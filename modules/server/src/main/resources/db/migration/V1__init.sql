@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS CI_BUILD (
   modifyTimeMillis BIGINT,
   name VARCHAR(50),
   buildId INTEGER,
-  group VARCHAR(50),
+  "GROUP" VARCHAR(50),
   branchName VARCHAR(50),
   script TEXT,
   resultDirFile VARCHAR(200),
@@ -539,7 +539,7 @@ CREATE TABLE IF NOT EXISTS INFRA_NODE (
   openStatus INTEGER DEFAULT 0,
   timeOut INTEGER DEFAULT 0,
   sshId VARCHAR(50),
-  group VARCHAR(50),
+  "GROUP" VARCHAR(50),
   httpProxy VARCHAR(200),
   httpProxyType VARCHAR(20),
   sortValue FLOAT,
@@ -585,7 +585,7 @@ CREATE TABLE IF NOT EXISTS OPS_RELEASE (
   secondaryDirectory VARCHAR(200),
   uploadCloseFirst TINYINT DEFAULT 0,
   statusMsg VARCHAR(255),
-  group VARCHAR(50),
+  "GROUP" VARCHAR(50),
   webhook VARCHAR(255),
   mode VARCHAR(50),
   modeData VARCHAR(500),
@@ -644,7 +644,7 @@ CREATE TABLE IF NOT EXISTS CI_PROJECT (
   javaExtDirsCp TEXT,
   sortValue FLOAT,
   triggerToken VARCHAR(100),
-  group VARCHAR(50),
+  "GROUP" VARCHAR(50),
   dslContent TEXT,
   autoStart TINYINT,
   nodeName VARCHAR(50),
@@ -669,7 +669,7 @@ CREATE TABLE IF NOT EXISTS CI_REPOSITORY (
   sortValue FLOAT,
   timeout INTEGER,
   createUser VARCHAR(50),
-  group VARCHAR(50),
+  "GROUP" VARCHAR(50),
   PRIMARY KEY (id)
 );
 
@@ -791,7 +791,7 @@ CREATE TABLE IF NOT EXISTS INFRA_SSH (
   notAllowedCommand TEXT,
   allowEditSuffix TEXT,
   timeout INTEGER DEFAULT 0,
-  group VARCHAR(50),
+  "GROUP" VARCHAR(50),
   machineSshId VARCHAR(50),
   PRIMARY KEY (id)
 );
@@ -940,7 +940,7 @@ CREATE TABLE IF NOT EXISTS SYS_WORKSPACE (
   modifyUser VARCHAR(50),
   name VARCHAR(50),
   description VARCHAR(255),
-  group VARCHAR(50),
+  "GROUP" VARCHAR(50),
   clusterInfoId VARCHAR(50),
   PRIMARY KEY (id)
 );

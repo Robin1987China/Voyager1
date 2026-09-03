@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web-vue/package-lock.json
+
+      - name: Build frontend
+        run: cd web-vue && npm ci && npm run build
+
+      - name: Build backend
+        run: rm -f modules/agent/target/agent-*.jar && mvn -B clean package -DskipTests
+
+      - name: Package server release tarball
+        run: |
+          SERVER_DIR=$(ls -d modules/server/target/server-*-release | head -1)
+          AGENT_DIR=$(ls -d modules/agent/target/agent-*-release | head -1)
+          tar -czf voyager1-server.tar.gz -C "$SERVER_DIR" .
+          tar -czf voyager1-agent.tar.gz -C "$AGENT_DIR" .
+          echo "server=$SERVER_DIR" >> "$GITHUB_OUTPUT"
+          echo "agent=$AGENT_DIR" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            voyager1-server.tar.gz
+            voyager1-agent.tar.gz
+          generate_release_notes: true
+          draft: false
+          prerelease: false

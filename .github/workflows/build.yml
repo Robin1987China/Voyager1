@@ -1,32 +1,53 @@
-name: build
+name: CI Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
-
   build:
-
+    name: Build & Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 18.x ]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          node-version: ${{ matrix.node-version }}
-      - run: cd web-vue && npm i && npm run build
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Build with Maven
-        run: mvn -B package
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web-vue/package-lock.json
+
+      - name: Build frontend
+        run: cd web-vue && npm ci && npm run build
+
+      - name: Build backend (skip tests)
+        run: rm -f modules/agent/target/agent-*.jar && mvn -B clean package -DskipTests
+
+      - name: Run tests
+        run: mvn -B test
+
+      - name: Upload server release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: voyager1-server-release
+          path: modules/server/target/server-*-release/
+          retention-days: 7
+
+      - name: Upload agent release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: voyager1-agent-release
+          path: modules/agent/target/agent-*-release/
+          retention-days: 7

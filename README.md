@@ -86,211 +86,104 @@ Voyager1 原生把核心运维能力暴露为 **MCP（Model Context Protocol）�
 
 ## 📥 安装 Voyager1
 
-Voyager1 支持多种安装方式，满足不同用户的个性化需求，您只需要选择一种方式安装即可。
+Voyager1 采用 **Server + Agent** 架构，从源码构建即可部署。当前初始版本（v0.0.1）推荐**从源码编译安装**。
 
-### 方式一：🚀（推荐） 一键安装（Linux）
+### 环境要求
 
-#### 一键安装服务端
+| 工具 | 版本 |
+|---|---|
+| JDK | 17（Spring Boot 3 最低要求；JDK ≥ 26 与 lombok 不兼容） |
+| Maven | 3.9.x |
+| Node.js | ≥ 22（前端构建） |
 
-> **注意：安装的目录位于执行命令的目录！**
->
-> ⚠️ 特别提醒：一键安装的时候注意执行命令不可在同一目录下，即 Server 端和 Agent 端不可安装在同一目录下！
->
-> 如果需要修改服务端数据、日志存储的路径请修改
-> 文件中 `voyager1.path` 配置属性。
+### 方式一：🚀 从源码编译安装（推荐）
 
-```shell
-# 一键默认安装
-# 一键默认安装 + 自动配置开机自启服务
-
-# 安装服务端和 jdk 环境
-yum install -y wget && \
-bash install.sh Server jdk
-
-# 安装服务端和 jdk、maven 环境
-yum install -y wget && \
-bash install.sh Server jdk+mvn
-
-# ubuntu
-apt-get install -y wget && \
-bash install.sh Server jdk
-```
-
-启动成功后，服务端的端口为 `2122`，可通过 `http://127.0.0.1:2122/`
-访问管理页面（如果不是本机访问，需要把 127.0.0.1 换成您安装的服务器 IP 地址）。
-
-> 如无法访问管理系统，执行命令 `systemctl status firewalld` 检查下是否开启了防火墙
-> ，如状态栏看到绿色显示 `Active: active (running)` 需要放行 `2122` 端口。
->
->```bash
-># 放行管理系统的 2122 端口
->firewall-cmd --add-port=2122/tcp --permanent
-># 重启防火墙才会生效
->firewall-cmd --reload
->```
->
->如果在操作系统上放行了端口仍无法访问，并且您使用的是云服务器，请到云服务器后台中检查安全组规则是否放行 2122 端口。
->
->⚠️ 注意： Linux 系统中有多种防火墙：Firewall、Iptables、SELinux 等，再检查防火墙配置时候需要都检查一下。
-
-#### 一键安装插件端
-
-> 如果安装服务端的服务器也需要被管理，在服务端上也需要安装插件端（同一个服务器中可以同时安装服务端和插件端）
->
-> ⚠️ 特别提醒：一键安装的时候注意执行命令不可在同一目录下，即 Server 端和 Agent 端不可安装在同一目录下！
->
-> 如果需要修改插件端数据、日志存储的路径请修改
-> 文件中 `voyager1.path` 配置属性。
+#### 1. 克隆代码并构建
 
 ```shell
-# 一键默认安装
-# 一键默认安装 + 自动配置开机自启服务
-
-# 安装插件端和 jdk 环境
-yum install -y wget && \
-bash install.sh Agent jdk
-
-# ubuntu
-apt-get install -y wget && \
-bash install.sh Agent jdk
-```
-
-启动成功后，插件端的端口为 `2123`，插件端提供给服务端使用。
-
-### 方式二：📦 容器化安装
-
-
-#### 一条命令安装
-
-```shell
-```
-
-#### 使用挂载方式存储相关数据（在部分环境可能出现兼容性问题）
-
-1. 阿里仓库
-
-```shell
-mkdir -p /home/voyager1-server/logs
-mkdir -p /home/voyager1-server/data
-mkdir -p /home/voyager1-server/conf
-docker run -d -p 2122:2122 \
-	--name voyager1-server \
-	-v /home/voyager1-server/logs:/usr/local/voyager1-server/logs \
-	-v /home/voyager1-server/data:/usr/local/voyager1-server/data \
-	-v /home/voyager1-server/conf:/usr/local/voyager1-server/conf \
-```
-
-2. dockerhub 仓库
-
-```shell
-mkdir -p /home/voyager1-server/logs
-mkdir -p /home/voyager1-server/data
-mkdir -p /home/voyager1-server/conf
-docker run -d -p 2122:2122 \
-	--name voyager1-server \
-	-v /home/voyager1-server/logs:/usr/local/voyager1-server/logs \
-	-v /home/voyager1-server/data:/usr/local/voyager1-server/data \
-	-v /home/voyager1-server/conf:/usr/local/voyager1-server/conf \
-```
-
-#### 使用容器卷方式存储相关数据
-
-1. 阿里仓库
-
-```shell
-docker volume create voyager1-server-data
-docker volume create voyager1-server-logs
-docker volume create voyager1-server-conf
-docker run -d -p 2122:2122 \
-	--name voyager1-server \
-	-v voyager1-server-data:/usr/local/voyager1-server/data \
-	-v voyager1-server-logs:/usr/local/voyager1-server/logs \
-	-v voyager1-server-conf:/usr/local/voyager1-server/conf \
-```
-
-2. dockerhub 仓库
-
-```shell
-docker volume create voyager1-server-data
-docker volume create voyager1-server-logs
-docker volume create voyager1-server-conf
-docker run -d -p 2122:2122 \
-	--name voyager1-server \
-	-v voyager1-server-data:/usr/local/voyager1-server/data \
-	-v voyager1-server-logs:/usr/local/voyager1-server/logs \
-	-v voyager1-server-conf:/usr/local/voyager1-server/conf \
-```
-
-> 容器化安装仅提供服务端版。由于容器和宿主机环境隔离，而导致插件端的很多功能无法正常使用，因此对插件端容器化意义不大。
->
-> 安装docker、配置镜像、自动启动、查找安装后所在目录等可参考文档
->
-> 在低版本 docker 中运行可能出现 `ls: cannot access'/usr/local/voyager1-server/lib/': Operation not permitted`
-> 错误，此时需要添加 `--privileged` 参数
-
-### 方式三：💾 下载安装
-
-2. 解压文件
-3. 安装插件端
-	1. `agent-x.x.x-release` 目录为插件端的全部安装文件
-	2. 上传到对应服务器（整个目录）
-	3. 启动插件端，Windows 环境用 bat 脚本，Linux 环境用 sh 脚本。（如果出现乱码或者无法正常执行，请检查编码格式、换行符是否匹配。）
-	4. 插件端默认运行端口：`2123`
-4. 安装服务端
-	1. `server-x.x.x-release` 目录为服务端的全部安装文件
-	2. 上传到对应服务器（整个目录）
-	3. 启动服务端，Windows 环境用 bat 脚本，Linux 环境用 sh 脚本。（如果出现乱码或者无法正常执行，请检查编码格式、换行符是否匹配。）
-	4. 服务端默认运行端口：`2122`，访问管理页面：`http://127.0.0.1:2122/`（非本机访问把 `127.0.0.1` 换成您的服务器 IP 地址）
-
-### 方式四：⌨️ 编译安装
-
-2. 切换到 `web-vue` 目录，执行 `npm install`（vue 环境需要提前搭建和安装依赖包详情可以查看 web-vue 目录下 README.md）
-3. 执行 `npm run build` 进行 vue 项目打包
-4. 切换到项目根目录执行：`mvn clean package`
-5. 安装插件端
-	1. 查看插件端安装包 `modules/agent/target/agent-x.x.x-release`
-	2. 打包上传服务器运行（整个目录）
-	3. 启动插件端，Windows 环境用 bat 脚本，Linux 环境用 sh 脚本。（如果出现乱码或者无法正常执行，请检查编码格式、换行符是否匹配。）
-	4. 默认运行端口：`2123`
-6. 安装服务端
-	1. 查看插件端安装包 `modules/server/target/server-x.x.x-release`
-	2. 打包上传服务器运行（整个目录）
-	3. 启动服务端，Windows 环境用 bat 脚本，Linux 环境用 sh 脚本。（如果出现乱码或者无法正常执行，请检查编码格式、换行符是否匹配。）
-	4. 服务端默认运行端口：`2122`，访问管理页面：`http://127.0.0.1:2122/`（非本机访问把 `127.0.0.1` 换成您的服务器 IP 地址）
-
-> 也可以使用 `script/release.bat` 或 `script/release.sh` 快速打包。
-
-### 方式五：📦 一键启动 docker-compose
-
-- 无需安装任何环境,自动编译构建
-
-> 需要注意修改 `.env` 文件中的 token 值
-
-```shell
-yum install -y git
+git clone https://github.com/Robin1987China/Voyager1.git
 cd Voyager1
-docker-compose -f docker-compose.yml up
-# docker-compose -f docker-compose.yml up --build
-# docker-compose -f docker-compose.yml build --no-cache
-# docker-compose -f docker-compose-local.yml up
-# docker-compose -f docker-compose-local.yml build --build-arg TEMP_VERSION=.0
-# docker-compose -f docker-compose-cluster.yml up --build
 ```
 
-### 方式六：💻 编译运行
+#### 2. 构建前端（dist 输出到 `modules/server/src/main/resources/dist`）
 
-   dev 分支）
-2. 运行插件端
-	1. 运行 `io.voyager1.Voyager1AgentApplication`
-	2. 留意控制台打印的默认账号密码信息
-	3. 插件端默认运行端口：`2123`
-3. 运行服务端
-	1. 运行 `io.voyager1.Voyager1ServerApplication`
-	2. 服务端默认运行端口：`2122`
-4. 构建 vue 页面，切换到 `web-vue` 目录（前提需要本地开发环境有 node、npm 环境）
-5. 安装项目 vue 依赖，控制台执行 `npm install`
-6. 启动开发模式，控制台执行 `npm run dev`
-7. 根据控制台输出的地址访问前端页面：`http://127.0.0.1:3000/`（非本机访问把 `127.0.0.1` 换成您的服务器 IP 地址）
+```shell
+cd web-vue
+npm install
+npm run build
+cd ..
+```
+
+#### 3. 构建后端并打包
+
+```shell
+# 打包（skip 测试；若 agent jar 已存在会增量跳过，需先删除强制重建）
+rm -f modules/agent/target/agent-0.0.1.jar
+mvn clean package
+```
+
+打包完成后，产物位于：
+- 服务端：`modules/server/target/server-0.0.1-release/`
+- 插件端：`modules/agent/target/agent-0.0.1-release/`
+
+> 也可以使用 `script/release.sh`（Linux）或 `script/release.bat`（Windows）一键打包。
+
+#### 4. 安装并启动服务端
+
+将 `server-0.0.1-release` 目录上传到服务器（整个目录），进入目录后：
+
+```shell
+./bin/Server.sh start     # Linux
+# 或 Windows: bin\Server.bat start
+```
+
+服务端默认端口 `2122`，访问 `http://127.0.0.1:2122/`（非本机访问换成服务器 IP）。
+
+#### 5. 安装并启动插件端
+
+将 `agent-0.0.1-release` 目录上传到被管主机（整个目录，**与服务端不要放在同一目录**），进入目录后：
+
+```shell
+./bin/Agent.sh start      # Linux
+# 或 Windows: bin\Agent.bat start
+```
+
+插件端默认端口 `2123`，由服务端调用。
+
+> ⚠️ 服务端与插件端务必安装在不同目录；两者通过 HTTP 通信，需网络互通。
+
+> 如无法访问管理页，检查防火墙是否放行 2122 端口：
+> ```bash
+> firewall-cmd --add-port=2122/tcp --permanent && firewall-cmd --reload
+> ```
+> 云服务器还需在安全组放行 2122 端口。
+
+### 方式二：⌨️ 本地开发运行
+
+适合二次开发调试。
+
+```shell
+# 1. 启动服务端（IDE 运行）
+io.voyager1.Voyager1ServerApplication       # 端口 2122
+
+# 2. 启动插件端（IDE 运行）
+io.voyager1.Voyager1AgentApplication        # 端口 2123，注意控制台打印的默认账号
+
+# 3. 启动前端开发模式
+cd web-vue && npm install && npm run dev    # 默认 http://127.0.0.1:3000/
+```
+
+### 方式三：📦 Docker Compose（从源码构建镜像）
+
+提供 `docker-compose.yml` / `docker-compose-local.yml` / `docker-compose-cluster.yml`，基于源码 `build` 构建镜像（`Dockerfile.local`），无需预置官方镜像。
+
+```shell
+cd Voyager1
+# 修改 .env 中的 SERVER_TOKEN（生产务必改为随机值）
+docker-compose -f docker-compose.yml up --build
+```
+
+> 容器化仅提供服务端版；插件端功能依赖宿主机环境，容器化意义不大，建议插件端直接部署在被管主机上。
 
 ## 管理 Voyager1 命令
 

@@ -87,210 +87,104 @@ Voyager1 natively exposes its core operations capabilities as **MCP (Model Conte
 
 ## 📥 Installing Voyager1
 
-Voyager1 supports various installation methods to meet different user needs. Just choose one method to install.
+Voyager1 uses a **Server + Agent** architecture and can be built from source. For the initial release (v0.0.1), building from source is recommended.
 
-### Method 1: 🚀(Recommended) One-click Installation (Linux)
+### Environment Requirements
 
-#### One-click Server Installation
+| Tool | Version |
+|---|---|
+| JDK | 17 (Spring Boot 3 minimum; JDK ≥ 26 is incompatible with lombok) |
+| Maven | 3.9.x |
+| Node.js | ≥ 22 (frontend build) |
 
-> **Note: The installation directory is the current directory where the command is executed!**
->
-> ⚠️ Special Reminder: When using the one-click installation, ensure the command is executed in different directories. The Server and Agent cannot be installed in the same directory!
->
-> To change the data and log storage paths of the server,
-> modify the `voyager1.path` configuration property in the file
+### Method 1: 🚀 Build from Source (Recommended)
 
-```shell
-# Default one-click installation
-# Default one-click installation and automatic startup service configuration
-
-# Install server and jdk environment
-yum install -y wget && \
-bash install.sh Server jdk
-
-# Install server and jdk, maven environment
-yum install -y wget && \
-bash install.sh Server jdk+mvn
-
-# ubuntu
-apt-get install -y wget && \
-bash install.sh Server jdk
-```
-
-After a successful startup, the server port is `2122`. You can access the management page via `http://127.0.0.1:2122/`
-(if not accessing from the local machine, replace 127.0.0.1 with the IP address of the installed server).
-
-> If you cannot access the management system, run the command `systemctl status firewalld` to check if the firewall is enabled.
-> If you see `Active: active (running)` in green in the status bar, you need to allow port `2122`.
->
->```bash
-># Allow port 2122 for the management system
->firewall-cmd --add-port=2122/tcp --permanent
-># Reload the firewall to take effect
->firewall-cmd --reload
->```
->
->If you have allowed the port in the operating system but still cannot access it, and you are using a cloud server, check the security group rules in the cloud server's control panel to see if port 2122 is allowed.
->
->⚠️ Note: There are multiple firewalls in Linux systems: Firewall, Iptables, SELinux, etc. When checking firewall configurations, make sure to check all of them.
-
-#### One-Click Agent Installation
-
-> If the server where the server side is installed also needs to be managed, you need to install the agent on the server side as well (both the server and agent can be installed on the same server but in different directories).
->
-> ⚠️ Special reminder: Do not execute the one-click installation command in the same directory for both the Server and Agent!
->
-> If you need to modify the agent data and log storage paths, update the `voyager1.path` configuration property in the file
+#### 1. Clone and Build
 
 ```shell
-# Default one-click installation
-# Default one-click installation and auto-configure startup service
-
-# Install agent and JDK environment
-yum install -y wget && \
-bash install.sh Agent jdk
-
-# ubuntu
-apt-get install -y wget && \
-bash install.sh Agent jdk
-```
-
-After a successful startup, the agent port is `2123`, which is used by the server.
-
-### Method 2: 📦 Container Installation
-
-
-#### One-Command Installation
-
-```shell
-```
-
-#### Using Mount to Store Data (may have compatibility issues in some environments)
-
-1. Alibaba Cloud Repository
-
-```shell
-mkdir -p /home/voyager1-server/logs
-mkdir -p /home/voyager1-server/data
-mkdir -p /home/voyager1-server/conf
-docker run -d -p 2122:2122 \
-	--name voyager1-server \
-	-v /home/voyager1-server/logs:/usr/local/voyager1-server/logs \
-	-v /home/voyager1-server/data:/usr/local/voyager1-server/data \
-	-v /home/voyager1-server/conf:/usr/local/voyager1-server/conf \
-```
-
-2. Docker Hub Repository
-
-```shell
-mkdir -p /home/voyager1-server/logs
-mkdir -p /home/voyager1-server/data
-mkdir -p /home/voyager1-server/conf
-docker run -d -p 2122:2122 \
-	--name voyager1-server \
-	-v /home/voyager1-server/logs:/usr/local/voyager1-server/logs \
-	-v /home/voyager1-server/data:/usr/local/voyager1-server/data \
-	-v /home/voyager1-server/conf:/usr/local/voyager1-server/conf \
-```
-
-#### Using Docker Volumes to Store Data
-
-1. Alibaba Cloud Repository
-
-```shell
-docker volume create voyager1-server-data
-docker volume create voyager1-server-logs
-docker volume create voyager1-server-conf
-docker run -d -p 2122:2122 \
-	--name voyager1-server \
-	-v voyager1-server-data:/usr/local/voyager1-server/data \
-	-v voyager1-server-logs:/usr/local/voyager1-server/logs \
-	-v voyager1-server-conf:/usr/local/voyager1-server/conf \
-```
-
-2. Docker Hub Repository
-
-```shell
-docker volume create voyager1-server-data
-docker volume create voyager1-server-logs
-docker volume create voyager1-server-conf
-docker run -d -p 2122:2122 \
-	--name voyager1-server \
-	-v voyager1-server-data:/usr/local/voyager1-server/data \
-	-v voyager1-server-logs:/usr/local/voyager1-server/logs \
-	-v voyager1-server-conf:/usr/local/voyager1-server/conf \
-```
-
-> Container installation only provides the server version. Due to isolation between the container and the host environment, many functionalities of the agent cannot be used properly. Therefore, containerization of the agent is not very meaningful.
->
-> For more information on installing Docker, configuring images, auto-start, and locating the installation directory, refer to the documentation
->
-> In lower versions of Docker, you may encounter the error `ls: cannot access'/usr/local/voyager1-server/lib/': Operation not permitted`
-> In this case, add the `--privileged` parameter
-
-### Method 3: 💾 Download and Install
-
-2. Extract the files
-3. Install the agent:
-	1. The `agent-x.x.x-release` directory contains all the installation files for the agent
-	2. Upload the entire directory to the corresponding server
-	3. Start the agent. Use the bat script on Windows and the sh script on Linux (if there are garbled characters or execution issues, check the encoding format and line endings)
-	4. The default running port for the agent is `2123`
-4. Install the server:
-	1. The `server-x.x.x-release` directory contains all the installation files for the server
-	2. Upload the entire directory to the corresponding server
-	3. Start the server. Use the bat script on Windows and the sh script on Linux (if there are garbled characters or execution issues, check the encoding format and line endings)
-	4. The default running port for the server is `2122`. Access the management page at `http://127.0.0.1:2122/` (if not accessed locally, replace `127.0.0.1` with your server's IP address)
-
-### Method 4: ⌨️ Compile and Install
-
-2. Switch to the `web-vue` directory and run `npm install` (you need to have the Vue environment set up in advance; refer to the README.md in the web-vue directory for details)
-3. Run `npm run build` to package the Vue project
-4. Switch to the project root directory and run: `mvn clean package`
-5. Install the agent:
-	1. Check the agent installation package in `modules/agent/target/agent-x.x.x-release`
-	2. Upload the entire directory to the server
-	3. Start the agent. Use the bat script on Windows and the sh script on Linux (if there are garbled characters or execution issues, check the encoding format and line endings)
-	4. The default running port for the agent is `2123`
-6. Install the server:
-	1. Check the server installation package in `modules/server/target/server-x.x.x-release`
-	2. Upload the entire directory to the server
-	3. Start the server. Use the bat script on Windows and the sh script on Linux (if there are garbled characters or execution issues, check the encoding format and line endings)
-	4. The default running port for the server is `2122`. Access the management page at `http://127.0.0.1:2122/` (if not accessed locally, replace `127.0.0.1` with your server's IP address)
-
-> You can also use `script/release.bat` or `script/release.sh` for quick packaging.
-
-### Method 5: 📦 One-Click Start with Docker-Compose
-
-- No environment installation required; automatically compiles and builds
-
-> Note: Remember to modify the token value in the `.env` file
-
-```shell
-yum install -y git
+git clone https://github.com/Robin1987China/Voyager1.git
 cd Voyager1
-docker-compose -f docker-compose.yml up
-# docker-compose -f docker-compose.yml up --build
-# docker-compose -f docker-compose.yml build --no-cache
-# docker-compose -f docker-compose-local.yml up
-# docker-compose -f docker-compose-local.yml build --build-arg TEMP_VERSION=.0
-# docker-compose -f docker-compose-cluster.yml up --build
 ```
 
-### Method 6: 💻 Compile and Run
+#### 2. Build the Frontend (dist output to `modules/server/src/main/resources/dist`)
 
-   dev branch)
-2. Run the agent:
-	1. Run `io.voyager1.Voyager1AgentApplication`
-	2. Note the default username and password information printed in the console.
-	3. The agent's default running port: `2123`
-3. Run the server:
-	1. Run `io.voyager1.Voyager1ServerApplication`
-	2. The server's default running port: `2122`
-4. Build the Vue page, switch to the `web-vue` directory (make sure you have node and npm environments set up locally).
-5. Install the Vue project dependencies by executing `npm install` in the console.
-6. Start development mode by executing `npm run dev` in the console.
-7. Access the frontend page using the address output in the console: `http://127.0.0.1:3000/` (if not accessing from the local machine, replace `127.0.0.1` with your server's IP address).
+```shell
+cd web-vue
+npm install
+npm run build
+cd ..
+```
+
+#### 3. Build the Backend and Package
+
+```shell
+# Package (skip tests; if the agent jar already exists it may be skipped, delete it first)
+rm -f modules/agent/target/agent-0.0.1.jar
+mvn clean package
+```
+
+After packaging, the artifacts are located at:
+- Server: `modules/server/target/server-0.0.1-release/`
+- Agent: `modules/agent/target/agent-0.0.1-release/`
+
+> You can also use `script/release.sh` (Linux) or `script/release.bat` (Windows) for one-command packaging.
+
+#### 4. Install and Start the Server
+
+Upload the `server-0.0.1-release` directory to the server (the entire directory), then inside it:
+
+```shell
+./bin/Server.sh start     # Linux
+# or Windows: bin\Server.bat start
+```
+
+The server default port is `2122`, accessible at `http://127.0.0.1:2122/` (replace `127.0.0.1` with the server IP if not local).
+
+#### 5. Install and Start the Agent
+
+Upload the `agent-0.0.1-release` directory to the managed host (the entire directory, **in a different directory from the server**), then inside it:
+
+```shell
+./bin/Agent.sh start      # Linux
+# or Windows: bin\Agent.bat start
+```
+
+The agent default port is `2123`, used by the server.
+
+> ⚠️ The server and agent must be installed in different directories; they communicate over HTTP and must have network connectivity.
+
+> If you cannot access the management page, check whether the firewall allows port 2122:
+> ```bash
+> firewall-cmd --add-port=2122/tcp --permanent && firewall-cmd --reload
+> ```
+> For cloud servers, also allow port 2122 in the security group.
+
+### Method 2: ⌨️ Local Development
+
+For secondary development and debugging.
+
+```shell
+# 1. Start the server (run in IDE)
+io.voyager1.Voyager1ServerApplication       # port 2122
+
+# 2. Start the agent (run in IDE)
+io.voyager1.Voyager1AgentApplication        # port 2123, note the default account printed
+
+# 3. Start the frontend dev server
+cd web-vue && npm install && npm run dev    # default http://127.0.0.1:3000/
+```
+
+### Method 3: 📦 Docker Compose (Build from Source)
+
+Provides `docker-compose.yml` / `docker-compose-local.yml` / `docker-compose-cluster.yml`, building images from source (`Dockerfile.local`) — no pre-built official image required.
+
+```shell
+cd Voyager1
+# Modify SERVER_TOKEN in .env (use a random value in production)
+docker-compose -f docker-compose.yml up --build
+```
+
+> Containerization only provides the server version; agent functionality depends on the host environment, so containerizing the agent is not meaningful. Deploy the agent directly on managed hosts instead.
 
 ## Managing Voyager1 Commands
 

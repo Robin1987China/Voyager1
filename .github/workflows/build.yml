@@ -39,14 +39,14 @@ jobs:
         run: mvn -B test
 
       - name: Upload server release artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: voyager1-server-release
           path: modules/server/target/server-*-release/
           retention-days: 7
 
       - name: Upload agent release artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: voyager1-agent-release
           path: modules/agent/target/agent-*-release/

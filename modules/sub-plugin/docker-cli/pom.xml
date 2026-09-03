@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>voyager1-plugins-parent</artifactId>
+        <groupId>io.voyager1.plugins</groupId>
+        <version>0.0.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>docker-cli</artifactId>
+    <name>plugin-docker-cli</name>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+
+        <docker-java-version>3.4.0</docker-java-version>
+        <!-- <jsch.version>0.2.7</jsch.version>-->
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.voyager1</groupId>
+            <artifactId>common</artifactId>
+            <scope>provided</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <!--Docker Client-->
+        <dependency>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java-core</artifactId>
+            <version>${docker-java-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcpkix-jdk15on</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.70</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java-transport-httpclient5</artifactId>
+            <version>${docker-java-version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jna</artifactId>
+                    <groupId>net.java.dev.jna</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>${jna-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.voyager1.plugins</groupId>
+            <artifactId>ssh-jsch</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!-- 是否指定项目classpath下的依赖 -->
+                            <addClasspath>true</addClasspath>
+                            <!-- 指定依赖的时候声明前缀 -->
+                            <classpathPrefix>./</classpathPrefix>
+                        </manifest>
+                        <manifestEntries>
+                            <!-- 项目版本号 -->
+                            <Voyager1-Project-Version>${project.version}</Voyager1-Project-Version>
+                            <!-- 打包时间 -->
+                            <Voyager1-Timestamp>${maven.build.timestamp}</Voyager1-Timestamp>
+                            <Voyager1-Type>${project.artifactId}</Voyager1-Type>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!--这里要替换成jar包main方法所在类 -->
+                        </manifest>
+                    </archive>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>script/release.xml</descriptor>
+                    </descriptors>
+
+                </configuration>
+
+                <executions>
+
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- 指定在打包节点执行jar包合并操作 -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

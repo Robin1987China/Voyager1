@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="旅行者1号 Voyager1">
+  <defs>
+    <!-- 深空背景 -->
+    <radialGradient id="v-space" cx="0.35" cy="0.3" r="1.1">
+      <stop offset="0" stop-color="#14224A"/>
+      <stop offset="0.55" stop-color="#0B1430"/>
+      <stop offset="1" stop-color="#050A1A"/>
+    </radialGradient>
+    <!-- 碟形天线金属面 -->
+    <linearGradient id="v-dish" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F8FAFC"/>
+      <stop offset="0.6" stop-color="#C7D2E4"/>
+      <stop offset="1" stop-color="#8FA3C2"/>
+    </linearGradient>
+    <!-- 金唱片 -->
+    <radialGradient id="v-gold" cx="0.35" cy="0.3" r="1">
+      <stop offset="0" stop-color="#FFE9A8"/>
+      <stop offset="0.55" stop-color="#D9A93F"/>
+      <stop offset="1" stop-color="#8A5E1B"/>
+    </radialGradient>
+    <!-- 机体 -->
+    <linearGradient id="v-bus" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E8C97E"/>
+      <stop offset="1" stop-color="#9C742C"/>
+    </linearGradient>
+    <!-- 轨迹光带 -->
+    <linearGradient id="v-trail" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#D9A93F" stop-opacity="0"/>
+      <stop offset="1" stop-color="#F2CE6B" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 圆角方块背景：深空 -->
+  <rect x="4" y="4" width="120" height="120" rx="26" fill="url(#v-space)"/>
+
+  <!-- 星点 -->
+  <g fill="#E2E8F0">
+    <circle cx="22" cy="26" r="1.1" opacity="0.8"/>
+    <circle cx="38" cy="15" r="0.7" opacity="0.5"/>
+    <circle cx="86" cy="18" r="0.9" opacity="0.6"/>
+    <circle cx="108" cy="34" r="0.7" opacity="0.5"/>
+    <circle cx="16" cy="66" r="0.8" opacity="0.5"/>
+    <circle cx="30" cy="98" r="0.9" opacity="0.6"/>
+    <circle cx="102" cy="100" r="1" opacity="0.7"/>
+    <circle cx="84" cy="112" r="0.6" opacity="0.45"/>
+    <circle cx="58" cy="20" r="0.6" opacity="0.5"/>
+    <circle cx="116" cy="70" r="0.8" opacity="0.5"/>
+  </g>
+
+  <!-- 飞行轨迹（右下起，向左上划过） -->
+  <path d="M118 96 C92 88 66 76 40 52" fill="none" stroke="url(#v-trail)" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="1 5"/>
+
+  <!-- 旅行者1号探测器（朝向左上飞行） -->
+  <g transform="rotate(-18 64 60)">
+    <!-- 科学仪器桅杆（右上） -->
+    <line x1="70" y1="56" x2="96" y2="40" stroke="#C7D2E4" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="97" cy="39.5" r="2.4" fill="#8FA3C2"/>
+
+    <!-- RTG 桅杆（左下长臂，末端核电源） -->
+    <line x1="56" y1="66" x2="28" y2="88" stroke="#B9C6DC" stroke-width="2.2" stroke-linecap="round"/>
+    <rect x="20" y="86" width="11" height="6" rx="2" transform="rotate(38 25 89)" fill="url(#v-gold)"/>
+
+    <!-- 碟形高增益天线（主体大圆盘，朝向左上） -->
+    <ellipse cx="66" cy="46" rx="24" ry="15" fill="url(#v-dish)"/>
+    <ellipse cx="66" cy="45" rx="17" ry="9.5" fill="#EDF2FA"/>
+    <ellipse cx="66" cy="44.5" rx="8" ry="4" fill="#C7D2E4"/>
+    <!-- 馈源杆 -->
+    <line x1="66" y1="46" x2="60" y2="66" stroke="#B9C6DC" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- 探测器机体（十边形简化） -->
+    <rect x="56" y="60" width="22" height="18" rx="4" fill="url(#v-bus)"/>
+    <rect x="56" y="60" width="22" height="6" rx="3" fill="#F4E2AE" opacity="0.75"/>
+
+    <!-- 金唱片（机身侧面） -->
+    <circle cx="67" cy="69" r="5.2" fill="url(#v-gold)" stroke="#6E4E14" stroke-width="0.8"/>
+    <circle cx="67" cy="69" r="1.6" fill="#6E4E14"/>
+    <path d="M63.5 69 a3.5 3.5 0 0 1 7 0" fill="none" stroke="#6E4E14" stroke-width="0.6" opacity="0.8"/>
+  </g>
+
+  <!-- 信号波纹（天线发出的电波） -->
+  <g fill="none" stroke="#7FA8F0" stroke-linecap="round" opacity="0.85">
+    <path d="M30 30 a18 18 0 0 1 12 -12" stroke-width="1.6" opacity="0.35"/>
+    <path d="M26 34 a26 26 0 0 1 18 -18" stroke-width="1.4" opacity="0.22"/>
+    <path d="M22 38 a34 34 0 0 1 24 -24" stroke-width="1.2" opacity="0.12"/>
+  </g>
+
+  <!-- 微光晕 -->
+  <circle cx="64" cy="60" r="34" fill="#F2CE6B" opacity="0.05"/>
+</svg>

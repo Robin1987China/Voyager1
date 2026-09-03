@@ -1,0 +1,212 @@
+/*
+ * Copyright (c) 2026 Voyager1
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.voyager1.socket;
+
+import io.voyager1.util.ArrayUtil;
+import io.voyager1.util.StrUtil;
+import com.alibaba.fastjson2.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import io.voyager1.common.forward.NodeForward;
+import io.voyager1.common.forward.NodeUrl;
+import io.voyager1.common.i18n.I18nMessageUtil;
+import io.voyager1.func.assets.model.MachineNodeModel;
+import io.voyager1.model.BaseWorkspaceModel;
+import io.voyager1.model.data.NodeModel;
+import io.voyager1.model.user.UserModel;
+import io.voyager1.transport.*;
+import io.voyager1.util.SocketSessionUtil;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * 服务端socket 基本类
+ *
+ * @since 2019/4/25
+ */
+@Slf4j
+public abstract class BaseProxyHandler extends BaseHandler {
+
+    private final NodeUrl nodeUrl;
+
+    public BaseProxyHandler(NodeUrl nodeUrl) {
+        this.nodeUrl = nodeUrl;
+    }
+
+    /**
+     * 连接参数
+     *
+     * @param attributes 属性
+     * @return key, value, key, value.....
+     */
+    protected abstract Object[] getParameters(Map<String, Object> attributes);
+
+    @Override
+    public void afterConnectionEstablishedImpl(WebSocketSession session) throws Exception {
+        super.afterConnectionEstablishedImpl(session);
+        Map<String, Object> attributes = session.getAttributes();
+        this.init(session, attributes);
+    }
+
+    /**
+     * 连接成功 初始化
+     *
+     * @param session    会话
+     * @param attributes 属性
+     * @throws URISyntaxException 异常
+     * @throws IOException        IO
+     */
+    protected void init(WebSocketSession session, Map<String, Object> attributes) throws Exception {
+        boolean init = (boolean) attributes.getOrDefault("init", false);
+        if (init) {
+            return;
+        }
+        NodeModel nodeModel = (NodeModel) attributes.get("nodeInfo");
+        MachineNodeModel machine = (MachineNodeModel) attributes.get("machine");
+
+        Object[] parameters = this.getParameters(attributes);
+        UserModel userModel = (UserModel) attributes.get("userInfo");
+        parameters = ArrayUtil.append(parameters, "optUser", userModel.getId(), "lang", attributes.get("lang"));
+        // 连接节点
+        INodeInfo nodeInfo = Optional.ofNullable(machine)
+            .map(NodeForward::coverNodeInfo)
+            .orElseGet(() -> Optional.ofNullable(nodeModel)
+                .map(NodeForward::parseNodeInfo)
+                .orElse(null)
+            );
+        if (nodeInfo == null) {
+            return;
+        }
+        String workspaceId = Optional.ofNullable(nodeModel).map(BaseWorkspaceModel::getWorkspaceId).orElse("");
+        IUrlItem urlItem = NodeForward.parseUrlItem(nodeInfo, workspaceId, this.nodeUrl, DataContentType.FORM_URLENCODED);
+
+        IProxyWebSocket proxySession = TransportServerFactory.get().websocket(nodeInfo, urlItem, parameters);
+        proxySession.onMessage(s -> onProxyMessage(session, s));
+        if (!proxySession.connectBlocking()) {
+            this.sendMsg(session, "插件端连接失败");
+            this.destroy(session);
+            return;
+        }
+        session.getAttributes().put("proxySession", proxySession);
+
+
+        attributes.put("init", true);
+    }
+
+    protected void onProxyMessage(WebSocketSession session, String msg) {
+        sendMsg(session, msg);
+    }
+
+
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        String msg = message.getPayload();
+        Map<String, Object> attributes = session.getAttributes();
+        IProxyWebSocket proxySession = (IProxyWebSocket) attributes.get("proxySession");
+        JSONObject json = JSONObject.parseObject(msg);
+        String op = json.getString("op");
+        ConsoleCommandOp consoleCommandOp = (op != null && !op.isEmpty()) ? ConsoleCommandOp.valueOf(op) : null;
+        try {
+            setLanguage(session);
+            String textMessage;
+            if (proxySession != null) {
+                textMessage = this.handleTextMessage(attributes, session, proxySession, json, consoleCommandOp);
+            } else {
+                textMessage = this.handleTextMessage(attributes, session, json, consoleCommandOp);
+            }
+            if (textMessage != null) {
+                this.sendMsg(session, textMessage);
+            }
+        } catch (Exception e) {
+            log.error("处理消息异常", e);
+            this.sendMsg(session, "处理消息异常：" + e.getMessage());
+        } finally {
+            clearLanguage();
+        }
+    }
+
+    /**
+     * 消息处理方法
+     *
+     * @param attributes       属性
+     * @param session          当前回话
+     * @param json             数据
+     * @param consoleCommandOp 操作类型
+     */
+    protected String handleTextMessage(Map<String, Object> attributes,
+                                       WebSocketSession session,
+                                       JSONObject json,
+                                       ConsoleCommandOp consoleCommandOp) throws IOException {
+        return null;
+    }
+
+    /**
+     * 消息处理方法
+     *
+     * @param attributes       属性
+     * @param proxySession     代理回话
+     * @param json             数据
+     * @param consoleCommandOp 操作类型
+     */
+    protected String handleTextMessage(Map<String, Object> attributes,
+                                       WebSocketSession session,
+                                       IProxyWebSocket proxySession,
+                                       JSONObject json,
+                                       ConsoleCommandOp consoleCommandOp) throws IOException {
+        return this.handleTextMessage(attributes, proxySession, json, consoleCommandOp);
+    }
+
+    /**
+     * 消息处理方法
+     *
+     * @param attributes       属性
+     * @param proxySession     代理回话
+     * @param json             数据
+     * @param consoleCommandOp 操作类型
+     */
+    protected String handleTextMessage(Map<String, Object> attributes,
+                                       IProxyWebSocket proxySession,
+                                       JSONObject json,
+                                       ConsoleCommandOp consoleCommandOp) throws IOException {
+        return null;
+    }
+
+
+    @Override
+    public void destroy(WebSocketSession session) {
+        try {
+            if (session.isOpen()) {
+                session.close();
+            }
+        } catch (IOException ignored) {
+        }
+        Map<String, Object> attributes = session.getAttributes();
+        IProxyWebSocket proxySession = (IProxyWebSocket) attributes.get("proxySession");
+        if (proxySession != null) {
+            try {
+                proxySession.close();
+            } catch (Exception e) {
+                log.error("关闭异常", e);
+            }
+        }
+        SocketSessionUtil.close(session);
+    }
+}

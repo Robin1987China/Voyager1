@@ -1,0 +1,11 @@
+alterType,tableName,name,type,len,defaultValue,notNull,comment
+ADD,CLOUD_ACCOUNT,extraKey,TEXT,,,false,额外凭证(加密)
+ADD,CLOUD_INSTANCE,regionId,String,50,,false,区域
+ADD,CLOUD_INSTANCE,zoneId,String,50,,false,可用区
+ADD,CLOUD_INSTANCE,instanceType,String,50,,false,实例规格
+ADD,CLOUD_INSTANCE,cpu,Integer,,,false,CPU核数
+ADD,CLOUD_INSTANCE,memory,Integer,,,false,内存(MB)
+ADD,CLOUD_INSTANCE,osName,String,200,,false,操作系统
+ADD,CLOUD_INSTANCE,expireTime,String,50,,false,到期时间
+ADD,CLOUD_INSTANCE,chargeType,String,30,,false,计费类型
+ADD,CLOUD_INSTANCE,tags,TEXT,,,false,标签(JSON)

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Voyager1 旅行者1号">
+  <defs>
+    <linearGradient id="m-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3D8BFD"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 徽章底：明亮蓝渐变（深/浅主题侧边栏均能浮出） -->
+  <rect x="1.5" y="1.5" width="45" height="45" rx="12" fill="url(#m-bg)"/>
+
+  <!-- 环绕轨道（呼应 Voyager 探索 / 交付循环） -->
+  <ellipse cx="24" cy="24.5" rx="16.5" ry="7" transform="rotate(-22 24 24.5)"
+           fill="none" stroke="#F2CE6B" stroke-width="2.1" opacity="0.92"/>
+
+  <!-- 主体 V 字形（粗描边，40px 下依然清晰） -->
+  <path d="M14.5 15.5 L24 33.5 L33.5 15.5" fill="none" stroke="#FFFFFF"
+        stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 轨道上的金色星球（品牌金，呼应金唱片） -->
+  <circle cx="37.6" cy="18.4" r="2.7" fill="#F2CE6B"/>
+</svg>

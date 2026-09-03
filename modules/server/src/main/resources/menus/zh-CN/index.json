@@ -1,0 +1,200 @@
+[
+  {
+    "title": "概括总览",
+    "icon_v3": "laptop",
+    "id": "overview"
+  },
+  {
+    "title": "多云管理",
+    "icon_v3": "cloud",
+    "id": "multiCloud",
+    "childs": [
+      {
+        "id": "cloudList",
+        "title": "云账号"
+      },
+      {
+        "id": "k8sList",
+        "title": "K8s 集群"
+      },
+      {
+        "id": "finopsList",
+        "title": "成本管理"
+      }
+    ]
+  },
+  {
+    "title": "主机与项目",
+    "icon_v3": "apartment",
+    "id": "host",
+    "childs": [
+      {
+        "id": "nodeList",
+        "title": "逻辑节点"
+      },
+      {
+        "id": "projectSearch",
+        "title": "项目列表"
+      },
+      {
+        "id": "dockerList",
+        "title": "Docker 列表"
+      },
+      {
+        "id": "dockerSwarm",
+        "title": "Docker 集群"
+      }
+    ]
+  },
+  {
+    "title": "构建发布",
+    "icon_v3": "build",
+    "id": "build",
+    "childs": [
+      {
+        "id": "repository",
+        "title": "仓库信息"
+      },
+      {
+        "id": "buildList",
+        "title": "构建列表"
+      },
+      {
+        "id": "buildHistory",
+        "title": "构建历史"
+      },
+      {
+        "id": "versionList",
+        "title": "版本管理"
+      },
+      {
+        "id": "pipelineList",
+        "title": "Pipeline"
+      },
+      {
+        "id": "swimlane",
+        "title": "版本晋升"
+      }
+    ]
+  },
+  {
+    "title": "运维管理",
+    "icon_v3": "code",
+    "id": "ops",
+    "childs": [
+      {
+        "id": "sshList",
+        "title": "SSH 列表"
+      },
+      {
+        "id": "commandList",
+        "title": "命令管理"
+      },
+      {
+        "id": "commandLogList",
+        "title": "命令执行记录"
+      },
+      {
+        "id": "scriptAllList",
+        "title": "节点脚本列表"
+      },
+      {
+        "id": "serverScriptList",
+        "title": "脚本列表"
+      },
+      {
+        "id": "serverScriptLogList",
+        "title": "脚本执行记录"
+      },
+      {
+        "id": "configWorkspaceEnv",
+        "title": "环境变量"
+      }
+    ]
+  },
+  {
+    "title": "分发管理",
+    "icon_v3": "gateway",
+    "id": "dispatch",
+    "childs": [
+      {
+        "id": "outgivingList",
+        "title": "分发列表"
+      },
+      {
+        "id": "outgivingLog",
+        "title": "分发日志"
+      },
+      {
+        "id": "outgivingWhitelistDirectory",
+        "title": "授权配置",
+        "role": "system"
+      },
+      {
+        "id": "logRead",
+        "title": "日志搜索"
+      }
+    ]
+  },
+  {
+    "title": "监控管理",
+    "icon_v3": "monitor",
+    "id": "monitor",
+    "childs": [
+      {
+        "id": "monitorList",
+        "title": "监控列表"
+      },
+      {
+        "id": "monitorLog",
+        "title": "监控日志"
+      },
+      {
+        "id": "userOptLog",
+        "title": "操作监控"
+      }
+    ]
+  },
+  {
+    "title": "文件与制品",
+    "icon_v3": "file",
+    "id": "file",
+    "childs": [
+      {
+        "id": "fileStorage",
+        "title": "文件列表"
+      },
+      {
+        "id": "staticFileStorage",
+        "title": "静态文件"
+      },
+      {
+        "id": "fileReleaseTask",
+        "title": "发布任务"
+      },
+      {
+        "id": "certificate",
+        "title": "证书管理"
+      }
+    ]
+  },
+  {
+    "title": "系统工具",
+    "icon_v3": "tool",
+    "id": "tools",
+    "childs": [
+      {
+        "id": "myWorkspaceList",
+        "title": "我的工作空间"
+      },
+      {
+        "id": "netTools",
+        "title": "网络工具"
+      },
+      {
+        "id": "cronTools",
+        "title": "Cron 表达式"
+      }
+    ]
+  }
+]

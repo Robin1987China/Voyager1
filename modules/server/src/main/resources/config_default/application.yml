@@ -1,0 +1,174 @@
+
+voyager1:
+  # voyager1 数据存储路径, 如果调试模式运行默认路径为【${user.home}/voyager1/】,安装运行默认为jar包文件的父级
+  path:
+  #  集群配置
+  cluster:
+    # 集群Id，默认为 default 不区分大小写，只能是字母或者数字，长度小于 20
+    id: default
+    # 心跳监控时间 （需要大于零） 单位秒 最小配置 5 秒
+    heart-second: 30
+  node:
+    # 节点心跳监控时间 （需要大于零） 单位秒 最小配置 5秒
+    heart-second: 30
+    # 节点统计日志保留天数，如果小于等于 0 不自动删除
+    stat-log-keep-days: 3
+    # 上传文件的超时时间 单位秒,最短5秒钟
+    upload-file-timeout: 300
+    # 节点文件分片上传大小，单位 M，建议小于 5MB（需要考虑插件端上传文件大小限制）
+    upload-file-slice-size: 1
+    # 节点文件分片上传并发数,最小1 最大 服务端 CPU 核心数
+    upload-file-concurrent: 2
+    # web socket 消息最大长度
+    web-socket-message-size-limit: 5MB
+  system:
+    # cron 定时器是否开启匹配秒
+    timer-match-second: false
+    # 旧包文件保留个数
+    old-jars-count: 2
+    # 系统日志编码格式
+    log-charset: UTF-8
+    # 控制台编码格式
+    console-charset:
+    # 在线升级允许降级-操作
+    allowed-downgrade: false
+    # 执行系统主要命名是否填充 sudo(sudo xxx) 使用前提需要配置 sudo 免密
+    command-use-sudo: false
+    # 系统语言：zh-CN、en-US
+    lang: zh-CN
+  user:
+    # 用户连续登录失败次数，超过此数将被限制登录
+    always-login-error: 5
+    # IP连续登录失败次数，超过此数将被限制登录
+    always-ip-login-error: 10
+    # 当ip连续登录失败，锁定对应IP时长，5h、1d
+    ip-error-lock-time: 5h
+    # 是否强制提醒用户开启  mfa
+    force-mfa: false
+    #登录token失效时间(单位：小时),默认为24
+    token-expired: 24
+    #登录token失效后自动续签时间（单位：分钟），默认为60，不自动续签
+    token-renewal: 60
+    # jwt 签名(加密)的key 长度建议控制到 16位
+    token-jwt-key:
+  web:
+    # 系统名称（浏览器标签页标题）
+    name: Voyager1 持续交付平台
+    # 系统副名称（主页面 logo 旁副标题） 建议4个汉字以内
+    sub-title: 持续交付
+    # 前端接口 超时时间 单位秒(最小 5 秒)
+    api-timeout: 20
+    # 禁用页面引导导航
+    disabled-guide: false
+    # 禁用登录图形验证码 （一般用于服务器没有字体或者开启了两部验证后才关闭图形验证码）
+    disabled-captcha: false
+    # 前端消息弹出位置，可选 topLeft topRight bottomLeft bottomRight
+    notification-placement:
+    # 前端消息传输需要编码或者加密 目前支持：NONE、BASE64
+    transport-encryption: NONE
+  # 查看日志时初始读取最后多少行（默认10，0不读取）
+  init-read-line: 10
+  db:
+    # 数据库默认 支持 ：H2、MYSQL、MARIADB、POSTGRESQL
+    mode: H2
+    # 日志存储条数，将自动清理旧数据,配置小于等于零则不清理
+    log-storage-count: 10000
+    # H2 模式无需配置 mysql 配置 jdbc 地址
+    url:
+    # 数据库账号 默认 voyager1
+    user-name: voyager1
+    # 数据库密码 默认 voyager1 如果自行配置请保证密码强度
+    user-pwd: voyager1
+    # h2 数据库缓存大小  kilobyte 1KB 1,024 megabyte 1MB 1,048,576
+    cache-size: 50MB
+    # 自动备份间隔天数 小于等于 0 不自动备份
+    auto-backup-interval-day: 1
+    # 自动备份保留天数 小于等于 0，不自动删除自动备份数据
+    auto-backup-reserve-day: 5
+    # 数据库连接池相关配置
+    max-active: 500
+    initial-size: 10
+    max-wait: 10
+    min-idle: 1
+    # 控制台是否打印 sql 信息
+    show-sql: false
+  # 构建相关配置
+  build:
+    # 最多保存多少份历史记录
+    max-history-count: 1000
+    # 单个最多保存多少份历史记录
+    item-max-history-count: 50
+    # 构建命令是否检查 存在删除命令
+    check-delete-command: true
+    # 构建线程池大小,小于 1 则为不限制，默认大小为 5
+    pool-size: 5
+    # 构建任务等待数量，超过此数量将取消构建任务，值最小为 1
+    pool-wait-queue: 10
+    # 日志显示 压缩折叠显示进度比例 范围 1-100
+    log-reduce-progress-ratio: 5
+  file-storage:
+    # 文件中心存储路径
+    save-pah:
+    scan-static-dir-cron: 0 0/1 * * *
+    # 是否开启静态文件目录监听
+    watch-monitor-static-dir: true
+    # 监听静态文件目录层级
+    watch-monitor-max-depth: 5
+  assets:
+    # 监控线程池大小,小于等于0 为CPU核心数
+    monitor-pool-size: 0
+    # 监控任务等待数量，超过此数量将取消监控任务，值最小为 1
+    monitor-pool-wait-queue: 500
+    # ssh 资产
+    ssh:
+      # 监控频率
+      monitor-cron: 0 0/1 * * * ?
+      # 指定分组不启用监控功能（如果想禁用所有配置 * 即可）
+      disable-monitor-group-name:
+        - 禁用监控
+    # docker 资产
+    docker:
+      # 监控频率
+      monitor-cron: 0 0/1 * * * ?
+server:
+  #运行端口号
+  port: 2122
+  servlet:
+    session:
+      cookie:
+        name: VOYAGER1ID-SERVER
+      timeout: 1H
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+      forceRequest: true
+      forceResponse: true
+  compression:
+    # gzip 压缩
+    enabled: true
+    #mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,image/png
+    min-response-size: 2048
+  tomcat:
+    uri-encoding: UTF-8
+spring:
+  web:
+    resources:
+      static-locations: classpath:/dist/
+      cache:
+        period: 1D
+  mvc:
+    throw-exception-if-no-handler-found: true
+    log-request-details: true
+  servlet:
+    multipart:
+      # 上传文件大小限制
+      max-request-size: 2GB
+      max-file-size: 1GB
+  h2:
+    console:
+      # 是否开启 web 访问数据库（url: http://${ip}:${port}/h2-console）
+      enabled: false
+      # 是否允许远程访问（开启此配置有安全风险），默认为 false（当部署到服务器上之后，是否可以通过其他浏览器访问数据库）
+      settings:
+        web-allow-others: false

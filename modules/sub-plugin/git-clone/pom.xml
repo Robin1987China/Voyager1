@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>voyager1-plugins-parent</artifactId>
+        <groupId>io.voyager1.plugins</groupId>
+        <version>0.0.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>git-clone</artifactId>
+    <name>plugin-git-clone</name>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>io.voyager1</groupId>
+            <artifactId>common</artifactId>
+            <scope>provided</scope>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.mwiede</groupId>
+            <artifactId>jsch</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
+            <version>5.13.3.202401111512-r</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.jcraft</groupId>
+                    <artifactId>jsch</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!-- 是否指定项目classpath下的依赖 -->
+                            <addClasspath>true</addClasspath>
+                            <!-- 指定依赖的时候声明前缀 -->
+                            <classpathPrefix>./</classpathPrefix>
+                        </manifest>
+                        <manifestEntries>
+                            <!-- 项目版本号 -->
+                            <Voyager1-Project-Version>${project.version}</Voyager1-Project-Version>
+                            <!-- 打包时间 -->
+                            <Voyager1-Timestamp>${maven.build.timestamp}</Voyager1-Timestamp>
+                            <Voyager1-Type>${project.artifactId}</Voyager1-Type>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!--这里要替换成jar包main方法所在类 -->
+                        </manifest>
+                    </archive>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>script/release.xml</descriptor>
+                    </descriptors>
+
+                </configuration>
+
+                <executions>
+
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- 指定在打包节点执行jar包合并操作 -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

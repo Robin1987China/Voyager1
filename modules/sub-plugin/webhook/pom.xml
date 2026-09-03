@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>voyager1-plugins-parent</artifactId>
+        <groupId>io.voyager1.plugins</groupId>
+        <version>0.0.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>webhook</artifactId>
+    <name>plugin-webhook</name>
+    <properties>
+
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.voyager1</groupId>
+            <artifactId>common</artifactId>
+            <scope>provided</scope>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!-- 是否指定项目classpath下的依赖 -->
+                            <addClasspath>true</addClasspath>
+                            <!-- 指定依赖的时候声明前缀 -->
+                            <classpathPrefix>./</classpathPrefix>
+                        </manifest>
+                        <manifestEntries>
+                            <!-- 项目版本号 -->
+                            <Voyager1-Project-Version>${project.version}</Voyager1-Project-Version>
+                            <!-- 打包时间 -->
+                            <Voyager1-Timestamp>${maven.build.timestamp}</Voyager1-Timestamp>
+                            <Voyager1-Type>${project.artifactId}</Voyager1-Type>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

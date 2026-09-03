@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>voyager1-parent</artifactId>
+        <groupId>io.voyager1</groupId>
+        <version>0.0.1</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <name>Voyager1 Common</name>
+    <artifactId>common</artifactId>
+    <version>0.0.1</version>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>tomcat-embed-core</artifactId>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>tomcat-embed-el</artifactId>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>tomcat-embed-websocket</artifactId>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>snakeyaml</artifactId>
+                    <groupId>org.yaml</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-web</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-webmvc</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>logback-classic</artifactId>
+                    <groupId>ch.qos.logback</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--   aop-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-aop</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <artifactId>spring-aop</artifactId>
+            <groupId>org.springframework</groupId>
+        </dependency>
+
+        <dependency>
+            <artifactId>spring-web</artifactId>
+            <groupId>org.springframework</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>spring-webmvc</artifactId>
+            <groupId>org.springframework</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>logback-classic</artifactId>
+            <groupId>ch.qos.logback</groupId>
+        </dependency>
+
+        <dependency>
+            <artifactId>snakeyaml</artifactId>
+            <groupId>org.yaml</groupId>
+        </dependency>
+
+        <dependency>
+            <artifactId>tomcat-embed-core</artifactId>
+            <groupId>org.apache.tomcat.embed</groupId>
+        </dependency>
+
+        <dependency>
+            <artifactId>tomcat-embed-el</artifactId>
+            <groupId>org.apache.tomcat.embed</groupId>
+        </dependency>
+
+        <dependency>
+            <artifactId>tomcat-embed-websocket</artifactId>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <version>${tomcat.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.websocket</groupId>
+            <artifactId>jakarta.websocket-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.4.0-jre</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.17.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.15.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.26.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-exec</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.mwiede</groupId>
+            <artifactId>jsch</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.voyager1.plugins</groupId>
+            <artifactId>encrypt</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>i18n/words.json</exclude>
+                </excludes>
+            </resource>
+        </resources>
+    </build>
+</project>

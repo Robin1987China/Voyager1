@@ -1,0 +1,25 @@
+{
+  "globals": {
+    "$confirm": true,
+    "$error": true,
+    "$info": true,
+    "$message": true,
+    "$notification": true,
+    "$success": true,
+    "$warning": true,
+    "appStore": true,
+    "guideStore": true,
+    "route": true,
+    "router": true,
+    "userStore": true,
+    "voyager1Window": true,
+    "$$confirm": true,
+    "$$error": true,
+    "$$info": true,
+    "$$message": true,
+    "$$notification": true,
+    "$$success": true,
+    "$$warning": true,
+    "syncDiscreteTheme": true
+  }
+}

@@ -1,0 +1,458 @@
+/*
+ * Copyright (c) 2026 Voyager1
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.voyager1.controller;
+
+import io.voyager1.util.LFUCache;
+import io.voyager1.util.CircleCaptcha;
+import io.voyager1.util.CodeGenerator;
+import io.voyager1.util.RandomGenerator;
+import io.voyager1.util.CollUtil;
+import io.voyager1.util.BetweenFormatter;
+import io.voyager1.util.Validator;
+import io.voyager1.util.IdUtil;
+import io.voyager1.util.ObjectUtil;
+import io.voyager1.util.RandomUtil;
+import io.voyager1.util.StrUtil;
+import io.voyager1.util.DigestUtil;
+import io.voyager1.util.JakartaServletUtil;
+import io.voyager1.util.ContentType;
+import io.voyager1.util.JWT;
+import io.voyager1.core.api.ApiResult;
+import com.alibaba.fastjson2.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.model.AuthResponse;
+import me.zhyd.oauth.model.AuthUser;
+import me.zhyd.oauth.request.AuthRequest;
+import io.voyager1.common.BaseServerController;
+import io.voyager1.common.Const;
+import io.voyager1.common.ServerConst;
+import io.voyager1.common.ServerOpenApi;
+import io.voyager1.common.i18n.I18nMessageUtil;
+import io.voyager1.common.interceptor.LoginInterceptor;
+import io.voyager1.common.interceptor.NotLogin;
+import io.voyager1.common.validator.ValidatorItem;
+import io.voyager1.common.validator.ValidatorRule;
+import io.voyager1.configuration.UserConfig;
+import io.voyager1.configuration.WebConfig;
+import io.voyager1.controller.user.UserWorkspaceModel;
+import io.voyager1.func.user.server.UserLoginLogServer;
+import io.voyager1.model.dto.UserLoginDto;
+import io.voyager1.model.user.UserModel;
+import io.voyager1.oauth2.BaseOauth2Config;
+import io.voyager1.oauth2.Oauth2Factory;
+import io.voyager1.permission.ClassFeature;
+import io.voyager1.permission.Feature;
+import io.voyager1.permission.MethodFeature;
+import io.voyager1.service.user.UserService;
+import io.voyager1.system.ServerConfig;
+import io.voyager1.util.JwtUtil;
+import io.voyager1.util.StringUtil;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.awt.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 登录控制
+ *
+ */
+@RestController
+@Slf4j
+public class LoginControl extends BaseServerController implements InitializingBean {
+    /**
+     * ip 禁止缓存
+     */
+    public static final LFUCache<String, Integer> LFU_CACHE = new LFUCache<>(1000);
+
+    private static final String LOGIN_CODE = "login_code";
+    // 去重容易混淆的字符串，oO0、lL1、q9Q、pP，区分大小写
+    private static final CodeGenerator codeGenerator = new RandomGenerator("abcdefghjkmnrstuvwxyzABCDEFGHIJKMNRSTUVWXYZ2345678", 4);
+
+    private final UserService userService;
+    private final UserConfig userConfig;
+    private final WebConfig webConfig;
+    private final UserLoginLogServer userLoginLogServer;
+
+    public LoginControl(UserService userService,
+                        ServerConfig serverConfig,
+                        UserLoginLogServer userLoginLogServer) {
+        this.userService = userService;
+        this.userConfig = serverConfig.getUser();
+        this.webConfig = serverConfig.getWeb();
+        this.userLoginLogServer = userLoginLogServer;
+    }
+
+    /**
+     * 验证码
+     */
+    @RequestMapping(value = "rand-code", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @NotLogin
+    public ApiResult<String> randCode(String theme) {
+        if (webConfig.isDisabledCaptcha()) {
+            return new ApiResult<>(400, "验证码已禁用");
+        }
+        CircleCaptcha captcha = this.createCaptcha(theme);
+        setSessionAttribute(LOGIN_CODE, captcha.getCode());
+        String base64Data = captcha.getImageBase64Data();
+        return new ApiResult<>(200, "", base64Data);
+    }
+
+    private CircleCaptcha createCaptcha(String theme) {
+        int height = 50;
+        CircleCaptcha circleCaptcha = new CircleCaptcha(100, height, codeGenerator, 8);
+        if ((theme != null && theme.equalsIgnoreCase("dark"))) {
+            circleCaptcha.setBackground(Color.darkGray);
+        } else {
+            circleCaptcha.setBackground(Color.white);
+        }
+        // 设置为默认字体
+        circleCaptcha.setFont(new Font(null, Font.PLAIN, (int) (height * 0.75)));
+        circleCaptcha.createCode();
+        return circleCaptcha;
+    }
+
+    /**
+     * 记录 ip 登录失败
+     */
+    private synchronized void ipError() {
+        String ip = getIp();
+        int count = (LFU_CACHE.get(ip) != null ? LFU_CACHE.get(ip) : 0) + 1;
+        LFU_CACHE.put(ip, count, userConfig.getIpErrorLockTime().toMillis());
+    }
+
+    private synchronized void ipSuccess() {
+        String ip = getIp();
+        LFU_CACHE.remove(ip);
+    }
+
+    /**
+     * 当登录的ip 错误次数达到配置以上锁定当前ip
+     *
+     * @return true
+     */
+    private boolean ipLock() {
+        if (userConfig.getAlwaysIpLoginError() <= 0) {
+            return false;
+        }
+        String ip = getIp();
+        Integer count = LFU_CACHE.get(ip);
+        if (count == null) {
+            count = 0;
+        }
+        return count > userConfig.getAlwaysIpLoginError();
+    }
+
+
+    /**
+     * 登录接口
+     *
+     * @param loginName 登录名
+     * @param userPwd   登录密码
+     * @param code      验证码
+     * @return json
+     */
+    @PostMapping(value = "userLogin", produces = MediaType.APPLICATION_JSON_VALUE)
+    @NotLogin
+    @Feature(cls = ClassFeature.USER, method = MethodFeature.EXECUTE, logResponse = false)
+    public ApiResult<Object> userLogin(@ValidatorItem(value = ValidatorRule.NOT_EMPTY, msg = "请输入登录信息") String loginName,
+                                          @ValidatorItem(value = ValidatorRule.NOT_EMPTY, msg = "请输入登录信息") String userPwd,
+                                          String code,
+                                          HttpServletRequest request) {
+        if (this.ipLock()) {
+            return new ApiResult<>(400, "尝试次数太多，请稍后再来");
+        }
+        synchronized (loginName.intern()) {
+            UserModel userModel = userService.getByKey(loginName);
+            if (userModel == null) {
+                this.ipError();
+                return new ApiResult<>(400, "登录失败，请输入正确的密码和账号,多次失败将锁定账号");
+            }
+            if (userModel.getStatus() != null && userModel.getStatus() == 0) {
+                userLoginLogServer.fail(userModel, 4, request);
+                return new ApiResult<>(ServerConst.ACCOUNT_LOCKED, ServerConst.ACCOUNT_LOCKED_TIP.get());
+            }
+            if (!webConfig.isDisabledCaptcha()) {
+                // 获取验证码
+                String sCode = getSessionAttribute(LOGIN_CODE);
+                Assert.state((code != null && code.equalsIgnoreCase(sCode)), "请输入正确的验证码");
+                removeSessionAttribute(LOGIN_CODE);
+            }
+            UserModel updateModel = null;
+            try {
+                long lockTime = userModel.overLockTime(userConfig.getAlwaysLoginError());
+                if (lockTime > 0) {
+                    String msg = StringUtil.formatBetween(lockTime * 1000, BetweenFormatter.Level.SECOND);
+                    updateModel = userModel.errorLock(userConfig.getAlwaysLoginError());
+                    this.ipError();
+                    userLoginLogServer.fail(userModel, 2, request);
+                    return new ApiResult<>(400, String.format("该账户登录失败次数过多，已被锁定{}, 请不要再次尝试", msg));
+                }
+                // 验证
+                if (userService.simpleLogin(loginName, userPwd) != null) {
+                    updateModel = UserModel.unLock(loginName);
+                    this.ipSuccess();
+                    UserLoginDto userLoginDto = this.createToken(userModel);
+                    userLoginLogServer.success(userModel, 0, request);
+                    return new ApiResult<>(200, "登录成功", userLoginDto);
+                } else {
+                    updateModel = userModel.errorLock(userConfig.getAlwaysLoginError());
+                    this.ipError();
+                    userLoginLogServer.fail(userModel, 1, request);
+                    return new ApiResult<>(501, "登录失败，请输入正确的密码和账号,多次失败将锁定账号");
+                }
+            } finally {
+                if (updateModel != null) {
+                    userService.updateById(updateModel);
+                }
+            }
+        }
+    }
+
+    /**
+     * 跳转到认证中心登录
+     *
+     * @param request 请求对象
+     * @return json
+     */
+    @GetMapping(value = "oauth2-url", produces = MediaType.APPLICATION_JSON_VALUE)
+    @NotLogin
+    public ApiResult<JSONObject> oauth2LoginUrl(HttpServletRequest request, @ValidatorItem String provide) {
+        AuthRequest authRequest = Oauth2Factory.get(provide);
+        String authorize = authRequest.authorize(null);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("toUrl", authorize);
+        return ApiResult.success("", jsonObject);
+    }
+
+    /**
+     * 跳转到认证中心登录
+     *
+     * @param provide 平台
+     */
+    @GetMapping(value = "oauth2-render-{provide}")
+    @NotLogin
+    public void oauth2UrlRender(HttpServletResponse response, @PathVariable String provide) {
+        try {
+            AuthRequest authRequest = Oauth2Factory.get(provide);
+            response.sendRedirect(authRequest.authorize(null));
+        } catch (Exception e) {
+            log.warn("跳转 oauth2 失败，{} {}", provide, e.getMessage());
+            JakartaServletUtil.write(response, ApiResult.getString(500, e.getMessage()), ContentType.JSON.toString());
+        }
+    }
+
+    /**
+     * oauth2 登录并获取token
+     *
+     * @param code    授权码
+     * @param state   state
+     * @param request 请求对象
+     * @return json
+     */
+    @PostMapping(value = "oauth2/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    @NotLogin
+    @Feature(cls = ClassFeature.USER, method = MethodFeature.EXECUTE, logResponse = false)
+    public ApiResult<UserLoginDto> oauth2Callback(@ValidatorItem String code,
+                                                     @ValidatorItem String provide,
+                                                     String state,
+                                                     HttpServletRequest request) {
+        AuthRequest authRequest = Oauth2Factory.get(provide);
+        AuthCallback authCallback = new AuthCallback();
+        authCallback.setCode(code);
+        authCallback.setState(state);
+
+        AuthResponse<?> authResponse = authRequest.login(authCallback);
+        if (authResponse.ok()) {
+            AuthUser authUser = (AuthUser) authResponse.getData();
+            String username = this.parseUsername(authUser);
+            UserModel userModel = userService.getByKey(username);
+            if (userModel == null) {
+                BaseOauth2Config oauth2Config = Oauth2Factory.getConfig(provide);
+                if (oauth2Config.autoCreteUser()) {
+                    userModel = this.createUser(username, authUser, provide, oauth2Config.getPermissionGroup());
+                } else {
+                    return new ApiResult<>(400, username + " 用户不存在请联系管理创建");
+                }
+            }
+            if (userModel.getStatus() != null && userModel.getStatus() == 0) {
+                userLoginLogServer.fail(userModel, 4, request);
+                return new ApiResult<>(ServerConst.ACCOUNT_LOCKED, ServerConst.ACCOUNT_LOCKED_TIP.get());
+            }
+            //
+            UserModel updateModel = UserModel.unLock(userModel.getId());
+            userService.updateById(updateModel);
+            //
+            UserLoginDto userLoginDto = this.createToken(userModel);
+            userLoginLogServer.success(userModel, 6, request);
+            return ApiResult.success("登录成功", userLoginDto);
+        }
+        return new ApiResult<>(400, "登录失败(OAuth2),请联系管理员！" + authResponse.getMsg());
+    }
+
+    /**
+     * 解析用户名
+     *
+     * @param authUser 平台账号信息
+     * @return 用户名
+     */
+    private String parseUsername(AuthUser authUser) {
+        String username = authUser.getUsername();
+        String checkId = username.replace("-", "_");
+        if (Validator.isGeneral(checkId, UserModel.USER_NAME_MIN_LEN, Const.ID_MAX_LEN)) {
+            return username;
+        }
+        if ((authUser.getEmail() != null && !authUser.getEmail().isEmpty())) {
+            return authUser.getEmail();
+        }
+        String uuid = authUser.getUuid();
+        if (Validator.isGeneral(uuid, UserModel.USER_NAME_MIN_LEN, Const.ID_MAX_LEN)) {
+            return uuid;
+        }
+        throw new IllegalStateException("OAuth 2 登录失败,平台账号不符合本系统要求");
+    }
+
+    /**
+     * oauth2 创建用户账号
+     *
+     * @param username        用户名
+     * @param authUser        平台信息
+     * @param source          来源平台
+     * @param permissionGroup 权限组
+     * @return 用户
+     */
+    private UserModel createUser(String username, AuthUser authUser, String source, String permissionGroup) {
+        // 创建用户
+        UserModel where = new UserModel();
+        where.setSystemUser(1);
+        List<UserModel> userModels = userService.listByBean(where);
+        UserModel first = (userModels == null || userModels.isEmpty() ? null : userModels.get(0));
+        Assert.notNull(first, "没有找到系统管理员");
+        UserModel userModel = new UserModel();
+        userModel.setName((authUser.getNickname() == null || authUser.getNickname().isEmpty() ? authUser.getUsername() : authUser.getNickname()));
+        userModel.setId(username);
+        userModel.setEmail(authUser.getEmail());
+        userModel.setSalt(userService.generateSalt());
+        String randomPwd = RandomUtil.randomString(UserModel.SALT_LEN);
+        String sha1Pwd = DigestUtil.sha1(randomPwd);
+        userModel.setPassword(DigestUtil.sha1(sha1Pwd + userModel.getSalt()));
+        userModel.setSystemUser(0);
+        userModel.setParent(first.getId());
+        userModel.setSource(source);
+        // 绑定权限组
+        List<String> permissionGroupList = java.util.Arrays.asList(permissionGroup.split(java.util.regex.Pattern.quote("@")));
+        if ((permissionGroupList != null && !permissionGroupList.isEmpty())) {
+            userModel.setPermissionGroup("@" + permissionGroupList.stream().map(String::valueOf).collect(java.util.stream.Collectors.joining("@")) + "@");
+        }
+        BaseServerController.resetInfo(first);
+        userService.insert(userModel);
+        return userModel;
+    }
+
+    private UserLoginDto createToken(UserModel userModel) {
+        // 判断工作空间
+        List<UserWorkspaceModel> bindWorkspaceModels = userService.myWorkspace(userModel);
+        Assert.notEmpty(bindWorkspaceModels, "当前账号没有绑定任何工作空间，请联系管理员处理");
+        UserLoginDto userLoginDto = userService.getUserJwtId(userModel);
+        // UserLoginDto userLoginDto = new UserLoginDto(JwtUtil.builder(userModel, jwtId), jwtId);
+        userLoginDto.setBindWorkspaceModels(bindWorkspaceModels);
+        //
+        setSessionAttribute(LoginInterceptor.SESSION_NAME, userModel);
+        return userLoginDto;
+    }
+
+    /**
+     * 退出登录
+     *
+     * @return json
+     */
+    @RequestMapping(value = "logout2", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @NotLogin
+    public ApiResult<Object> logout(HttpSession session) {
+        session.invalidate();
+        return ApiResult.success("退出成功");
+    }
+
+    /**
+     * 刷新token
+     *
+     * @return json
+     */
+    @RequestMapping(value = "renewal", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @NotLogin
+    public ApiResult<UserLoginDto> renewalToken(HttpServletRequest request) {
+        String token = request.getHeader(ServerOpenApi.HTTP_HEAD_AUTHORIZATION);
+        if ((token == null || token.isEmpty())) {
+            return new ApiResult<>(ServerConst.AUTHORIZE_TIME_OUT_CODE, "刷新token失败");
+        }
+        JWT jwt = JwtUtil.readBody(token);
+        if (JwtUtil.expired(jwt, 0)) {
+            int renewal = userConfig.getTokenRenewal();
+            if (jwt == null || renewal <= 0 || JwtUtil.expired(jwt, TimeUnit.MINUTES.toSeconds(renewal))) {
+                return new ApiResult<>(ServerConst.AUTHORIZE_TIME_OUT_CODE, "刷新token超时");
+            }
+        }
+        UserModel userModel = userService.checkUser(JwtUtil.getId(jwt));
+        if (userModel == null) {
+            return new ApiResult<>(ServerConst.AUTHORIZE_TIME_OUT_CODE, "没有对应的用户");
+        }
+        UserLoginDto userLoginDto = userService.getUserJwtId(userModel);
+        userLoginLogServer.success(userModel, 3, request);
+        return ApiResult.success("", userLoginDto);
+    }
+
+    /**
+     * 获取 demo 账号的信息
+     */
+    @GetMapping(value = "login-config", produces = MediaType.APPLICATION_JSON_VALUE)
+    @NotLogin
+    public ApiResult<JSONObject> demoInfo() {
+        String userDemoTip = userConfig.getDemoTip();
+        userDemoTip = StringUtil.convertFileStr(userDemoTip, "");
+
+        JSONObject jsonObject = new JSONObject();
+        if ((userDemoTip != null && !userDemoTip.isEmpty()) && userService.hasDemoUser()) {
+            JSONObject demo = new JSONObject();
+            demo.put("msg", userDemoTip);
+            demo.put("user", UserModel.DEMO_USER);
+            jsonObject.put("demo", demo);
+        }
+        jsonObject.put("disabledCaptcha", webConfig.isDisabledCaptcha());
+        Collection<String> provides = Oauth2Factory.provides();
+        jsonObject.put("oauth2Provides", provides);
+        return ApiResult.success("", jsonObject);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        try {
+            this.createCaptcha(null);
+            log.debug("当前服务器验证码可用");
+        } catch (Throwable e) {
+            log.warn("当前服务器生成验证码异常,自动禁用验证码", e);
+            webConfig.setDisabledCaptcha(true);
+        }
+    }
+}

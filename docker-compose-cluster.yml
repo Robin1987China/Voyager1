@@ -1,0 +1,86 @@
+
+version: '3.8'
+services:
+  server:
+    env_file:
+      - env-beta.env
+    image: ${VOYAGER1_IMAGE_REPO:-voyager1/voyager1}:server-${VOYAGER1_VERSION}
+    build:
+      dockerfile: ./modules/server/Dockerfile
+      context: .
+      args:
+        VOYAGER1_VERSION: ${VOYAGER1_VERSION}
+    environment:
+      "VOYAGER1_SERVER_TEMP_TOKEN": ${SERVER_TOKEN}
+      "voyager1.cluster.id": server00
+    volumes:
+      - voyager1-server-data:/usr/local/voyager1-server/data
+      - voyager1-server-logs:/usr/local/voyager1-server/logs
+      - voyager1-server-conf:/usr/local/voyager1-server/conf
+    ports:
+      - "2122:2122"
+    hostname: server
+  server01:
+    env_file:
+      - env-beta.env
+    image: ${VOYAGER1_IMAGE_REPO:-voyager1/voyager1}:server-${VOYAGER1_VERSION}
+    build:
+      dockerfile: ./modules/server/Dockerfile
+      context: .
+      args:
+        VOYAGER1_VERSION: ${VOYAGER1_VERSION}
+    environment:
+      "VOYAGER1_SERVER_TEMP_TOKEN": ${SERVER_TOKEN}
+      "voyager1.cluster.id": server01
+    volumes:
+      - voyager1-server01-data:/usr/local/voyager1-server/data
+      - voyager1-server01-logs:/usr/local/voyager1-server/logs
+      - voyager1-server01-conf:/usr/local/voyager1-server/conf
+    ports:
+      - "2120:2122"
+    hostname: server01
+  agent01:
+    env_file:
+      - env-beta.env
+    image: ${VOYAGER1_IMAGE_REPO:-voyager1/voyager1}:agent-${VOYAGER1_VERSION}
+    build:
+      dockerfile: ./modules/agent/Dockerfile
+      context: .
+      args:
+        VOYAGER1_VERSION: ${VOYAGER1_VERSION}
+        RUN_ARG: --auto-push-to-server 'http://server:2122/api/node/receive_push?token=${SERVER_TOKEN}&workspaceId=DEFAULT'
+
+    volumes:
+      - voyager1-agent01:/usr/local/voyager1-agent
+    ports:
+      - "2123:2123"
+    depends_on:
+      - server
+    hostname: agent01
+  agent02:
+    env_file:
+      - env-beta.env
+    image: ${VOYAGER1_IMAGE_REPO:-voyager1/voyager1}:agent-${VOYAGER1_VERSION}
+    build:
+      dockerfile: ./modules/agent/Dockerfile
+      context: .
+      args:
+        VOYAGER1_VERSION: ${VOYAGER1_VERSION}
+        RUN_ARG: --auto-push-to-server 'http://server01:2122/api/node/receive_push?token=${SERVER_TOKEN}&workspaceId=DEFAULT'
+
+    volumes:
+      - voyager1-agent02:/usr/local/voyager1-agent
+    ports:
+      - "2124:2123"
+    depends_on:
+      - server01
+    hostname: agent02
+volumes:
+  voyager1-agent01:
+  voyager1-agent02:
+  voyager1-server-data:
+  voyager1-server-logs:
+  voyager1-server-conf:
+  voyager1-server01-data:
+  voyager1-server01-logs:
+  voyager1-server01-conf:

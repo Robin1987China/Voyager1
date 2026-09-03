@@ -1,0 +1,200 @@
+[
+  {
+    "title": "Overview",
+    "icon_v3": "laptop",
+    "id": "overview"
+  },
+  {
+    "title": "Multi-Cloud",
+    "icon_v3": "cloud",
+    "id": "multiCloud",
+    "childs": [
+      {
+        "id": "cloudList",
+        "title": "Cloud Accounts"
+      },
+      {
+        "id": "k8sList",
+        "title": "K8s Cluster"
+      },
+      {
+        "id": "finopsList",
+        "title": "Cost Management"
+      }
+    ]
+  },
+  {
+    "title": "Hosts & Projects",
+    "icon_v3": "apartment",
+    "id": "host",
+    "childs": [
+      {
+        "id": "nodeList",
+        "title": "Logical node"
+      },
+      {
+        "id": "projectSearch",
+        "title": "List of projects"
+      },
+      {
+        "id": "dockerList",
+        "title": "List of Docker"
+      },
+      {
+        "id": "dockerSwarm",
+        "title": "Docker Cluster"
+      }
+    ]
+  },
+  {
+    "title": "Build & Deploy",
+    "icon_v3": "build",
+    "id": "build",
+    "childs": [
+      {
+        "id": "repository",
+        "title": "Warehouse information"
+      },
+      {
+        "id": "buildList",
+        "title": "Build List"
+      },
+      {
+        "id": "buildHistory",
+        "title": "Building History"
+      },
+      {
+        "id": "versionList",
+        "title": "Version"
+      },
+      {
+        "id": "pipelineList",
+        "title": "Pipeline"
+      },
+      {
+        "id": "swimlane",
+        "title": "Release Promotion"
+      }
+    ]
+  },
+  {
+    "title": "Operations",
+    "icon_v3": "code",
+    "id": "ops",
+    "childs": [
+      {
+        "id": "sshList",
+        "title": "SSH List"
+      },
+      {
+        "id": "commandList",
+        "title": "Command Management"
+      },
+      {
+        "id": "commandLogList",
+        "title": "Command execution record"
+      },
+      {
+        "id": "scriptAllList",
+        "title": "List of node scripts"
+      },
+      {
+        "id": "serverScriptList",
+        "title": "List of scripts"
+      },
+      {
+        "id": "serverScriptLogList",
+        "title": "Script execution record"
+      },
+      {
+        "id": "configWorkspaceEnv",
+        "title": "Environment variable"
+      }
+    ]
+  },
+  {
+    "title": "Distribution",
+    "icon_v3": "gateway",
+    "id": "dispatch",
+    "childs": [
+      {
+        "id": "outgivingList",
+        "title": "Distribution List"
+      },
+      {
+        "id": "outgivingLog",
+        "title": "Distribution log"
+      },
+      {
+        "id": "outgivingWhitelistDirectory",
+        "title": "Authorization configuration",
+        "role": "system"
+      },
+      {
+        "id": "logRead",
+        "title": "Log Search"
+      }
+    ]
+  },
+  {
+    "title": "Monitoring and management",
+    "icon_v3": "monitor",
+    "id": "monitor",
+    "childs": [
+      {
+        "id": "monitorList",
+        "title": "Watch list"
+      },
+      {
+        "id": "monitorLog",
+        "title": "Monitor log"
+      },
+      {
+        "id": "userOptLog",
+        "title": "Operation monitoring"
+      }
+    ]
+  },
+  {
+    "title": "Files & Artifacts",
+    "icon_v3": "file",
+    "id": "file",
+    "childs": [
+      {
+        "id": "fileStorage",
+        "title": "List of files"
+      },
+      {
+        "id": "staticFileStorage",
+        "title": "Static file"
+      },
+      {
+        "id": "fileReleaseTask",
+        "title": "Publish task"
+      },
+      {
+        "id": "certificate",
+        "title": "Certificate Management"
+      }
+    ]
+  },
+  {
+    "title": "System Tools",
+    "icon_v3": "tool",
+    "id": "tools",
+    "childs": [
+      {
+        "id": "myWorkspaceList",
+        "title": "My working space"
+      },
+      {
+        "id": "netTools",
+        "title": "Network tools"
+      },
+      {
+        "id": "cronTools",
+        "title": "Cron expression"
+      }
+    ]
+  }
+]

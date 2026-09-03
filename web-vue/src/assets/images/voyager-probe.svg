@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="旅行者1号探测器">
+  <defs>
+    <linearGradient id="p-dish" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F8FAFC"/>
+      <stop offset="0.6" stop-color="#C7D2E4"/>
+      <stop offset="1" stop-color="#8FA3C2"/>
+    </linearGradient>
+    <radialGradient id="p-gold" cx="0.35" cy="0.3" r="1">
+      <stop offset="0" stop-color="#FFE9A8"/>
+      <stop offset="0.55" stop-color="#D9A93F"/>
+      <stop offset="1" stop-color="#8A5E1B"/>
+    </radialGradient>
+    <linearGradient id="p-bus" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E8C97E"/>
+      <stop offset="1" stop-color="#9C742C"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="rotate(-18 64 60)">
+    <!-- 科学仪器桅杆 -->
+    <line x1="70" y1="56" x2="96" y2="40" stroke="#C7D2E4" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="97" cy="39.5" r="2.4" fill="#8FA3C2"/>
+    <!-- RTG 桅杆 -->
+    <line x1="56" y1="66" x2="28" y2="88" stroke="#B9C6DC" stroke-width="2.2" stroke-linecap="round"/>
+    <rect x="20" y="86" width="11" height="6" rx="2" transform="rotate(38 25 89)" fill="url(#p-gold)"/>
+    <!-- 碟形高增益天线 -->
+    <ellipse cx="66" cy="46" rx="24" ry="15" fill="url(#p-dish)"/>
+    <ellipse cx="66" cy="45" rx="17" ry="9.5" fill="#EDF2FA"/>
+    <ellipse cx="66" cy="44.5" rx="8" ry="4" fill="#C7D2E4"/>
+    <line x1="66" y1="46" x2="60" y2="66" stroke="#B9C6DC" stroke-width="2" stroke-linecap="round"/>
+    <!-- 机体 + 金唱片 -->
+    <rect x="56" y="60" width="22" height="18" rx="4" fill="url(#p-bus)"/>
+    <rect x="56" y="60" width="22" height="6" rx="3" fill="#F4E2AE" opacity="0.75"/>
+    <circle cx="67" cy="69" r="5.2" fill="url(#p-gold)" stroke="#6E4E14" stroke-width="0.8"/>
+    <circle cx="67" cy="69" r="1.6" fill="#6E4E14"/>
+    <path d="M63.5 69 a3.5 3.5 0 0 1 7 0" fill="none" stroke="#6E4E14" stroke-width="0.6" opacity="0.8"/>
+  </g>
+
+  <!-- 信号波纹 -->
+  <g fill="none" stroke="#7FA8F0" stroke-linecap="round" opacity="0.85">
+    <path d="M30 30 a18 18 0 0 1 12 -12" stroke-width="1.6" opacity="0.35"/>
+    <path d="M26 34 a26 26 0 0 1 18 -18" stroke-width="1.4" opacity="0.22"/>
+    <path d="M22 38 a34 34 0 0 1 24 -24" stroke-width="1.2" opacity="0.12"/>
+  </g>
+</svg>

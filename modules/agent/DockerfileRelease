@@ -1,0 +1,42 @@
+
+FROM maven:3.9.6-eclipse-temurin-8
+
+ARG BUILD_DATE
+
+ENV VOYAGER1_HOME=/usr/local/voyager1-agent
+ENV VOYAGER1_PKG_VERSION=0.0.1
+ENV VOYAGER1_PKG=agent-${VOYAGER1_PKG_VERSION}-release.tar.gz
+ENV SHA1_NAME=agent-${VOYAGER1_PKG_VERSION}-release.tar.gz.sha1
+
+ENV VOYAGER1_DATA_PATH=${VOYAGER1_HOME}/data
+ENV VOYAGER1_LOG_PATH=${VOYAGER1_HOME}/logs
+# 数据目录
+ENV voyager1.path=${VOYAGER1_DATA_PATH}
+
+WORKDIR ${VOYAGER1_HOME}
+
+# 时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
+
+RUN mkdir -p ${VOYAGER1_HOME}
+#
+RUN curl -LfSo ${VOYAGER1_HOME}/${VOYAGER1_PKG} https://d.voyager1.download/release/${VOYAGER1_PKG_VERSION}/${VOYAGER1_PKG}
+RUN curl -LfsSo ${VOYAGER1_HOME}/${SHA1_NAME} https://d.voyager1.download/release/${VOYAGER1_PKG_VERSION}/${SHA1_NAME} && \
+    ESUM=`cat ${VOYAGER1_HOME}/${SHA1_NAME}` && \
+    echo "${ESUM} ${VOYAGER1_HOME}/${VOYAGER1_PKG}" | sha1sum -c -;
+RUN tar -zxvf ${VOYAGER1_HOME}/${VOYAGER1_PKG} -C ${VOYAGER1_HOME}
+RUN rm -rf ${VOYAGER1_HOME}/${VOYAGER1_PKG}
+
+# 将配置文件暂存默认目录，避免无法挂载
+RUN mv $VOYAGER1_HOME/conf $VOYAGER1_HOME/conf_default
+
+# 健康检查
+HEALTHCHECK CMD curl -X POST -f http://localhost:2123 || exit 1
+
+EXPOSE 2123
+
+ENTRYPOINT ["/bin/bash", "./bin/BlockListener.sh"]
+
+
+

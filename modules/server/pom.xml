@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>voyager1-parent</artifactId>
+        <groupId>io.voyager1</groupId>
+        <version>0.0.1</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <name>Voyager1 Server</name>
+    <artifactId>server</artifactId>
+    <version>0.0.1</version>
+    <properties>
+        <start-class>io.voyager1.Voyager1ServerApplication</start-class>
+    </properties>
+    <dependencies>
+
+        <dependency>
+            <groupId>io.voyager1</groupId>
+            <artifactId>common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Kubernetes Client (fabric8) -->
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-client</artifactId>
+        </dependency>
+
+        <!-- Kubernetes Client mock（单元测试） -->
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-server-mock</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- 阿里云 ECS SDK（多云对接 aliyun provider） -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>ecs20140526</artifactId>
+            <version>3.0.5</version>
+        </dependency>
+
+        <!-- 阿里云 ESS 弹性伸缩 SDK -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>ess20220222</artifactId>
+            <version>1.12.3</version>
+        </dependency>
+
+        <!-- 阿里云 BSS 账单 SDK（FinOps 账单采集） -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>bssopenapi20171214</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+
+        <!-- 腾讯云 CVM SDK（多云对接 tencent provider） -->
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java-cvm</artifactId>
+            <version>3.2.9</version>
+        </dependency>
+
+        <!-- 腾讯云 Billing 账单 SDK（FinOps 账单采集） -->
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java-billing</artifactId>
+            <version>3.2.11</version>
+        </dependency>
+
+        <!-- AWS EC2 SDK v2（多云对接 aws provider） -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>ec2</artifactId>
+            <version>2.25.60</version>
+        </dependency>
+
+        <!-- AWS Cost Explorer SDK v2（FinOps 账单采集） -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>costexplorer</artifactId>
+            <version>2.25.60</version>
+        </dependency>
+
+        <!-- AWS AutoScaling SDK v2（弹性伸缩） -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>autoscaling</artifactId>
+            <version>2.25.60</version>
+        </dependency>
+
+        <!-- 华为云 ECS SDK（多云对接 huawei provider） -->
+        <dependency>
+            <groupId>com.huaweicloud.sdk</groupId>
+            <artifactId>huaweicloud-sdk-ecs</artifactId>
+            <version>3.1.214</version>
+        </dependency>
+
+        <!-- 火山引擎 ECS SDK（多云对接 volcengine provider） -->
+        <dependency>
+            <groupId>com.volcengine</groupId>
+            <artifactId>volcengine-java-sdk-ecs</artifactId>
+            <version>2.0.25</version>
+        </dependency>
+
+        <!-- Azure Resource Manager SDK（多云对接 azure provider，聚合入口） -->
+        <dependency>
+            <groupId>com.azure.resourcemanager</groupId>
+            <artifactId>azure-resourcemanager</artifactId>
+            <version>2.60.0</version>
+        </dependency>
+
+        <!-- Azure 身份认证（Service Principal） -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>1.15.0</version>
+        </dependency>
+
+        <!-- GCP Compute SDK（多云对接 gcp provider） -->
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-compute</artifactId>
+            <version>1.106.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.voyager1.plugins</groupId>
+            <artifactId>webhook</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.voyager1.plugins</groupId>
+            <artifactId>git-clone</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.voyager1.plugins</groupId>
+            <artifactId>ssh-jsch</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.voyager1.plugins</groupId>
+            <artifactId>svn-clone</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.voyager1.plugins</groupId>
+            <artifactId>docker-cli</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--邮件-->
+        <dependency>
+            <groupId>io.voyager1.plugins</groupId>
+            <artifactId>email</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--Spring Junit Test-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>snakeyaml</artifactId>
+                    <groupId>org.yaml</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>io.voyager1.agent-transport</groupId>
+            <artifactId>agent-transport-http</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+<dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+
+<!-- ===== Phase 1: 新持久层（Spring Data JPA + Flyway）===== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>me.zhyd.oauth</groupId>
+            <artifactId>JustAuth</artifactId>
+            <version>1.16.6</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>fastjson</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson-version}</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <resources>
+            <!--版权文件,更新日志-->
+            <resource>
+                <filtering>false</filtering>
+                <directory>../../</directory>
+                <includes>
+                    <include>CHANGELOG.md</include>
+                    <include>CHANGELOG-BETA.md</include>
+                    <include>LICENSE</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>server-default-profile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>${start-class}</mainClass>
+                                    <!-- 是否指定项目classpath下的依赖 -->
+                                    <addClasspath>true</addClasspath>
+                                    <!-- 指定依赖的时候声明前缀 -->
+                                    <classpathPrefix>./</classpathPrefix>
+                                </manifest>
+                                <manifestEntries>
+                                    <!-- 项目版本号 -->
+                                    <Voyager1-Project-Version>${project.version}</Voyager1-Project-Version>
+                                    <!-- 打包时间 -->
+                                    <Voyager1-Timestamp>${maven.build.timestamp}</Voyager1-Timestamp>
+                                    <Voyager1-Type>${project.artifactId}</Voyager1-Type>
+                                    <Voyager1-Min-Version>${voyager1-min-version}</Voyager1-Min-Version>
+                                </manifestEntries>
+                                <addMavenDescriptor>true</addMavenDescriptor>
+                            </archive>
+                            <excludes>
+                                <exclude>logback.xml</exclude>
+                                <exclude>application*.yml</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <fork>true</fork>
+                            <mainClass>${start-class}</mainClass>
+                            <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
+                            <!--	<excludeGroupIds>io.voyager1.plugins</excludeGroupIds>-->
+                            <excludes>
+                                <exclude>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                </exclude>
+                            </excludes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>repackage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+        <!--  生成安装包文件-->
+        <profile>
+            <id>install-assembly</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <configuration>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                            <descriptors>
+                                <descriptor>${basedir}/src/main/assembly/release.xml</descriptor>
+                            </descriptors>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- 生成 sha1 校验文件 -->
+                    <plugin>
+                        <groupId>net.nicoulaj.maven.plugins</groupId>
+                        <artifactId>checksum-maven-plugin</artifactId>
+                        <version>1.11</version>
+                        <executions>
+                            <execution>
+                                <id>checksum-maven-plugin-files</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>files</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>*.jar</include>
+                                        <include>*.zip</include>
+                                        <include>*.tar.gz</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <algorithms>
+                                <algorithm>SHA-1</algorithm>
+                            </algorithms>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

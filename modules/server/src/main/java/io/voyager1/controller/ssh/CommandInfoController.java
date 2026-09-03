@@ -1,0 +1,251 @@
+/*
+ * Copyright (c) 2026 Voyager1
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.voyager1.controller.ssh;
+
+import io.voyager1.util.CollUtil;
+import io.voyager1.util.FileUtil;
+import io.voyager1.util.StrUtil;
+import io.voyager1.core.api.ApiResult;
+import com.alibaba.fastjson2.JSONObject;
+import io.voyager1.common.BaseServerController;
+import io.voyager1.common.ServerConst;
+import io.voyager1.common.ServerOpenApi;
+import io.voyager1.common.UrlRedirectUtil;
+import io.voyager1.common.i18n.I18nMessageUtil;
+import io.voyager1.common.validator.ValidatorItem;
+import io.voyager1.common.validator.ValidatorRule;
+import io.voyager1.model.PageResultDto;
+import io.voyager1.model.data.CommandExecLogModel;
+import io.voyager1.model.data.CommandModel;
+import io.voyager1.model.data.SshModel;
+import io.voyager1.model.user.UserModel;
+import io.voyager1.permission.ClassFeature;
+import io.voyager1.permission.Feature;
+import io.voyager1.permission.MethodFeature;
+import io.voyager1.permission.SystemPermission;
+import io.voyager1.script.CommandParam;
+import io.voyager1.service.node.ssh.CommandExecLogService;
+import io.voyager1.service.node.ssh.SshCommandService;
+import io.voyager1.service.node.ssh.SshService;
+import io.voyager1.service.user.TriggerTokenLogServer;
+import io.voyager1.util.CommandUtil;
+import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 命令管理
+ *
+ * @since : 2021/12/6 21:42
+ */
+@RestController
+@RequestMapping(value = "/node/ssh_command")
+@Feature(cls = ClassFeature.SSH_COMMAND)
+public class CommandInfoController extends BaseServerController {
+
+    private final SshCommandService sshCommandService;
+    private final CommandExecLogService commandExecLogService;
+    private final TriggerTokenLogServer triggerTokenLogServer;
+    private final SshService sshService;
+
+    public CommandInfoController(SshCommandService sshCommandService,
+                                 CommandExecLogService commandExecLogService,
+                                 TriggerTokenLogServer triggerTokenLogServer,
+                                 SshService sshService) {
+        this.sshCommandService = sshCommandService;
+        this.commandExecLogService = commandExecLogService;
+        this.triggerTokenLogServer = triggerTokenLogServer;
+        this.sshService = sshService;
+    }
+
+    /**
+     * 分页获取命令信息
+     *
+     * @return result
+     */
+    @RequestMapping(value = "list", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Feature(method = MethodFeature.LIST)
+    public ApiResult<PageResultDto<CommandModel>> page(HttpServletRequest request) {
+        PageResultDto<CommandModel> page = sshCommandService.listPage(request);
+        return ApiResult.success("", page);
+    }
+
+    /**
+     * 新建/编辑命令
+     *
+     * @param data 命令信息
+     * @return result
+     * @api {POST} node/ssh_command/edit 新建/编辑命令
+     * @apiGroup node/ssh_command
+     * @apiUse defResultJson
+     * @apiBody {String} name           命令名称
+     * @apiBody {String} command        命令内容
+     * @apiBody {String} [desc]         命令描述
+     * @apiBody {String} defParams      默认参数
+     * @apiBody {String} autoExecCron   定时构建表达式
+     * @apiBody {String} id             命令主键 ID
+     * @apiBody {String} [sshIds]       SSH 节点
+     */
+    @RequestMapping(value = "edit", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Feature(method = MethodFeature.EDIT)
+    public ApiResult<Object> edit(@RequestBody JSONObject data, HttpServletRequest request) {
+        String name = data.getString("name");
+        String command = data.getString("command");
+        String desc = data.getString("desc");
+        String defParams = data.getString("defParams");
+        Assert.hasText(name, "请输入命令名称");
+        Assert.hasText(command, "请输入命令内容");
+        String autoExecCron = this.checkCron(data.getString("autoExecCron"));
+        String id = data.getString("id");
+        //
+        CommandModel commandModel = new CommandModel();
+        commandModel.setName(name);
+        commandModel.setCommand(command);
+        commandModel.setDesc(desc);
+        String sshIds = data.getString("sshIds");
+        List<String> sshIdList = java.util.Arrays.asList(sshIds.split(","));
+        if ((sshIdList != null && !sshIdList.isEmpty())) {
+            List<SshModel> commandModels = sshService.getByKey(sshIdList, request);
+            Assert.state((sshIdList == null ? 0 : sshIdList.size()) == (commandModels == null ? 0 : commandModels.size()), "关联 SSH 节点包含不存在的节点");
+        }
+        commandModel.setSshIds(sshIds);
+        commandModel.setAutoExecCron(autoExecCron);
+        //
+        commandModel.setDefParams(CommandParam.checkStr(defParams));
+
+        if ((id == null || id.isEmpty())) {
+            sshCommandService.insert(commandModel);
+        } else {
+            commandModel.setId(id);
+            sshCommandService.updateById(commandModel, request);
+        }
+        return ApiResult.success("操作成功");
+    }
+
+    /**
+     * 删除命令
+     *
+     * @param id id
+     * @return result
+     * @api {DELETE} node/ssh_command/del 删除命令
+     * @apiGroup node/ssh_command
+     * @apiUse defResultJson
+     * @apiParam {String} id 日志 id
+     */
+    @RequestMapping(value = "del", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Feature(method = MethodFeature.DEL)
+    public ApiResult<Object> del(String id, HttpServletRequest request) {
+        File logFileDir = CommandExecLogModel.logFileDir(id);
+        boolean fastDel = CommandUtil.systemFastDel(logFileDir);
+        Assert.state(!fastDel, "清理日志文件失败");
+        //
+
+        sshCommandService.delByKey(id, request);
+        commandExecLogService.delByWorkspace(request, entity -> entity.set("commandId", id));
+        return ApiResult.success("操作成功");
+    }
+
+    /**
+     * 批量执行命令
+     *
+     * @return result
+     * @api {POST} node/ssh_command/batch 批量执行命令
+     * @apiGroup node/ssh_command
+     * @apiUse defResultJson
+     * @apiParam {String} id 命令 id
+     * @apiParam {String} [params] 参数
+     * @apiParam {String} nodes ssh节点
+     * @apiSuccess {String} data batchId
+     */
+    @RequestMapping(value = "batch", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Feature(method = MethodFeature.EXECUTE)
+    public ApiResult<String> batch(String id,
+                                      String params,
+                                      @ValidatorItem(value = ValidatorRule.NOT_BLANK, msg = "运行节点不能为空") String nodes) throws IOException {
+        Assert.hasText(id, "请选择执行的命令");
+        Assert.hasText(nodes, "请选择执行节点");
+        String batchId = sshCommandService.executeBatch(id, params, nodes);
+        return ApiResult.success("操作成功", batchId);
+    }
+
+    /**
+     * 同步到指定工作空间
+     *
+     * @param ids           节点ID
+     * @param toWorkspaceId 分配到到工作空间ID
+     * @return msg
+     */
+    @GetMapping(value = "sync-to-workspace", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Feature(method = MethodFeature.EDIT)
+    @SystemPermission()
+    public ApiResult<Object> syncToWorkspace(@ValidatorItem String ids, @ValidatorItem String toWorkspaceId, HttpServletRequest request) {
+        String nowWorkspaceId = nodeService.getCheckUserWorkspace(request);
+        //
+        sshCommandService.checkUserWorkspace(toWorkspaceId);
+        sshCommandService.syncToWorkspace(ids, nowWorkspaceId, toWorkspaceId);
+        return ApiResult.success("操作成功");
+    }
+
+    /**
+     * get a trigger url
+     *
+     * @param id id
+     * @return json
+     */
+    @RequestMapping(value = "trigger-url", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Feature(method = MethodFeature.EDIT)
+    public ApiResult<Map<String, String>> getTriggerUrl(String id, String rest, HttpServletRequest request) {
+        CommandModel item = sshCommandService.getByKey(id, request);
+        UserModel user = getUser();
+        CommandModel updateInfo;
+        if ((item.getTriggerToken() == null || item.getTriggerToken().isEmpty()) || (rest != null && !rest.isEmpty())) {
+            updateInfo = new CommandModel();
+            updateInfo.setId(id);
+            updateInfo.setTriggerToken(triggerTokenLogServer.restToken(item.getTriggerToken(), sshCommandService.typeName(),
+                item.getId(), user.getId()));
+            sshCommandService.updateById(updateInfo);
+        } else {
+            updateInfo = item;
+        }
+        Map<String, String> map = this.getBuildToken(updateInfo, request);
+        String string = "重置成功";
+        return ApiResult.success((rest == null || rest.isEmpty()) ? "ok" : string, map);
+    }
+
+    private Map<String, String> getBuildToken(CommandModel item, HttpServletRequest request) {
+        String contextPath = UrlRedirectUtil.getHeaderProxyPath(request, ServerConst.PROXY_PATH);
+        String url = ServerOpenApi.SSH_COMMAND_TRIGGER_URL.
+            replace("{id}", item.getId()).
+            replace("{token}", item.getTriggerToken());
+        String triggerBuildUrl = String.format("/%s/%s", contextPath, url);
+        Map<String, String> map = new HashMap<>(10);
+        map.put("triggerUrl", FileUtil.normalize(triggerBuildUrl));
+        String batchTriggerBuildUrl = String.format("/%s/%s", contextPath, ServerOpenApi.SSH_COMMAND_TRIGGER_BATCH);
+        map.put("batchTriggerUrl", FileUtil.normalize(batchTriggerBuildUrl));
+
+        map.put("id", item.getId());
+        map.put("token", item.getTriggerToken());
+        return map;
+    }
+}

@@ -1,0 +1,12 @@
+
+voyager1:
+  db:
+    # 数据库默认 支持 ：H2、MYSQL、MARIADB、POSTGRESQL
+    mode: POSTGRESQL
+    url: jdbc:postgresql://127.0.0.1:5432/voyager1
+    # 数据库账号 默认 voyager1
+    #user-name: voyager1
+    user-name: voyager1
+    # 数据库密码 默认 voyager1 如果自行配置请保证密码强度
+    # user-pwd: voyager1
+    user-pwd: voyager1123456

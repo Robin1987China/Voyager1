@@ -1,0 +1,766 @@
+{
+  "/build/history": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索",
+      "批量删除"
+    ],
+    "inputCount": 7,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 257,
+    "tabs": []
+  },
+  "/build/list-info": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索",
+      "新增",
+      "批量操作"
+    ],
+    "inputCount": 7,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 235,
+    "tabs": []
+  },
+  "/certificate/list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索",
+      "导入证书"
+    ],
+    "inputCount": 4,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 240,
+    "tabs": []
+  },
+  "/cloud/list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "保存账号",
+      "新增实例",
+      "创建快照"
+    ],
+    "inputCount": 13,
+    "tableCount": 5,
+    "searchBox": false,
+    "textLen": 559,
+    "tabs": []
+  },
+  "/dispatch/list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索",
+      "新增关联",
+      "新增分发"
+    ],
+    "inputCount": 4,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 252,
+    "tabs": []
+  },
+  "/dispatch/log": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索"
+    ],
+    "inputCount": 4,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 291,
+    "tabs": []
+  },
+  "/dispatch/log-read": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 146,
+    "tabs": []
+  },
+  "/dispatch/white-list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "提交"
+    ],
+    "inputCount": 2,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 279,
+    "tabs": []
+  },
+  "/docker/list": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 2,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 142,
+    "tabs": []
+  },
+  "/docker/swarm": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 2,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 155,
+    "tabs": []
+  },
+  "/file-manager/file-storage": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 237,
+    "tabs": []
+  },
+  "/file-manager/release-task": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索",
+      "任务模板"
+    ],
+    "inputCount": 5,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 268,
+    "tabs": []
+  },
+  "/file-manager/static-file-storage": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 214,
+    "tabs": []
+  },
+  "/finops/list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "分析",
+      "CSV 导入",
+      "云 API 采集",
+      "保存规则",
+      "保存预算",
+      "超支检查",
+      "识别闲置资源"
+    ],
+    "inputCount": 13,
+    "tableCount": 4,
+    "searchBox": false,
+    "textLen": 666,
+    "tabs": []
+  },
+  "/full-terminal": {
+    "buttons": [],
+    "inputCount": 0,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 4,
+    "tabs": []
+  },
+  "/k8s/list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "保存集群"
+    ],
+    "inputCount": 5,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 320,
+    "tabs": []
+  },
+  "/management": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索",
+      "快速安装",
+      "工作空间同步",
+      "管理",
+      "终端"
+    ],
+    "inputCount": 4,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 445,
+    "tabs": []
+  },
+  "/monitor/list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索",
+      "新增"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 278,
+    "tabs": []
+  },
+  "/monitor/log": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索"
+    ],
+    "inputCount": 4,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 318,
+    "tabs": []
+  },
+  "/monitor/operate-log": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 225,
+    "tabs": []
+  },
+  "/my-workspace": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "保存",
+      "恢复默认名称"
+    ],
+    "inputCount": 2,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 209,
+    "tabs": []
+  },
+  "/node/list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索",
+      "快速安装",
+      "工作空间同步",
+      "管理",
+      "终端"
+    ],
+    "inputCount": 4,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 467,
+    "tabs": []
+  },
+  "/node/script-all": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索",
+      "新增",
+      "同步缓存"
+    ],
+    "inputCount": 4,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 338,
+    "tabs": []
+  },
+  "/node/search": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "批量操作",
+      "新增",
+      "同步",
+      "搜索"
+    ],
+    "inputCount": 4,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 383,
+    "tabs": []
+  },
+  "/operation/log": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "搜索",
+      "详情",
+      "详情",
+      "详情",
+      "详情",
+      "详情",
+      "详情",
+      "详情",
+      "详情",
+      "详情",
+      "详情"
+    ],
+    "inputCount": 8,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 698,
+    "tabs": []
+  },
+  "/overview": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 2,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 886,
+    "tabs": []
+  },
+  "/pipeline/pipeline-list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "保存配置"
+    ],
+    "inputCount": 4,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 420,
+    "tabs": []
+  },
+  "/pipeline/swimlane": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 2,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 263,
+    "tabs": []
+  },
+  "/pipeline/version-list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "查询",
+      "创建版本"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 293,
+    "tabs": []
+  },
+  "/repository/list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "导出",
+      "导入",
+      "搜索",
+      "新增",
+      "令牌导入"
+    ],
+    "inputCount": 6,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 363,
+    "tabs": []
+  },
+  "/script/env-list": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 281,
+    "tabs": []
+  },
+  "/script/script-list": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索",
+      "新增",
+      "工作空间同步",
+      "测试脚本",
+      "执行",
+      "编辑",
+      "日志",
+      "测试脚本2",
+      "执行",
+      "编辑",
+      "日志"
+    ],
+    "inputCount": 6,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 512,
+    "tabs": []
+  },
+  "/script/script-log": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 302,
+    "tabs": []
+  },
+  "/ssh": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 2,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 262,
+    "tabs": []
+  },
+  "/ssh-tabs": {
+    "buttons": [],
+    "inputCount": 0,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 14,
+    "tabs": []
+  },
+  "/ssh/command": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "搜索",
+      "新增"
+    ],
+    "inputCount": 5,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 357,
+    "tabs": []
+  },
+  "/ssh/command-log": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 333,
+    "tabs": []
+  },
+  "/system/assets/docker-list": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "搜索",
+      "新增",
+      "批量分配",
+      "自动探测"
+    ],
+    "inputCount": 6,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 207,
+    "tabs": []
+  },
+  "/system/assets/machine-list": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "搜索",
+      "新增",
+      "批量操作",
+      "本机Agent",
+      "编辑",
+      "分配",
+      "删除"
+    ],
+    "inputCount": 6,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 334,
+    "tabs": []
+  },
+  "/system/assets/repository-list": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "导出",
+      "导入",
+      "搜索",
+      "新增",
+      "令牌导入"
+    ],
+    "inputCount": 6,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 219,
+    "tabs": []
+  },
+  "/system/assets/script-library": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "搜索",
+      "创建"
+    ],
+    "inputCount": 5,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 177,
+    "tabs": []
+  },
+  "/system/assets/ssh-list": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "搜索",
+      "新增",
+      "批量分配",
+      "导出",
+      "导入"
+    ],
+    "inputCount": 6,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 244,
+    "tabs": []
+  },
+  "/system/backup": {
+    "buttons": [
+      "默认集群",
+      "系统管理员"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 356,
+    "tabs": []
+  },
+  "/system/cache": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "手动刷新统计",
+      "清空"
+    ],
+    "inputCount": 2,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 616,
+    "tabs": []
+  },
+  "/system/config": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "保存",
+      "保存并重启"
+    ],
+    "inputCount": 4,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 730,
+    "tabs": []
+  },
+  "/system/ext-config": {
+    "buttons": [
+      "默认集群",
+      "系统管理员"
+    ],
+    "inputCount": 4,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 205,
+    "tabs": []
+  },
+  "/system/global-env": {
+    "buttons": [
+      "默认集群",
+      "系统管理员"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 170,
+    "tabs": []
+  },
+  "/system/log": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "刷新",
+      "删除",
+      "下载",
+      "清空"
+    ],
+    "inputCount": 2,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 193,
+    "tabs": []
+  },
+  "/system/mail": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "提交"
+    ],
+    "inputCount": 8,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 291,
+    "tabs": []
+  },
+  "/system/management": {
+    "buttons": [
+      "默认集群",
+      "系统管理员"
+    ],
+    "inputCount": 2,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 162,
+    "tabs": []
+  },
+  "/system/oauth-config": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "提交"
+    ],
+    "inputCount": 5,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 316,
+    "tabs": []
+  },
+  "/system/overview": {
+    "buttons": [
+      "默认集群",
+      "系统管理员"
+    ],
+    "inputCount": 2,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 167,
+    "tabs": []
+  },
+  "/system/upgrade": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "我要加入",
+      "选择升级文件",
+      "上传升级包"
+    ],
+    "inputCount": 3,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 611,
+    "tabs": []
+  },
+  "/system/workspace": {
+    "buttons": [
+      "默认集群",
+      "系统管理员"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 289,
+    "tabs": []
+  },
+  "/tools/cron": {
+    "buttons": [
+      "默认",
+      "系统管理员",
+      "检查"
+    ],
+    "inputCount": 6,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 373,
+    "tabs": []
+  },
+  "/tools/network": {
+    "buttons": [
+      "默认",
+      "系统管理员"
+    ],
+    "inputCount": 2,
+    "tableCount": 0,
+    "searchBox": false,
+    "textLen": 283,
+    "tabs": []
+  },
+  "/user/list": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "搜索",
+      "新增",
+      "发布系统公告",
+      "编辑"
+    ],
+    "inputCount": 4,
+    "tableCount": 1,
+    "searchBox": true,
+    "textLen": 322,
+    "tabs": []
+  },
+  "/user/login-log": {
+    "buttons": [
+      "默认集群",
+      "系统管理员",
+      "搜索"
+    ],
+    "inputCount": 7,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 934,
+    "tabs": []
+  },
+  "/user/permission-group": {
+    "buttons": [
+      "默认集群",
+      "系统管理员"
+    ],
+    "inputCount": 3,
+    "tableCount": 1,
+    "searchBox": false,
+    "textLen": 207,
+    "tabs": []
+  }
+}

@@ -1,0 +1,70 @@
+# Created by .ignore support plugin (hsz.mobi)
+target/
+.idea/
+*.iml
+venv/
+node_modules/
+.vscode/
+
+# Jrebel
+rebel.xml
+
+#
+apidoc/
+
+
+# dependencies
+**/node_modules
+# roadhog-api-doc ignore
+/src/utils/request-temp.js
+_roadhog-api-doc
+
+# production
+dist/
+#/.vscode
+
+# misc
+.DS_Store
+npm-debug.log*
+yarn-error.log
+
+/coverage
+.idea
+yarn.lock
+pnpm-lock.yaml
+*bak
+pom.xml.versionsBackup
+#.vscode
+
+# visual studio code
+.history
+*.log
+functions/*
+.temp/**
+
+# umi
+.umi
+.umi-production
+
+# screenshot
+screenshot
+.firebase
+.eslintcache
+
+web-vue/stats.html
+.baidubce.token
+*.class
+
+
+# environment files (may contain secrets)
+.env
+env-*.env
+!.env.example
+
+# runtime logs & internal tooling (open-source hygiene)
+logs/
+.opencode/
+.workflow/
+
+# internal spec & design docs (not for public release)
+openspec/

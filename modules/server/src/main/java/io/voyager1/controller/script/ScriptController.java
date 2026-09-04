@@ -193,8 +193,10 @@ public class ScriptController extends BaseServerController {
         ScriptModel server = scriptServer.getByKeyAndGlobal(id, request);
         if (server != null) {
             File file = server.scriptPath();
-            boolean del = FileUtil.del(file);
-            Assert.state(del, "清理脚本文件失败");
+            // 脚本文件存在则尝试清理；文件不存在或清理失败不阻止删除记录，避免记录僵死无法删除
+            if (file != null) {
+                FileUtil.del(file);
+            }
             // 删除节点中的脚本
             String nodeIds = server.getNodeIds();
             List<String> delNode = io.voyager1.util.ConvertUtil.splitTrim(nodeIds, ",");

@@ -70,6 +70,9 @@ Voyager1 natively exposes its core operations capabilities as **MCP (Model Conte
 	1. Supports notifications via email, DingTalk groups, and WeChat groups, actively monitoring project status
 - Node script templates with scheduling or triggers for expanded functionality
 - Configurable authorization for important paths to prevent user errors with system files
+- **Kubernetes (K8s) cluster management**: connect clusters, deploy/scale/restart applications, view Pod logs and events
+- **Cloud resource management**: cloud host accounts and cloud monitoring (FINops) cost analysis, multi-cloud provider credential management
+- **System backup**: full/partial database backup and restore management
 
 ### 🔔️ Special Reminders
 
@@ -119,7 +122,7 @@ cd ..
 
 ```shell
 # Package (skip tests; if the agent jar already exists it may be skipped, delete it first)
-rm -f modules/agent/target/agent-0.0.1.jar
+rm -f modules/agent/target/agent-0.0.2.jar
 mvn clean package
 ```
 
@@ -300,7 +303,7 @@ To ensure code quality and standards, and to help you quickly understand the pro
 
    Replace `branch-name` and `username` with the appropriate values.
 
-   Use `dev` for code contributions and `docs` for documentation contributions.
+   For code/documentation contributions, base your work on the `feature/v0.0.2` development branch (the `main` branch is the release version and does not accept PRs).
 
    ```bash
    git clone -b branch-name https://github.com/username/Voyager1.git
@@ -313,7 +316,7 @@ To ensure code quality and standards, and to help you quickly understand the pro
    git add .
    # Commit your changes with a descriptive message
    git commit -m 'Describe your changes'
-   # Push to your remote repository, replacing branch-name with dev or docs
+   # Push to your remote repository, using branch feature/v0.0.2
    git push origin branch-name
    ```
 
@@ -323,14 +326,12 @@ To ensure code quality and standards, and to help you quickly understand the pro
 
 ### Branch Explanation
 
-| Branch     | Description                                                   |
+| Branch | Description |
 |--------|------------------------------------------------------|
-| master | Main branch, protected. Does not accept PRs. Merges from the beta branch after testing.       |
-| beta   | 	Beta version branch, protected. Does not accept PRs. Merges from the dev branch after testing. |
-| dev    | Development branch, accepts PRs. Please submit PRs to the dev branch.                           |
-| docs   | Documentation branch, accepts PRs. Used for project documentation, feature introductions, and FAQ summaries.                         |
+| main | Main branch (release), protected. Merged after testing. |
+| feature/v0.0.2 | Development branch, accepts PRs. Please submit PRs to this branch. |
 
-> Primarily use the dev and docs branches for PR submissions. Other branches are for archiving and can be ignored by contributors.
+> The `main` and `feature/v0.0.2` branches must point to the same commit to stay consistent; feature/fix commits are synced to both branches.
 
 ## ⚠️ Production Security Notes
 

@@ -16,7 +16,6 @@
 
 package io.voyager1.model.data;
 
-import io.voyager1.util.EnumUtil;
 import io.voyager1.util.StrUtil;
 import io.voyager1.util.HttpUtil;
 import lombok.Data;
@@ -115,7 +114,7 @@ public class RepositoryModel extends BaseGroupModel {
         map.put("url", this.getGitUrl());
         map.put("protocol", this.getProtocol());
         Integer protocolCode = this.getProtocol();
-        GitProtocolEnum protocol = EnumUtil.likeValueOf(GitProtocolEnum.class, protocolCode);
+        GitProtocolEnum protocol = BaseEnum.getEnum(GitProtocolEnum.class, protocolCode);
         if (protocol != null) {
             map.put("protocolStr", protocol.name());
         }

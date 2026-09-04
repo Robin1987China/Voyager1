@@ -22,7 +22,6 @@ import io.voyager1.util.FileUtil;
 import io.voyager1.util.Opt;
 
 import io.voyager1.util.ThreadUtil;
-import io.voyager1.util.EnumUtil;
 import io.voyager1.util.ObjectUtil;
 import io.voyager1.util.StrUtil;
 import io.voyager1.common.SpringContextHolder;
@@ -39,6 +38,7 @@ import io.voyager1.common.forward.NodeUrl;
 import io.voyager1.common.i18n.I18nMessageUtil;
 import io.voyager1.common.i18n.I18nThreadUtil;
 import io.voyager1.model.AfterOpt;
+import io.voyager1.model.BaseEnum;
 import io.voyager1.model.data.NodeModel;
 import io.voyager1.model.log.OutGivingLog;
 import io.voyager1.model.outgiving.OutGivingModel;
@@ -180,7 +180,8 @@ public class OutGivingRun {
         // 更新二级目录
         if (this.projectSecondaryDirectory != null && !this.projectSecondaryDirectory.isEmpty()) item.setSecondaryDirectory(this.projectSecondaryDirectory);
         //
-        AfterOpt afterOpt = (EnumUtil.likeValueOf(AfterOpt.class, item.getAfterOpt()) != null ? EnumUtil.likeValueOf(AfterOpt.class, item.getAfterOpt()) : AfterOpt.No);
+        AfterOpt parsedAfterOpt = BaseEnum.getEnum(AfterOpt.class, item.getAfterOpt());
+        AfterOpt afterOpt = (parsedAfterOpt != null ? parsedAfterOpt : AfterOpt.No);
         StrictSyncFinisher syncFinisher;
         //
         List<OutGivingNodeProject> outGivingNodeProjects = item.outGivingNodeProjectList(select);

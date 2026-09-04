@@ -28,8 +28,8 @@ import io.voyager1.util.Tuple;
 import io.voyager1.util.UrlQuery;
 import io.voyager1.util.ThreadUtil;
 import io.voyager1.util.ArrayUtil;
-import io.voyager1.util.EnumUtil;
 import io.voyager1.common.SpringContextHolder;
+import io.voyager1.model.BaseEnum;
 import io.voyager1.model.BaseIdModel;
 import io.voyager1.plugin.IPlugin;
 import lombok.Builder;
@@ -426,7 +426,7 @@ public class BuildExecuteManage implements Runnable {
         try {
             String msg;
             Integer repoTypeCode = repositoryModel.getRepoType();
-            RepositoryModel.RepoType repoType = EnumUtil.likeValueOf(RepositoryModel.RepoType.class, repoTypeCode);
+            RepositoryModel.RepoType repoType = BaseEnum.getEnum(RepositoryModel.RepoType.class, repoTypeCode);
             Boolean checkRepositoryDiff = Optional.ofNullable(taskData.checkRepositoryDiff).orElse(buildExtraModule.getCheckRepositoryDiff());
             String repositoryLastCommitId = buildInfoModel.getRepositoryLastCommitId();
             if (repoType == RepositoryModel.RepoType.Git) {

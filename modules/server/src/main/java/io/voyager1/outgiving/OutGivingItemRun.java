@@ -18,7 +18,6 @@ package io.voyager1.outgiving;
 
 import io.voyager1.util.BetweenFormatter;
 import io.voyager1.util.FileUtil;
-import io.voyager1.util.EnumUtil;
 import io.voyager1.util.ObjectUtil;
 import io.voyager1.util.StrUtil;
 import io.voyager1.common.SpringContextHolder;
@@ -28,6 +27,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import io.voyager1.common.i18n.I18nMessageUtil;
 import io.voyager1.model.AfterOpt;
+import io.voyager1.model.BaseEnum;
 import io.voyager1.model.data.NodeModel;
 import io.voyager1.model.log.OutGivingLog;
 import io.voyager1.model.outgiving.OutGivingModel;
@@ -71,7 +71,8 @@ public class OutGivingItemRun implements Callable<OutGivingNodeProject.Status> {
         this.unzip = unzip;
         this.outGivingNodeProject = outGivingNodeProject;
         this.file = file;
-        this.afterOpt = (EnumUtil.likeValueOf(AfterOpt.class, item.getAfterOpt()) != null ? EnumUtil.likeValueOf(AfterOpt.class, item.getAfterOpt()) : AfterOpt.No);
+        AfterOpt parsedAfterOpt = BaseEnum.getEnum(AfterOpt.class, item.getAfterOpt());
+        this.afterOpt = (parsedAfterOpt != null ? parsedAfterOpt : AfterOpt.No);
         //
         NodeService nodeService = SpringContextHolder.getBean(NodeService.class);
         this.nodeModel = nodeService.getByKey(outGivingNodeProject.getNodeId());

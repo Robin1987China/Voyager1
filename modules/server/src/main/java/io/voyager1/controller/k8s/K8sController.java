@@ -161,7 +161,7 @@ public class K8sController extends BaseServerController {
         if ((manifest == null || manifest.isEmpty())) {
             return ApiResult.fail("manifest 不能为空");
         }
-        k8sService.applyManifest(id, manifest);
+        k8sService.applyManifest(id, namespace, manifest);
         return ApiResult.success("部署成功");
     }
 }

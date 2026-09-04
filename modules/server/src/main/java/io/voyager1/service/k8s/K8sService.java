@@ -366,14 +366,24 @@ public class K8sService {
 
     /**
      * 部署：manifest createOrReplace
+     *
+     * @param clusterId 集群 id
+     * @param namespace 目标命名空间（为空时用 kubeconfig 默认，避免依赖错误）
+     * @param manifest  YAML/JSON 清单
      */
-    public void applyManifest(String clusterId, String manifest) {
+    public void applyManifest(String clusterId, String namespace, String manifest) {
         Assert.hasText(manifest, "manifest 不能为空");
         KubernetesClient client = this.getClient(clusterId);
         List<HasMetadata> items = client.load(new ByteArrayInputStream(manifest.getBytes(StandardCharsets.UTF_8))).items();
         Assert.state(!items.isEmpty(), "manifest 没有可部署的资源");
+        String ns = this.validateNamespace(namespace, null);
         for (HasMetadata item : items) {
-            client.resource(item).createOrReplace();
+            // 仅当清单内未显式指定 namespace 时才应用用户选择的命名空间
+            if (ns != null && (item.getMetadata() == null || item.getMetadata().getNamespace() == null)) {
+                client.resource(item).inNamespace(ns).createOrReplace();
+            } else {
+                client.resource(item).createOrReplace();
+            }
         }
     }
 

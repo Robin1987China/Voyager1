@@ -303,7 +303,7 @@ To ensure code quality and standards, and to help you quickly understand the pro
 
    Replace `branch-name` and `username` with the appropriate values.
 
-   For code/documentation contributions, base your work on the `feature/v0.0.2` development branch (the `main` branch is the release version and does not accept PRs).
+   For code/documentation contributions, base your work on the `feature/v0.0.1` development branch (the `main` branch is the release version and does not accept PRs).
 
    ```bash
    git clone -b branch-name https://github.com/username/Voyager1.git
@@ -316,7 +316,7 @@ To ensure code quality and standards, and to help you quickly understand the pro
    git add .
    # Commit your changes with a descriptive message
    git commit -m 'Describe your changes'
-   # Push to your remote repository, using branch feature/v0.0.2
+   # Push to your remote repository, using branch feature/v0.0.1
    git push origin branch-name
    ```
 
@@ -329,9 +329,9 @@ To ensure code quality and standards, and to help you quickly understand the pro
 | Branch | Description |
 |--------|------------------------------------------------------|
 | main | Main branch (release), protected. Merged after testing. |
-| feature/v0.0.2 | Development branch, accepts PRs. Please submit PRs to this branch. |
+| feature/v0.0.1 | Development branch, accepts PRs. Please submit PRs to this branch. |
 
-> The `main` and `feature/v0.0.2` branches must point to the same commit to stay consistent; feature/fix commits are synced to both branches.
+> The `main` and `feature/v0.0.1` branches must point to the same commit to stay consistent; feature/fix commits are synced to both branches.
 
 ## ⚠️ Production Security Notes
 

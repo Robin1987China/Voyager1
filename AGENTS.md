@@ -87,29 +87,6 @@ cd modules/agent/target/agent-0.0.2-release && ./bin/Agent.sh start
 8. **版本检查**：`remote-version-url` 未配置时静默降级（返回 null，不打 WARN）
 9. **release 目录是打包产物**：修改源码后必须重新 `mvn package` 才生效（含前端 dist、bin 脚本权限 755）
 
-## Naive UI 迁移防回归（Ant → Naive 语义差异，改 UI 必看）
-
-迁移遗留了大量 Ant 与 Naive 的 API 语义差异，稍不注意就会让「列表页数据/操作列/工具栏/搜索框/弹窗」静默失效。以下是已踩过的坑，**禁止回退**：
-
-| 坑 | Ant 写法（错） | Naive 正确写法 |
-|---|---|---|
-| `n-card` 无 `#title` slot | `<template #title>` | `<template #header>`（`title` 是 prop，不是 slot） |
-| `n-grid` 只渲染 `n-grid-item` | `<n-grid justify="end"><n-form/></n-grid>` | 用 `div` + flex 布局包裹非 grid-item 内容 |
-| `row-key` 必须是函数 | `row-key="id"`（字符串） | `:row-key="(row) => row.id"`（否则报 `getKey is not a function`，整表空白） |
-| 数据源 prop 名 | `:options="list"` / 组件内部 `dataSource` 与页面 `:data` 不一致 | 原生 `n-data-table` 用 `:data="list"`；CustomTable 已兼容 `data` 别名回退 `dataSource` |
-| 列字段名 | 迁移把列定义 `dataIndex`→`key`，但 slot 仍按 `column.dataIndex` 判断 | CustomTable 的 `toNaiveColumn` 需合成 `dataIndex`（`col.key ?? col.dataIndex`），否则操作列命中不了 |
-| 表格体插槽双命名 | 页面用 `#bodyCell` 或 `#tableBodyCell` 不统一 | CustomTable 用 `slots.tableBodyCell \|\| slots.bodyCell` 双名兼容 |
-| `n-tabs` 取值 | `v-model:active-key` / `#rightExtra` | `v-model:value` + `n-tab-pane :name`；页签 `:name` 必补，否则切换/关闭误删末位 |
-| `n-form` 无 `@finish` | `@finish="submit"` | `@submit.prevent` + 手动 `this.$refs.xxx.validate()`；重置校验用 `restoreValidation()`（非 `resetFields()`） |
-| `n-modal` 无 `@ok`/`@cancel` 事件 | `@ok/@cancel` | CustomModal 已封装：`emits['ok','cancel']` + `preset="card"` + footer；`#title` 改 `#header`；`:footer="null/false"` 隐藏死按钮 |
-| `n-drawer` 插槽 | `#title/#footer/#extra` 直接挂 | 插槽由 `n-drawer-content` 承接；`@update:show` 需转发并补发 `close`/`update:open` |
-| 下拉/单选事件 | `@change` / `props.onClick`（下拉菜单） | `n-select`/`n-radio-group` 用 `@update:value`；`n-dropdown` 用 `@select` |
-| 穿梭框 | 依赖 `n-transfer` 的 `#children` 插槽 | 自研 `compositionTransfer` 自包含双面板+穿梭按钮（保留 `onChange(targetKeys,direction)` 契约） |
-| 图标注册 | 只 import 不注册（普通 `<script>`） | 必须写进 `components` 注册（如 `ReloadOutlined` 等），否则渲染空白 |
-| 自动刷新倒计时 | `n-statistic` 显示时间戳假倒计时 | `n-countdown` + `:key` remount 重置（`countdownKey++`） |
-| 日志弹窗显隐 prop | 只认 `visible` | `logView` 需兼容 `show` 别名 + watch 同步 `visibleModel` |
-| 表格横向滚动 | `scroll-x: 'max-content'`（Ant） | `n-data-table` 的 `scroll-x` 需数字像素；CustomTable 已把非数字值归一化为不设 scroll-x（否则表格宽度被撑成 100 万 px，非 fixed 列全被推出视口） |
-
 ## 常见坑备忘
 
 - **登录失败排查**：先确认密码格式（前端 sha1），再确认账号锁定（多次失败锁 30 分钟，用 `--rest:super_user_pwd` 重置解锁）

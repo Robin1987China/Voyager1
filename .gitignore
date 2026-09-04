@@ -68,3 +68,6 @@ logs/
 
 # internal spec & design docs (not for public release)
 openspec/
+
+# 本地内部备忘（Naive UI 迁移坑等，不对外发布）
+AGENTS.local.md

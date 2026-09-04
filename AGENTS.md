@@ -79,8 +79,8 @@ cd modules/agent/target/agent-0.0.2-release && ./bin/Agent.sh start
 
 1. **包名/品牌**：根包 `io.voyager1`；禁止引入历史遗留品牌依赖；全仓关键字零残留
 2. **环境变量**：一律 `VOYAGER1_*` 前缀（VOYAGER1_TYPE/VOYAGER1_VERSION/VOYAGER1_IS_DEBUG/VOYAGER1_REMOTE_VERSION_CACHE_FILE/VOYAGER1_REMOTE_VERSION_AUTH/JOIN_VOYAGER1_BETA_RELEASE/VOYAGER1_AGENT_APPLICATION/VOYAGER1_SERVER_APPLICATION/VOYAGER1_DATE_PATH）
-3. **前端已从 Ant Design Vue 迁移到 Naive UI**：ant-design-vue 依赖已完全移除（src 无 `a-*` 组件、package.json 无 antd），统一使用 Naive（`naive-ui ^2.45.3` + `unplugin-vue-components` 自动导入）。**禁止逆向引入 Ant 组件或 antd 依赖**；新增 Naive 组件后需确认自动导入/类型（`components.d.ts`）已更新
-4. **CustomTable 组件**：`<slot name="title" v-bind="slotProps || {}">` 必须保留 `|| {}` 兜底（antd Card 的 title 插槽无参调用，slotProps 为 null，直接 v-bind 会抛 `null.key` 导致功能区消失）。当前改用 `<template #header>`（Naive 无 `#title` slot，见「Naive UI 迁移防回归」）
+3. **前端 UI 框架**：统一使用 Naive UI（`naive-ui ^2.45.3` + `unplugin-vue-components` 自动导入）。**禁止引入其它 UI 组件库**；新增 Naive 组件后需确认自动导入/类型（`components.d.ts`）已更新
+4. **CustomTable 组件**：`<slot name="title" v-bind="slotProps || {}">` 必须保留 `|| {}` 兜底（title 插槽可能无参调用，slotProps 为 null，直接 v-bind 会抛 `null.key` 导致功能区消失）。当前改用 `<template #header>`（`title` 是 prop，不是 slot）
 5. **启动脚本**：JDK8 专属参数（UseFastAccessorMethods 等）必须放在 `java_8` 分支内（历史兼容）；JDK17 运行需 add-opens
 6. **日志路径**：`LogbackConfig` 回退路径需剥离 `jar!` 段；启动脚本需 export VOYAGER1_LOG
 7. **系统任务**：启动时系统任务执行依赖 bean 就绪（SystemEvent 用 SmartInitializingSingleton）

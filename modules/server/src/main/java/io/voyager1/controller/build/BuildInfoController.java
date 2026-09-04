@@ -226,8 +226,8 @@ public class BuildInfoController extends BaseServerController {
             // 判断删除命令
             Assert.state(!CommandUtil.checkContainsDel(script), "构建命令不能包含删除命令");
         }
-        // 查询构建信息
-        BuildInfoModel buildInfoModel = buildInfoService.getByKey(id, request);
+        // 查询构建信息（新增时 id 为空，直接新建，避免 findById(null) 抛 "id must not be null"）
+        BuildInfoModel buildInfoModel = ((id != null && !id.isEmpty()) ? buildInfoService.getByKey(id, request) : null);
         buildInfoModel = (buildInfoModel != null ? buildInfoModel : new BuildInfoModel());
         // 设置参数
         Opt.ofBlankAble(webhook).ifPresent(s -> Validator.validateMatchRegex(RegexPool.URL_HTTP, s, "WebHooks 地址不合法"));

@@ -4,7 +4,7 @@ FROM maven:3.9.6-eclipse-temurin-8
 ARG BUILD_DATE
 
 ENV VOYAGER1_HOME=/usr/local/voyager1-server
-ENV VOYAGER1_PKG_VERSION=0.0.2
+ENV VOYAGER1_PKG_VERSION=0.0.1
 ENV VOYAGER1_PKG=server-${VOYAGER1_PKG_VERSION}-release.tar.gz
 ENV SHA1_NAME=server-${VOYAGER1_PKG_VERSION}-release.tar.gz.sha1
 

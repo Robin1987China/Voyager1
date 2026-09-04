@@ -90,7 +90,7 @@ Voyager1 natively exposes its core operations capabilities as **MCP (Model Conte
 
 ## 📥 Installing Voyager1
 
-Voyager1 uses a **Server + Agent** architecture and can be built from source. For the initial release (v0.0.2), building from source is recommended.
+Voyager1 uses a **Server + Agent** architecture and can be built from source. For the initial release (v0.0.1), building from source is recommended.
 
 ### Environment Requirements
 
@@ -122,19 +122,19 @@ cd ..
 
 ```shell
 # Package (skip tests; if the agent jar already exists it may be skipped, delete it first)
-rm -f modules/agent/target/agent-0.0.2.jar
+rm -f modules/agent/target/agent-0.0.1.jar
 mvn clean package
 ```
 
 After packaging, the artifacts are located at:
-- Server: `modules/server/target/server-0.0.2-release/`
-- Agent: `modules/agent/target/agent-0.0.2-release/`
+- Server: `modules/server/target/server-0.0.1-release/`
+- Agent: `modules/agent/target/agent-0.0.1-release/`
 
 > You can also use `script/release.sh` (Linux) or `script/release.bat` (Windows) for one-command packaging.
 
 #### 4. Install and Start the Server
 
-Upload the `server-0.0.2-release` directory to the server (the entire directory), then inside it:
+Upload the `server-0.0.1-release` directory to the server (the entire directory), then inside it:
 
 ```shell
 ./bin/Server.sh start     # Linux
@@ -145,7 +145,7 @@ The server default port is `2122`, accessible at `http://127.0.0.1:2122/` (repla
 
 #### 5. Install and Start the Agent
 
-Upload the `agent-0.0.2-release` directory to the managed host (the entire directory, **in a different directory from the server**), then inside it:
+Upload the `agent-0.0.1-release` directory to the managed host (the entire directory, **in a different directory from the server**), then inside it:
 
 ```shell
 ./bin/Agent.sh start      # Linux

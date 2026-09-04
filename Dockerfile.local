@@ -1,6 +1,6 @@
 FROM eclipse-temurin:17-jre
 
-ARG VOYAGER1_VERSION=0.0.2
+ARG VOYAGER1_VERSION=0.0.1
 
 # 基础依赖：git（构建/仓库功能）、curl（健康检查）
 RUN apt-get update \

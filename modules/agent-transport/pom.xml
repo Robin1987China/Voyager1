@@ -5,7 +5,7 @@
     <parent>
         <artifactId>voyager1-parent</artifactId>
         <groupId>io.voyager1</groupId>
-        <version>0.0.2</version>
+        <version>0.0.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <packaging>pom</packaging>
@@ -14,7 +14,7 @@
         <module>agent-transport-http</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
-    <version>0.0.2</version>
+    <version>0.0.1</version>
     <groupId>io.voyager1.agent-transport</groupId>
     <artifactId>voyager1-agent-transport-parent</artifactId>
     <name>Voyager1 Agent Transport</name>

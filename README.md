@@ -89,7 +89,7 @@ Voyager1 原生把核心运维能力暴露为 **MCP（Model Context Protocol）�
 
 ## 📥 安装 Voyager1
 
-Voyager1 采用 **Server + Agent** 架构，从源码构建即可部署。当前初始版本（v0.0.1）推荐**从源码编译安装**。
+Voyager1 采用 **Server + Agent** 架构，从源码构建即可部署。当前初始版本（v0.0.2）推荐**从源码编译安装**。
 
 ### 环境要求
 
@@ -121,30 +121,30 @@ cd ..
 
 ```shell
 # 打包（skip 测试；若 agent jar 已存在会增量跳过，需先删除强制重建）
-rm -f modules/agent/target/agent-0.0.1.jar
+rm -f modules/agent/target/agent-0.0.2.jar
 mvn clean package
 ```
 
 打包完成后，产物位于：
-- 服务端：`modules/server/target/server-0.0.1-release/`
-- 插件端：`modules/agent/target/agent-0.0.1-release/`
+- 服务端：`modules/server/target/server-0.0.2-release/`
+- 插件端：`modules/agent/target/agent-0.0.2-release/`
 
 > 也可以使用 `script/release.sh`（Linux）或 `script/release.bat`（Windows）一键打包。
 
 #### 4. 安装并启动服务端
 
-将 `server-0.0.1-release` 目录上传到服务器（整个目录），进入目录后：
+将 `server-0.0.2-release` 目录上传到服务器（整个目录），进入目录后：
 
 ```shell
 ./bin/Server.sh start     # Linux
 # 或 Windows: bin\Server.bat start
 ```
 
-服务端默认端口 `2122`，访问 `http://127.0.0.1:2122/`（非本机访问换成服务器 IP）。
+服务端默认端口 `2122`，访问 `http://127.0.0.2:2122/`（非本机访问换成服务器 IP）。
 
 #### 5. 安装并启动插件端
 
-将 `agent-0.0.1-release` 目录上传到被管主机（整个目录，**与服务端不要放在同一目录**），进入目录后：
+将 `agent-0.0.2-release` 目录上传到被管主机（整个目录，**与服务端不要放在同一目录**），进入目录后：
 
 ```shell
 ./bin/Agent.sh start      # Linux
@@ -173,7 +173,7 @@ io.voyager1.Voyager1ServerApplication       # 端口 2122
 io.voyager1.Voyager1AgentApplication        # 端口 2123，注意控制台打印的默认账号
 
 # 3. 启动前端开发模式
-cd web-vue && npm install && npm run dev    # 默认 http://127.0.0.1:3000/
+cd web-vue && npm install && npm run dev    # 默认 http://127.0.0.2:3000/
 ```
 
 ### 方式三：📦 Docker Compose（从源码构建镜像）
@@ -301,7 +301,7 @@ Voyager1 作为开源项目，离不开社区的支持，欢迎任何人修改�
 
    注意替换掉链接中的`分支名`和`用户名`。
 
-   如果是贡献代码/文档，请基于开发分支 `feature/v0.0.1` 提交（主分支 `main` 为发布版，不接受 PR）。
+   如果是贡献代码/文档，请基于开发分支 `feature/v0.0.2` 提交（主分支 `main` 为发布版，不接受 PR）。
 
    ```bash
    git clone -b 分支名 https://github.com/用户名/Voyager1.git
@@ -314,7 +314,7 @@ Voyager1 作为开源项目，离不开社区的支持，欢迎任何人修改�
    git add .
    # 提交到本地仓库，说明您具体做了什么修改
    git commit -m '填写您做了什么修改'
-   # 推送到远程仓库，分支名请使用 feature/v0.0.1
+   # 推送到远程仓库，分支名请使用 feature/v0.0.2
    git push origin 分支名
    ```
 
@@ -325,9 +325,9 @@ Voyager1 作为开源项目，离不开社区的支持，欢迎任何人修改�
 | 分支 | 说明 |
 |--------|------------------------------------------------------|
 | main | 主分支（发布版），受保护分支。经测试通过后合入。 |
-| feature/v0.0.1 | 开发分支，接受 PR。PR 请提交到该分支。 |
+| feature/v0.0.2 | 开发分支，接受 PR。PR 请提交到该分支。 |
 
-> 主分支 `main` 与开发分支 `feature/v0.0.1` 必须指向同一提交保持一致；功能/修复提交需同步到两个分支。
+> 主分支 `main` 与开发分支 `feature/v0.0.2` 必须指向同一提交保持一致；功能/修复提交需同步到两个分支。
 
 ### 贡献者
 

@@ -1,8 +1,8 @@
 {
   "name": "Voyager1 服务端接口文档",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Voyager1 服务端接口文档",
   "title": "Voyager1 服务端接口文档",
-  "url": "http://127.0.0.1:2122/",
-  "sampleUrl": "http://127.0.0.1:2122/"
+  "url": "http://127.0.0.2:2122/",
+  "sampleUrl": "http://127.0.0.2:2122/"
 }

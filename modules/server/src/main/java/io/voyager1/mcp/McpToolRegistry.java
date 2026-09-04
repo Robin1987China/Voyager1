@@ -65,7 +65,7 @@ public class McpToolRegistry {
     public JSONObject initialize() {
         JSONObject serverInfo = new JSONObject();
         serverInfo.put("name", "voyager1");
-        serverInfo.put("version", "0.0.1");
+        serverInfo.put("version", "0.0.2");
         JSONObject capabilities = new JSONObject();
         capabilities.put("tools", new JSONObject());
         JSONObject result = new JSONObject();

@@ -24,7 +24,7 @@
         轻量级一体化运维与持续交付平台（在线构建 · 自动部署 · 日常运维 · 项目监控）
     </description>
     <inceptionYear>2026</inceptionYear>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>

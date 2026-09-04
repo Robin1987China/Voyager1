@@ -90,7 +90,7 @@ Voyager1 natively exposes its core operations capabilities as **MCP (Model Conte
 
 ## 📥 Installing Voyager1
 
-Voyager1 uses a **Server + Agent** architecture and can be built from source. For the initial release (v0.0.1), building from source is recommended.
+Voyager1 uses a **Server + Agent** architecture and can be built from source. For the initial release (v0.0.2), building from source is recommended.
 
 ### Environment Requirements
 
@@ -122,30 +122,30 @@ cd ..
 
 ```shell
 # Package (skip tests; if the agent jar already exists it may be skipped, delete it first)
-rm -f modules/agent/target/agent-0.0.1.jar
+rm -f modules/agent/target/agent-0.0.2.jar
 mvn clean package
 ```
 
 After packaging, the artifacts are located at:
-- Server: `modules/server/target/server-0.0.1-release/`
-- Agent: `modules/agent/target/agent-0.0.1-release/`
+- Server: `modules/server/target/server-0.0.2-release/`
+- Agent: `modules/agent/target/agent-0.0.2-release/`
 
 > You can also use `script/release.sh` (Linux) or `script/release.bat` (Windows) for one-command packaging.
 
 #### 4. Install and Start the Server
 
-Upload the `server-0.0.1-release` directory to the server (the entire directory), then inside it:
+Upload the `server-0.0.2-release` directory to the server (the entire directory), then inside it:
 
 ```shell
 ./bin/Server.sh start     # Linux
 # or Windows: bin\Server.bat start
 ```
 
-The server default port is `2122`, accessible at `http://127.0.0.1:2122/` (replace `127.0.0.1` with the server IP if not local).
+The server default port is `2122`, accessible at `http://127.0.0.2:2122/` (replace `127.0.0.2` with the server IP if not local).
 
 #### 5. Install and Start the Agent
 
-Upload the `agent-0.0.1-release` directory to the managed host (the entire directory, **in a different directory from the server**), then inside it:
+Upload the `agent-0.0.2-release` directory to the managed host (the entire directory, **in a different directory from the server**), then inside it:
 
 ```shell
 ./bin/Agent.sh start      # Linux
@@ -174,7 +174,7 @@ io.voyager1.Voyager1ServerApplication       # port 2122
 io.voyager1.Voyager1AgentApplication        # port 2123, note the default account printed
 
 # 3. Start the frontend dev server
-cd web-vue && npm install && npm run dev    # default http://127.0.0.1:3000/
+cd web-vue && npm install && npm run dev    # default http://127.0.0.2:3000/
 ```
 
 ### Method 3: 📦 Docker Compose (Build from Source)
@@ -303,7 +303,7 @@ To ensure code quality and standards, and to help you quickly understand the pro
 
    Replace `branch-name` and `username` with the appropriate values.
 
-   For code/documentation contributions, base your work on the `feature/v0.0.1` development branch (the `main` branch is the release version and does not accept PRs).
+   For code/documentation contributions, base your work on the `feature/v0.0.2` development branch (the `main` branch is the release version and does not accept PRs).
 
    ```bash
    git clone -b branch-name https://github.com/username/Voyager1.git
@@ -316,7 +316,7 @@ To ensure code quality and standards, and to help you quickly understand the pro
    git add .
    # Commit your changes with a descriptive message
    git commit -m 'Describe your changes'
-   # Push to your remote repository, using branch feature/v0.0.1
+   # Push to your remote repository, using branch feature/v0.0.2
    git push origin branch-name
    ```
 
@@ -329,9 +329,9 @@ To ensure code quality and standards, and to help you quickly understand the pro
 | Branch | Description |
 |--------|------------------------------------------------------|
 | main | Main branch (release), protected. Merged after testing. |
-| feature/v0.0.1 | Development branch, accepts PRs. Please submit PRs to this branch. |
+| feature/v0.0.2 | Development branch, accepts PRs. Please submit PRs to this branch. |
 
-> The `main` and `feature/v0.0.1` branches must point to the same commit to stay consistent; feature/fix commits are synced to both branches.
+> The `main` and `feature/v0.0.2` branches must point to the same commit to stay consistent; feature/fix commits are synced to both branches.
 
 ## ⚠️ Production Security Notes
 

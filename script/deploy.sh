@@ -30,7 +30,7 @@ SKIP_TESTS=false
 SKIP_FRONTEND=false
 NO_CAPTCHA=false
 LOGIN_PWD="${VOYAGER1_LOGIN_PWD:-nGetCEvj}"
-VOYAGER1_VERSION="0.0.1"
+VOYAGER1_VERSION="0.0.2"
 
 # ---------- 参数解析 ----------
 for arg in "$@"; do
@@ -103,8 +103,8 @@ sleep 15
 
 # ---------- 6. 验证 ----------
 log "6/6 验证..."
-SERVER_HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:2122/ || echo 000)
-AGENT_HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:2123/ || echo 000)
+SERVER_HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.2:2122/ || echo 000)
+AGENT_HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.2:2123/ || echo 000)
 [ "$SERVER_HTTP" = "200" ] || fail "服务端验证失败（HTTP $SERVER_HTTP）"
 [ "$AGENT_HTTP" = "200" ] || fail "插件端验证失败（HTTP $AGENT_HTTP）"
 log "服务端 2122: HTTP $SERVER_HTTP ✅  插件端 2123: HTTP $AGENT_HTTP ✅"
@@ -112,9 +112,9 @@ log "服务端 2122: HTTP $SERVER_HTTP ✅  插件端 2123: HTTP $AGENT_HTTP ✅
 # 登录验证
 SHAPWD=$(node -e "const c=require('crypto');console.log(c.createHash('sha1').update(process.argv[1],'utf8').digest('hex'))" "$LOGIN_PWD" 2>/dev/null || true)
 if [ -n "$SHAPWD" ]; then
-  LOGIN_RESULT=$(curl -s -X POST "http://127.0.0.1:2122/userLogin?loginName=admin&userPwd=$SHAPWD" | head -c 50)
+  LOGIN_RESULT=$(curl -s -X POST "http://127.0.0.2:2122/userLogin?loginName=admin&userPwd=$SHAPWD" | head -c 50)
   echo "$LOGIN_RESULT" | grep -q '"code":200' && log "登录验证 ✅（admin）" || log "登录验证跳过（密码或账号变化，可 --pwd 指定）"
 fi
 
 log "部署完成 ✅"
-log "管理页面: http://127.0.0.1:2122/  插件端: http://127.0.0.1:2123/"
+log "管理页面: http://127.0.0.2:2122/  插件端: http://127.0.0.2:2123/"

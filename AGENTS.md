@@ -56,7 +56,7 @@ mvn test
 
 # 打包（-DskipTests 跳过测试；agent jar 存在时增量会跳过重建，需先 rm）
 mvn package -DskipTests
-rm -f modules/agent/target/agent-0.0.1.jar   # agent 强制重建
+rm -f modules/agent/target/agent-0.0.2.jar   # agent 强制重建
 
 # 前端构建（dist 输出到 modules/server/src/main/resources/dist，打包进 server jar）
 cd web-vue && npm run build
@@ -66,13 +66,13 @@ bash script/deploy.sh [--skip-tests] [--skip-frontend] [--pwd <密码>] [--no-ca
 
 # UI 全页面巡检（需服务端运行；--baseline 生成基线 / --compare 对比 / 缺省 scan 模式）
 # 巡检含登录页冒烟检查；自动化登录要求服务端禁用图形验证码，故需先 --no-captcha 部署
-# 可选 --base <url> 覆盖地址（默认 http://127.0.0.1:2122）、--user <用户名>（默认 admin）
+# 可选 --base <url> 覆盖地址（默认 http://127.0.0.2:2122）、--user <用户名>（默认 admin）
 node script/ui-regression.mjs --pwd <密码> [--baseline | --compare] [--base <url>] [--user <用户名>]
 
 # 本地启动（JDK17 需 add-opens）
 export JAVA_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
-cd modules/server/target/server-0.0.1-release && ./bin/Server.sh start
-cd modules/agent/target/agent-0.0.1-release && ./bin/Agent.sh start
+cd modules/server/target/server-0.0.2-release && ./bin/Server.sh start
+cd modules/agent/target/agent-0.0.2-release && ./bin/Agent.sh start
 ```
 
 ## 关键约定（防回归）

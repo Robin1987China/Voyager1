@@ -8,7 +8,7 @@ Voyager1 是自研的轻量级运维平台（在线构建、自动部署、日�
 - **Server**（端口 2122）：Web 控制台，管理构建/监控/SSH/Docker/权限
 - **Agent**（端口 2123）：部署在被管主机上的插件端，执行构建/脚本/进程管理
 
-项目代码统一使用 Voyager1 自有命名空间，**代码层禁止出现任何历史遗留品牌关键字残留**（OpenSpec 有强制约束）。
+项目代码统一使用 Voyager1 自有命名空间，**代码层禁止出现任何历史遗留品牌关键字残留**。
 
 ## 技术栈
 
@@ -28,18 +28,16 @@ Voyager1 是自研的轻量级运维平台（在线构建、自动部署、日�
 - `storage-module`：数据库方言实现（h2/mysql/mariadb/postgresql）
 - `sub-plugin`：功能插件（git-clone/svn-clone/docker-cli/ssh-jsch/email/webhook/encrypt）
 
-## 业务能力（自研 Pipeline + 多云/K8s，均有 OpenSpec 规格约束）
+## 业务能力（自研 Pipeline + 多云/K8s）
 
-| 能力 | 说明 | 关键代码 | OpenSpec 规格 |
-|---|---|---|---|
-| 版本状态机 | 构建产物版本、发布状态流转（含提测冻结/打回） | `service/version/VersionService.java` | release-versioning |
-| 可视化 Pipeline 编辑器 | 流水线图形编辑、节点编排 | `service/pipeline/PipelineConfigService.java`、`web-vue/src/pages/pipeline/pipeline-list.vue` | pipeline-visual-editor |
-| 环境晋升 | dev→test→prod 泳道视图、自动 CD、审批邮件、失败自动打回 | `web-vue/src/pages/pipeline/swimlane.vue`、`service/environment/EnvironmentService.java`、`service/DeploymentService.java` | environment-promotion |
-| 触发方式 | 手动 / cron 定时 / WebHook 触发 Pipeline；构建列表与 Pipeline 双向关联 | `service/pipeline/PipelineConfigService.java`（CronUtils key `pipeline:<id>`）、`POST /pipeline/trigger-webhook` | pipeline-trigger |
-| 云资产 | 云账号（aliyun/tencent/aws）+ 云实例管理，实例一键导入为 SSH 机器 | `service/cloud/{CloudService,CloudInstanceService}.java`、`controller/cloud/CloudController.java`、`web-vue/src/pages/cloud/cloud-list.vue`（表 CLOUD_ACCOUNT/CLOUD_INSTANCE） | cloud-assets |
-| K8s 集群 | kubeconfig 接入集群、结构化资源列表/详情/删除/扩缩容/重启/日志/事件、manifest 部署（fabric8 SDK） | `service/k8s/K8sService.java`、`controller/k8s/K8sController.java`、`web-vue/src/pages/k8s/k8s-list.vue`（表 K8S_CLUSTER） | kubernetes-cluster |
-
-新功能开发/修改必须同时更新对应 OpenSpec 规格（`openspec/specs/` 为主规格权威来源，变更先走 `/opsx-propose`）。
+| 能力 | 说明 | 关键代码 |
+|---|---|---|
+| 版本状态机 | 构建产物版本、发布状态流转（含提测冻结/打回） | `service/version/VersionService.java` |
+| 可视化 Pipeline 编辑器 | 流水线图形编辑、节点编排 | `service/pipeline/PipelineConfigService.java`、`web-vue/src/pages/pipeline/pipeline-list.vue` |
+| 环境晋升 | dev→test→prod 泳道视图、自动 CD、审批邮件、失败自动打回 | `web-vue/src/pages/pipeline/swimlane.vue`、`service/environment/EnvironmentService.java`、`service/DeploymentService.java` |
+| 触发方式 | 手动 / cron 定时 / WebHook 触发 Pipeline；构建列表与 Pipeline 双向关联 | `service/pipeline/PipelineConfigService.java`（CronUtils key `pipeline:<id>`）、`POST /pipeline/trigger-webhook` |
+| 云资产 | 云账号（aliyun/tencent/aws）+ 云实例管理，实例一键导入为 SSH 机器 | `service/cloud/{CloudService,CloudInstanceService}.java`、`controller/cloud/CloudController.java`、`web-vue/src/pages/cloud/cloud-list.vue`（表 CLOUD_ACCOUNT/CLOUD_INSTANCE） |
+| K8s 集群 | kubeconfig 接入集群、结构化资源列表/详情/删除/扩缩容/重启/日志/事件、manifest 部署（fabric8 SDK） | `service/k8s/K8sService.java`、`controller/k8s/K8sController.java`、`web-vue/src/pages/k8s/k8s-list.vue`（表 K8S_CLUSTER） |
 
 ## 开发环境
 
@@ -77,7 +75,7 @@ cd modules/server/target/server-0.0.2-release && ./bin/Server.sh start
 cd modules/agent/target/agent-0.0.2-release && ./bin/Agent.sh start
 ```
 
-## 关键约定（防回归，均有 OpenSpec 约束）
+## 关键约定（防回归）
 
 1. **包名/品牌**：根包 `io.voyager1`；禁止引入历史遗留品牌依赖；全仓关键字零残留
 2. **环境变量**：一律 `VOYAGER1_*` 前缀（VOYAGER1_TYPE/VOYAGER1_VERSION/VOYAGER1_IS_DEBUG/VOYAGER1_REMOTE_VERSION_CACHE_FILE/VOYAGER1_REMOTE_VERSION_AUTH/JOIN_VOYAGER1_BETA_RELEASE/VOYAGER1_AGENT_APPLICATION/VOYAGER1_SERVER_APPLICATION/VOYAGER1_DATE_PATH）
@@ -110,20 +108,7 @@ cd modules/agent/target/agent-0.0.2-release && ./bin/Agent.sh start
 | 图标注册 | 只 import 不注册（普通 `<script>`） | 必须写进 `components` 注册（如 `ReloadOutlined` 等），否则渲染空白 |
 | 自动刷新倒计时 | `n-statistic` 显示时间戳假倒计时 | `n-countdown` + `:key` remount 重置（`countdownKey++`） |
 | 日志弹窗显隐 prop | 只认 `visible` | `logView` 需兼容 `show` 别名 + watch 同步 `visibleModel` |
-
-## 开发工作流（强制）
-
-所有功能开发走 **OpenSpec 规格驱动闭环**：
-
-```
-1. /opsx-propose  描述需求 → 生成 change（proposal/specs/design/tasks）
-2. /opsx-apply    按 tasks 实现（每步勾选跟踪）
-3. /opsx-archive  完成后归档（delta specs 自动合并进主规格）
-```
-
-- 主规格：`openspec/specs/`（17 个 capability：branding / dependency-localization / startup-reliability / test-quality / frontend-stability / ui-regression / package-permission / local-cicd / version-check-feed / runtime-platform / release-versioning / pipeline-orchestration / pipeline-trigger / pipeline-visual-editor / environment-promotion / cloud-assets / kubernetes-cluster）
-- 项目上下文与规则：`openspec/config.yaml`
-- 归档记录：`openspec/changes/archive/`
+| 表格横向滚动 | `scroll-x: 'max-content'`（Ant） | `n-data-table` 的 `scroll-x` 需数字像素；CustomTable 已把非数字值归一化为不设 scroll-x（否则表格宽度被撑成 100 万 px，非 fixed 列全被推出视口） |
 
 ## 常见坑备忘
 

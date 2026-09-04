@@ -31,13 +31,13 @@
 
 Voyager1 原生把核心运维能力暴露为 **MCP（Model Context Protocol）工具**，并内置 Agent 编排与自愈能力，让 AI 助手（Cursor、Claude Code 等）能安全地操作你的环境。
 
-- **MCP Server（12 个工具）**：`/mcp` 端点（JSON-RPC 2.0），复用 JWT 鉴权与 `@Feature` 权限，把构建、部署、流水线、SSH、监控、K8s、云资源等能力暴露给 AI Agent 调用。
-  - 只读：`version.list` / `environment.list` / `build.list` / `log.get` / `monitor.list` / `k8s.resourceList` / `cloud.instanceList`
+- **MCP Server（13 个工具）**：`/mcp` 端点（JSON-RPC 2.0），复用 JWT 鉴权与 `@Feature` 权限，把构建、部署、流水线、SSH、监控、K8s、云资源、AIOps 自愈等能力暴露给 AI Agent 调用。
+  - 只读：`version.list` / `environment.list` / `build.list` / `log.get` / `monitor.list` / `k8s.resourceList` / `cloud.instanceList` / `selfHeal.diagnose`
   - 执行：`build.trigger` / `deploy.publish` / `pipeline.trigger` / `ssh.execute`
   - 人工闸门（HITL）：`pipeline.approval`
 - **Agent 意图解析**：把自然语言（如「把 v1.2.3 部署到 test」）拆解为 MCP 工具调用序列；当前为规则版（关键词匹配），LLM 实现作为可插拔扩展（后续接入 OpenAI 兼容接口）。
 - **Agent 审批闸门**：高危工具（`deploy.publish`、`ssh.execute`）需人工审批后才执行；内置危险命令黑名单（`rm -rf /`、`mkfs`、`dd`、`shutdown` 等）。
-- **AIOps 自愈**：告警 → 根因 → 修复动作映射（如 `process_down` / `high_cpu` / `deploy_failed`），当前为规则版，后续接入 LLM 网关。
+- **AIOps 自愈**：告警 → 根因 → 修复动作映射（如 `process_down` / `high_cpu` / `deploy_failed`），当前为规则版，可通过 MCP 工具 `selfHeal.diagnose` 触发，后续接入 LLM 网关。
 
 > 详见 [MCP 工具说明](docs/mcp-tools.md) 与 [架构说明](docs/ARCHITECTURE.md)。
 

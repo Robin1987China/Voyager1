@@ -25,6 +25,7 @@ import io.voyager1.build.BuildExecuteService;
 import io.voyager1.common.BaseServerController;
 import io.voyager1.model.user.UserModel;
 import io.voyager1.service.agent.AgentApprovalService;
+import io.voyager1.service.agent.SelfHealService;
 import io.voyager1.service.cloud.CloudInstanceService;
 import io.voyager1.service.dblog.BuildInfoService;
 import io.voyager1.service.environment.DeploymentService;
@@ -39,7 +40,7 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 /**
- * MCP 工具注册表：定义 12 个 tools 的元数据并执行（复用现有 Service）
+ * MCP 工具注册表：定义 13 个 tools 的元数据并执行（复用现有 Service）
  *
  * @since 2026/8/21
  */
@@ -92,6 +93,7 @@ public class McpToolRegistry {
         tools.add(tool("monitor.list", "监控列表", new String[]{}));
         tools.add(tool("k8s.resourceList", "K8s 资源列表（结构化）", new String[]{"clusterId", "type"}));
         tools.add(tool("cloud.instanceList", "云实例列表", new String[]{"accountId"}));
+        tools.add(tool("selfHeal.diagnose", "AIOps 告警诊断，返回根因与修复动作建议", new String[]{"alertType", "target"}));
         result.put("tools", tools);
         return result;
     }
@@ -194,6 +196,9 @@ public class McpToolRegistry {
                     args.getString("clusterId"), args.getString("namespace"), args.getString("type"));
             case "cloud.instanceList":
                 return SpringContextHolder.getBean(CloudInstanceService.class).listByAccount(args.getString("accountId"));
+            case "selfHeal.diagnose":
+                return SpringContextHolder.getBean(SelfHealService.class).diagnose(
+                    args.getString("alertType"), args.getString("target"));
             default:
                 throw new IllegalArgumentException("未知 tool: " + name);
         }

@@ -31,13 +31,13 @@
 
 Voyager1 natively exposes its core operations capabilities as **MCP (Model Context Protocol) tools**, and ships with built-in Agent orchestration and self-healing, enabling AI assistants (Cursor, Claude Code, etc.) to safely operate your environment.
 
-- **MCP Server (12 tools)**: `/mcp` endpoint (JSON-RPC 2.0), reusing JWT auth and `@Feature` permission, exposing build, deploy, pipeline, SSH, monitor, K8s, and cloud capabilities to AI agents.
-  - Read-only: `version.list` / `environment.list` / `build.list` / `log.get` / `monitor.list` / `k8s.resourceList` / `cloud.instanceList`
+- **MCP Server (13 tools)**: `/mcp` endpoint (JSON-RPC 2.0), reusing JWT auth and `@Feature` permission, exposing build, deploy, pipeline, SSH, monitor, K8s, cloud, and AIOps self-healing capabilities to AI agents.
+  - Read-only: `version.list` / `environment.list` / `build.list` / `log.get` / `monitor.list` / `k8s.resourceList` / `cloud.instanceList` / `selfHeal.diagnose`
   - Execute: `build.trigger` / `deploy.publish` / `pipeline.trigger` / `ssh.execute`
   - Human-in-the-loop (HITL): `pipeline.approval`
 - **Agent Intent Parsing**: turns natural language (e.g. "deploy v1.2.3 to test") into MCP tool-call sequences. Currently rule-based (keyword matching), with LLM as a pluggable extension (OpenAI-compatible endpoints to follow).
 - **Agent Approval Gate**: high-risk tools (`deploy.publish`, `ssh.execute`) require human approval before execution; built-in dangerous-command blacklist (`rm -rf /`, `mkfs`, `dd`, `shutdown`, etc.).
-- **AIOps Self-Healing**: alert → root cause → remediation mapping (e.g. `process_down` / `high_cpu` / `deploy_failed`), currently rule-based, with an LLM gateway to follow.
+- **AIOps Self-Healing**: alert → root cause → remediation mapping (e.g. `process_down` / `high_cpu` / `deploy_failed`), currently rule-based, triggerable via the `selfHeal.diagnose` MCP tool, with an LLM gateway to follow.
 
 > See [MCP Tools](docs/mcp-tools.md) and [Architecture](docs/ARCHITECTURE.md) for details.
 

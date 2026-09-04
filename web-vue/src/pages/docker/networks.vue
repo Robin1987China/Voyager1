@@ -1,16 +1,6 @@
 <template>
-  <n-data-table
-    size="medium"
-    :data="list"
-    :columns="columns"
-    :pagination="false"
-    bordered
-    :row-key="(row) => row.id"
-    :scroll="{
-      x: 'max-content'
-    }"
-  >
-    <template #title>
+    <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
       <n-space>
         <n-input
           v-model:value="listQuery['name']"
@@ -27,9 +17,19 @@
 
         <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
       </n-space>
-    </template>
+    
+  </n-card>
+<n-data-table
+    size="medium"
+    :data="list"
+    :columns="columns"
+    :pagination="false"
+    bordered
+    :row-key="(row) => row.id"
+    >
+    
     <template #bodyCell="{ column, text, record }">
-      <template v-if="column.dataIndex === 'Created'">
+      <template v-if="column.key === 'Created'">
         <n-tooltip placement="topLeft">
           <template #trigger>
             <span class="tw">
@@ -41,7 +41,7 @@
           record.rawValues && record.rawValues['Created']
         </n-tooltip>
       </template>
-      <template v-else-if="column.dataIndex === 'ipam'">
+      <template v-else-if="column.key === 'ipam'">
         <n-tooltip placement="top-start">
           <template #trigger>
             <span class="tw">
@@ -99,7 +99,7 @@
           text
         </n-tooltip>
       </template>
-      <template v-else-if="column.dataIndex === 'operation'">
+      <template v-else-if="column.key === 'operation'">
         <n-space>
           <n-tooltip>
             <template #trigger>

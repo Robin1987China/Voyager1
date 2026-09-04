@@ -96,13 +96,11 @@
                   </span>
                 </template>
                 <template #header>{{ $t('i18n_4d351f3c91') }}</template>
-                <n-list size="small" bordered :data="temp.errorIp">
-                  <template #renderItem="{ item }">
-                    <n-list-item>
-                      {{ item.key }} <n-tag>{{ item.obj }}{{ $t('i18n_7229ecc631') }}</n-tag>
-                      <n-tag>{{ $t('i18n_8f40b41e89') }}{{ formatDuration(item.ttl, '') }}</n-tag>
-                    </n-list-item>
-                  </template>
+                <n-list size="small" bordered>
+                  <n-list-item v-for="(item, index) in temp.errorIp" :key="index">
+                    {{ item.key }} <n-tag>{{ item.obj }}{{ $t('i18n_7229ecc631') }}</n-tag>
+                    <n-tag>{{ $t('i18n_8f40b41e89') }}{{ formatDuration(item.ttl, '') }}</n-tag>
+                  </n-list-item>
                 </n-list>
               </n-popover>
               <n-button

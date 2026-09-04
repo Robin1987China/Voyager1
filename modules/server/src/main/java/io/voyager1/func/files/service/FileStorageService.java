@@ -216,7 +216,7 @@ public class FileStorageService extends JpaGlobalOrWorkspaceService<FileStorageM
         fileStorageModel.setStatus(0);
         fileStorageModel.setSize(progressSize);
 
-        fileStorageModel.setProgressDesc(String.format("当前进度：{}, 文件总大小：{}，已经下载：{}", desc, FileUtil.readableFileSize(total), fileSize));
+        fileStorageModel.setProgressDesc(String.format("当前进度：%s, 文件总大小：%s，已经下载：%s", desc, FileUtil.readableFileSize(total), fileSize));
         this.updateById(fileStorageModel);
     }
 

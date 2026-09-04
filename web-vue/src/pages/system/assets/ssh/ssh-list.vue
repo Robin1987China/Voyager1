@@ -381,7 +381,7 @@
             <!--				</n-form-item>-->
             <!-- 修改时可以不填写 -->
             <n-form-item
-              :name="`${temp.type === 'add' && temp.connectType === 'PASS' ? 'password' : 'password-update'}`"
+              :path="`${temp.type === 'add' && temp.connectType === 'PASS' ? 'password' : 'password-update'}`"
             >
               <template #label>
                 <n-tooltip>
@@ -543,9 +543,8 @@
               type="info"
               show-icon
             />
-            <n-list bordered :data="workspaceSshList">
-              <template #renderItem="{ item }">
-                <n-list-item style="display: block">
+            <n-list bordered>
+<n-list-item v-for="(item, index) in workspaceSshList" :key="index" style="display: block">
                   <n-grid>
                     <n-grid-item :span="10">SSH{{ $t('i18n_5b47861521') }}{{ item.name }}</n-grid-item>
                     <n-grid-item :span="10"
@@ -561,8 +560,7 @@
                     </n-grid-item>
                   </n-grid>
                 </n-list-item>
-              </template>
-            </n-list>
+</n-list>
           </n-space>
         </CustomModal>
         <CustomModal
@@ -951,7 +949,7 @@ export default {
       }
       this.editSshVisible = true
       // @author jzy 08-04
-      this.$refs['editSshForm'] && this.$refs['editSshForm'].resetFields()
+      this.$refs['editSshForm'] && this.$refs['editSshForm'].restoreValidation()
     },
     // 修改
     handleEdit(record) {
@@ -966,7 +964,7 @@ export default {
       }
       this.editSshVisible = true
       // @author jzy 08-04
-      this.$refs['editSshForm'] && this.$refs['editSshForm'].resetFields()
+      this.$refs['editSshForm'] && this.$refs['editSshForm'].restoreValidation()
       this.loadGroupList()
     },
     // 提交 SSH 数据
@@ -989,7 +987,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 分页、排序、筛选变化时触发
     changePage(pagination, filters, sorter) {
@@ -1086,7 +1084,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除工作空间的数据
     handleDeleteWorkspaceItem(record) {

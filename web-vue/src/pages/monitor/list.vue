@@ -1,7 +1,9 @@
 <template>
   <div>
-    <!-- 数据表格 -->
-    <CustomTable
+    <n-tabs v-model:value="activeTab" type="line" animated>
+      <n-tab-pane name="list" tab="监控列表">
+        <!-- 数据表格 -->
+        <CustomTable
       is-show-tools
       default-auto-refresh
       :auto-refresh-time="30"
@@ -83,7 +85,7 @@
         <template v-else-if="column.dataIndex === 'status'">
           <n-switch
             size="small"
-            :checked="text"
+            :value="text"
             disabled
             :checked-label="$t('i18n_cc42dd3170')"
             :unchecked-label="$t('i18n_b15d91274e')"
@@ -92,7 +94,7 @@
         <template v-else-if="column.dataIndex === 'autoRestart'">
           <n-switch
             size="small"
-            :checked="text"
+            :value="text"
             disabled
             :checked-label="$t('i18n_0a60ac8f02')"
             :unchecked-label="$t('i18n_c9744f45e7')"
@@ -101,7 +103,7 @@
         <template v-else-if="column.dataIndex === 'alarm'">
           <n-switch
             size="small"
-            :checked="text"
+            :value="text"
             disabled
             :checked-label="$t('i18n_11957d12e4')"
             :unchecked-label="$t('i18n_bb667fdb2a')"
@@ -118,6 +120,11 @@
         </template>
       </template>
     </CustomTable>
+      </n-tab-pane>
+      <n-tab-pane name="log" tab="监控日志">
+        <monitor-log />
+      </n-tab-pane>
+    </n-tabs>
     <!-- 编辑区 -->
     <CustomModal
       v-if="editMonitorVisible"
@@ -313,9 +320,12 @@ import { getNodeListAll, getProjectListAll } from '@/api/node'
 import { CHANGE_PAGE, COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY, itemGroupBy, parseTime } from '@/utils/const'
 import { CRON_DATA_SOURCE } from '@/utils/const-i18n'
 import { supportLang } from '@/i18n'
+import MonitorLog from './log'
 export default {
+  components: { MonitorLog },
   data() {
     return {
+      activeTab: 'list',
       loading: false,
       listQuery: Object.assign({}, PAGE_DEFAULT_LIST_QUERY),
       CRON_DATA_SOURCE,
@@ -560,7 +570,7 @@ export default {
               $notification.success({
                 message: res.msg
               })
-              this.$refs['editMonitorForm'].resetFields()
+              this.$refs['editMonitorForm'].restoreValidation()
               this.editMonitorVisible = false
               this.loadData()
             }
@@ -568,7 +578,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除
     handleDelete(record) {

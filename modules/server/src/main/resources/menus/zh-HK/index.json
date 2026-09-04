@@ -60,10 +60,6 @@
         "title": "構建列表"
       },
       {
-        "id": "buildHistory",
-        "title": "構建歷史"
-      },
-      {
         "id": "versionList",
         "title": "版本管理"
       },
@@ -84,31 +80,19 @@
     "childs": [
       {
         "id": "sshList",
-        "title": "SSH列表"
+        "title": "SSH 會話"
       },
       {
         "id": "commandList",
         "title": "命令管理"
       },
       {
-        "id": "commandLogList",
-        "title": "命令執行記錄"
-      },
-      {
-        "id": "scriptAllList",
-        "title": "節點腳本列表"
-      },
-      {
         "id": "serverScriptList",
-        "title": "腳本列表"
-      },
-      {
-        "id": "serverScriptLogList",
-        "title": "腳本執行記錄"
+        "title": "腳本"
       },
       {
         "id": "configWorkspaceEnv",
-        "title": "環境變量"
+        "title": "工作空間變量"
       }
     ]
   },
@@ -120,10 +104,6 @@
       {
         "id": "outgivingList",
         "title": "分發列表"
-      },
-      {
-        "id": "outgivingLog",
-        "title": "分發日誌"
       },
       {
         "id": "outgivingWhitelistDirectory",
@@ -144,10 +124,6 @@
       {
         "id": "monitorList",
         "title": "監控列表"
-      },
-      {
-        "id": "monitorLog",
-        "title": "監控日誌"
       },
       {
         "id": "userOptLog",

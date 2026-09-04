@@ -92,7 +92,7 @@ public class MachineNodeController extends BaseGroupNameController {
     public ApiResult<List<MachineNodeModel>> search(String name, String appendIds, int limit) {
         Entity entity = new Entity();
         if ((name != null && !name.isEmpty())) {
-            entity.set("name", String.format(" like '%%s%'", name));
+            entity.set("name", "like %" + name + "%");
         }
         limit = Math.max(limit, 1);
         List<String> appendIdList = io.voyager1.util.ConvertUtil.splitTrim(appendIds, ",");

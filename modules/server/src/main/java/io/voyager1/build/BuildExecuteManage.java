@@ -175,7 +175,7 @@ public class BuildExecuteManage implements Runnable {
         int queueSize = threadPoolExecutor.getQueue().size();
         int limitPoolSize = threadPoolExecutor.getPoolSize();
         int corePoolSize = threadPoolExecutor.getCorePoolSize();
-        String format = String.format("当前构建中任务数：{}, 队列中任务数：{} 构建任务等待超时或者超出最大等待数量, 当前运行中的任务数：{}/{}, 取消执行当前构建", BUILD_MANAGE_MAP.size(), queueSize, limitPoolSize, corePoolSize);
+        String format = String.format("当前构建中任务数：%s, 队列中任务数：%s 构建任务等待超时或者超出最大等待数量, 当前运行中的任务数：%s/%s, 取消执行当前构建", BUILD_MANAGE_MAP.size(), queueSize, limitPoolSize, corePoolSize);
         logRecorder.system(format);
         this.cancelTask(format);
     }

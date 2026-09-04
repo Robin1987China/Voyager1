@@ -315,7 +315,7 @@ export default {
     handleEdit(record) {
       this.temp = record
       this.editVisible = true
-      this.$refs['editForm']?.resetFields()
+      this.$refs['editForm']?.restoreValidation()
     },
     // 服务
     handleConsole(record, type) {
@@ -344,7 +344,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
 
     // 删除

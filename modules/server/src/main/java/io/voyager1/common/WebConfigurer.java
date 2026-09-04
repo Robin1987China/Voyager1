@@ -32,6 +32,7 @@ import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerF
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.http.CacheControl;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -66,10 +67,12 @@ public class WebConfigurer implements WebMvcConfigurer, WebServerFactoryCustomiz
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        //        registry.addResourceHandler("/css/**").addResourceLocations("classpath:/dist/css/");
-        //        registry.addResourceHandler("/js/**").addResourceLocations("classpath:/dist/js/");
-        //        registry.addResourceHandler("/img/**").addResourceLocations("classpath:/dist/img/");
-        //        registry.addResourceHandler("/fonts/**").addResourceLocations("classpath:/dist/fonts/");
+        // SPA 静态资源：带内容 hash 的 JS/CSS 允许浏览器缓存（性能），
+        // 但设置合理时长并开启协商缓存，避免升级后旧 chunk 长期驻留。
+        registry.addResourceHandler("/assets/**")
+            .addResourceLocations("classpath:/dist/assets/")
+            .setCacheControl(CacheControl.maxAge(7, java.util.concurrent.TimeUnit.DAYS).cachePublic())
+            .setCachePeriod(7 * 24 * 3600);
     }
 
     @Override

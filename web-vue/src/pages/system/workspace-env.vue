@@ -1,5 +1,42 @@
 <template>
   <div>
+    <!-- 搜索区（Naive n-data-table 无 #title 插槽，移到表格外） -->
+    <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+      <n-space>
+        <n-input
+          v-model:value="envVarListQuery['%name%']"
+          :placeholder="$t('i18n_d7ec2d3fea')"
+          clearable
+          class="search-input-item"
+          @press-enter="loadDataEnvVar"
+        />
+        <n-input
+          v-model:value="envVarListQuery['%value%']"
+          :placeholder="$t('i18n_fe7509e0ed')"
+          clearable
+          class="search-input-item"
+          @press-enter="loadDataEnvVar"
+        />
+        <n-input
+          v-model:value="envVarListQuery['%description%']"
+          :placeholder="$t('i18n_3bdd08adab')"
+          clearable
+          class="search-input-item"
+          @press-enter="loadDataEnvVar"
+        />
+        <n-button type="primary" @click="loadDataEnvVar">{{ $t('i18n_e5f71fc31e') }}</n-button>
+        <n-button type="primary" @click="addEnvVar">{{ $t('i18n_66ab5e9f24') }}</n-button>
+        <n-tooltip>
+          <template #trigger>
+            <QuestionCircleOutlined />
+          </template>
+
+          <div>{{ $t('i18n_969098605e') }}</div>
+          <div>{{ $t('i18n_a34b91cdd7') }}</div>
+          <div>{{ $t('i18n_102dbe1e39') }}</div>
+        </n-tooltip>
+      </n-space>
+    </n-card>
     <!-- 数据表格 -->
     <n-data-table
       :data="envVarList"
@@ -9,49 +46,10 @@
       :pagination="envVarPagination"
       bordered
       :row-key="(row) => row.id"
-      :scroll="{
-        x: 'max-content'
-      }"
       @change="changeListeEnvVar"
     >
-      <template #title>
-        <n-space>
-          <n-input
-            v-model:value="envVarListQuery['%name%']"
-            :placeholder="$t('i18n_d7ec2d3fea')"
-            clearable
-            class="search-input-item"
-            @press-enter="loadDataEnvVar"
-          />
-          <n-input
-            v-model:value="envVarListQuery['%value%']"
-            :placeholder="$t('i18n_fe7509e0ed')"
-            clearable
-            class="search-input-item"
-            @press-enter="loadDataEnvVar"
-          />
-          <n-input
-            v-model:value="envVarListQuery['%description%']"
-            :placeholder="$t('i18n_3bdd08adab')"
-            clearable
-            class="search-input-item"
-            @press-enter="loadDataEnvVar"
-          />
-          <n-button type="primary" @click="loadDataEnvVar">{{ $t('i18n_e5f71fc31e') }}</n-button>
-          <n-button type="primary" @click="addEnvVar">{{ $t('i18n_66ab5e9f24') }}</n-button>
-          <n-tooltip>
-            <template #trigger>
-              <QuestionCircleOutlined />
-            </template>
-
-            <div>{{ $t('i18n_969098605e') }}</div>
-            <div>{{ $t('i18n_a34b91cdd7') }}</div>
-            <div>{{ $t('i18n_102dbe1e39') }}</div>
-          </n-tooltip>
-        </n-space>
-      </template>
       <template #bodyCell="{ column, text, record }">
-        <template v-if="column.dataIndex === 'value'">
+        <template v-if="column.key === 'value'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -77,11 +75,11 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'workspaceId'">
+        <template v-else-if="column.key === 'workspaceId'">
           <span>{{ text === 'GLOBAL' ? $t('i18n_2be75b1044') : $t('i18n_691b11e443') }}</span>
         </template>
 
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-button size="small" type="primary" @click="handleEnvEdit(record)">{{ $t('i18n_95b351c862') }}</n-button>
             <n-button size="small" type="primary" :disabled="record.privacy === 1" @click="handleTrigger(record)">{{
@@ -135,7 +133,7 @@
             </n-tooltip>
           </template>
           <n-switch
-            :checked="envTemp.privacy === 1"
+            :value="envTemp.privacy === 1"
             :disabled="envTemp.id !== undefined"
             :checked-label="$t('i18n_6d802636ab')"
             :unchecked-label="$t('i18n_a5f84fd99c')"
@@ -359,7 +357,7 @@ export default {
       }
 
       this.editEnvVisible = true
-      this.$refs['editEnvForm'] && this.$refs['editEnvForm'].resetFields()
+      this.$refs['editEnvForm'] && this.$refs['editEnvForm'].restoreValidation()
       this.getAllNodeList(this.envTemp.workspaceId)
     },
     handleEnvEdit(record) {
@@ -383,7 +381,7 @@ export default {
               $notification.success({
                 message: res.msg
               })
-              this.$refs['editEnvForm'].resetFields()
+              this.$refs['editEnvForm'].restoreValidation()
               this.editEnvVisible = false
               this.loadDataEnvVar()
             }
@@ -391,7 +389,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     //
     handleEnvDelete(record) {

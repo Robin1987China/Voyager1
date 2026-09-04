@@ -15,19 +15,8 @@
       <n-tabs v-model:value="tabKey" tab-position="left">
         <n-tab-pane name="1" :tab="$t('i18n_3fea7ca76c')">
           <!-- 嵌套表格 -->
-          <n-data-table
-            :loading="childLoading"
-            :columns="childColumns"
-            size="medium"
-            :bordered="true"
-            :data="list"
-            :pagination="false"
-            :row-key="(row) => row.id_no"
-            :scroll="{
-              x: 'max-content'
-            }"
-          >
-            <template #title>
+                    <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
               <n-space>
                 <div>
                   {{ $t('i18n_e703c7367c') }}
@@ -52,9 +41,20 @@
                   </template>
                 </n-statistic>
               </n-space>
-            </template>
+            
+          </n-card>
+<n-data-table
+            :loading="childLoading"
+            :columns="childColumns"
+            size="medium"
+            :bordered="true"
+            :data="list"
+            :pagination="false"
+            :row-key="(row) => row.id_no"
+            >
+            
             <template #bodyCell="{ column, text, record }">
-              <template v-if="column.dataIndex === 'nodeId'">
+              <template v-if="column.key === 'nodeId'">
                 <n-tooltip placement="topLeft">
                   <template #trigger>
                     <span class="tw">
@@ -69,7 +69,7 @@
                   text
                 </n-tooltip>
               </template>
-              <template v-else-if="column.dataIndex === 'projectName'">
+              <template v-else-if="column.key === 'projectName'">
                 <n-tooltip placement="top-start">
                   <template #trigger>
                     <span class="tw">
@@ -87,7 +87,7 @@
                   {{ text }}
                 </n-tooltip>
               </template>
-              <template v-else-if="column.dataIndex === 'outGivingStatus'">
+              <template v-else-if="column.key === 'outGivingStatus'">
                 <n-tag v-if="text === 2" color="green">{{ dispatchStatusMap[text] || $t('i18n_1622dc9b6b') }}</n-tag>
                 <n-tag v-else-if="text === 1 || text === 0 || text === 5" color="orange">{{
                   dispatchStatusMap[text] || $t('i18n_1622dc9b6b')
@@ -97,7 +97,7 @@
                 }}</n-tag>
                 <n-tag v-else>{{ dispatchStatusMap[text] || $t('i18n_1622dc9b6b') }}</n-tag>
               </template>
-              <template v-else-if="column.dataIndex === 'outGivingResultMsg'">
+              <template v-else-if="column.key === 'outGivingResultMsg'">
                 <n-tooltip placement="topLeft">
                   <template #trigger>
                     <span class="tw">
@@ -113,7 +113,7 @@
                   readJsonStrField(record.outGivingResult, 'msg')
                 </n-tooltip>
               </template>
-              <template v-else-if="column.dataIndex === 'outGivingResultTime'">
+              <template v-else-if="column.key === 'outGivingResultTime'">
                 <n-tooltip placement="topLeft">
                   <template #trigger>
                     <span class="tw">
@@ -125,7 +125,7 @@
                   readJsonStrField(record.outGivingResult, 'upload_duration')
                 </n-tooltip>
               </template>
-              <template v-else-if="column.dataIndex === 'outGivingResultSize'">
+              <template v-else-if="column.key === 'outGivingResultSize'">
                 <n-tooltip placement="topLeft">
                   <template #trigger>
                     {{ readJsonStrField(record.outGivingResult, 'upload_file_size') }}
@@ -133,7 +133,7 @@
                   readJsonStrField(record.outGivingResult, 'upload_file_size')
                 </n-tooltip>
               </template>
-              <template v-else-if="column.dataIndex === 'outGivingResultMsgData'">
+              <template v-else-if="column.key === 'outGivingResultMsgData'">
                 <n-tooltip placement="top-start">
                   <template #trigger>
                     <template v-if="record.fileSize">
@@ -145,7 +145,7 @@
                 </n-tooltip>
               </template>
 
-              <template v-else-if="column.dataIndex === 'projectStatus'">
+              <template v-else-if="column.key === 'projectStatus'">
                 <n-tooltip v-if="record.errorMsg">
                   <template #trigger>
                     <WarningOutlined />
@@ -154,7 +154,7 @@
                 </n-tooltip>
                 <n-switch
                   v-else
-                  :checked="text"
+                  :value="text"
                   :disabled="true"
                   size="small"
                   :checked-label="$t('i18n_d679aea3aa')"
@@ -162,7 +162,7 @@
                 />
               </template>
 
-              <template v-else-if="column.dataIndex === 'projectPid'">
+              <template v-else-if="column.key === 'projectPid'">
                 <n-tooltip placement="topLeft">
                   <template #trigger>
                     <span class="tw">
@@ -176,7 +176,7 @@
                 </n-tooltip>
               </template>
 
-              <template v-else-if="column.dataIndex === 'child-operation'">
+              <template v-else-if="column.key === 'child-operation'">
                 <n-space>
                   <n-button size="small" :disabled="!record.projectName" type="primary" @click="handleFile(record)">{{
                     $t('i18n_2a0c4740f1')
@@ -209,7 +209,7 @@
                       <n-switch
                         :checked-label="$t('i18n_7854b52a88')"
                         :unchecked-label="$t('i18n_710ad08b11')"
-                        :checked="element.disabled ? false : true"
+                        :value="element.disabled ? false : true"
                         @change="
                           (checked) => {
                             list = list.map((item2) => {

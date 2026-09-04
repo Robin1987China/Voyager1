@@ -119,7 +119,7 @@
             <template #trigger>
               <span class="tw">
                 <span class="tw">
-                  <span>{{ text || item.userId }}</span>
+                  <span>{{ text || record.userId }}</span>
                 </span>
               </span>
             </template>
@@ -155,20 +155,14 @@
       :title="$t('i18n_3032257aa3')"
       :footer="null"
     >
-      <n-list item-layout="horizontal" :data="detailData">
-        <template #renderItem="{ item }">
-          <n-list-item>
-            <n-list-item>
-              <template #title>
-                <h4>{{ item.title }}</h4>
-              </template>
-              <template #description>
-                <div v-if="item.description">{{ item.description }}</div>
-                <pre v-if="item.json" style="overflow: scroll">{{ item.value }}</pre>
-              </template>
-            </n-list-item>
-          </n-list-item>
-        </template>
+      <n-list>
+        <n-list-item v-for="(item, index) in detailData" :key="index">
+          <div style="width: 100%">
+            <h4 style="margin: 4px 0">{{ item.title }}</h4>
+            <div v-if="item.description" style="color: rgba(0, 0, 0, 0.6)">{{ item.description }}</div>
+            <pre v-if="item.json" style="overflow: scroll">{{ item.value }}</pre>
+          </div>
+        </n-list-item>
       </n-list>
     </CustomModal>
   </div>

@@ -1,20 +1,8 @@
 <template>
   <div class="">
     <!-- 表格 -->
-    <n-data-table
-      size="medium"
-      :columns="columns"
-      :data="list"
-      bordered
-      :row-key="(row) => row.id"
-      :pagination="pagination"
-      :scroll="{
-        x: 'max-content'
-      }"
-      @update:page="(page) => changePage({ ...pagination, current: page })"
-      @update:page-size="(pageSize) => changePage({ ...pagination, current: 1, pageSize })"
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space>
           <n-input
             v-model:value="listQuery['%name%']"
@@ -49,9 +37,21 @@
           <n-button type="primary" @click="handleSqlUpload">{{ $t('i18n_90c0458a4c') }}</n-button>
           <n-button type="primary" @click="handleTrigger()">{{ $t('i18n_4696724ed3') }}</n-button>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      size="medium"
+      :columns="columns"
+      :data="list"
+      bordered
+      :row-key="(row) => row.id"
+      :pagination="pagination"
+      @update:page="(page) => changePage({ ...pagination, current: page })"
+      @update:page-size="(pageSize) => changePage({ ...pagination, current: 1, pageSize })"
+    >
+      
       <template #bodyCell="{ column, text, record }">
-        <template v-if="column.dataIndex === 'name'">
+        <template v-if="column.key === 'name'">
           <n-tooltip>
             <template #trigger>
               <span class="tw">
@@ -63,7 +63,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'backupType'">
+        <template v-else-if="column.key === 'backupType'">
           <n-tooltip>
             <template #trigger>
               <span class="tw">
@@ -75,7 +75,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'baleTimeStamp'">
+        <template v-else-if="column.key === 'baleTimeStamp'">
           <n-tooltip>
             <template #trigger>
               {{ parseTime(text) }}
@@ -83,7 +83,7 @@
             `${parseTime(text)}`
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'status'">
+        <template v-else-if="column.key === 'status'">
           <n-tooltip v-if="record.fileExist">
             <template #trigger>
               <span class="tw">
@@ -105,7 +105,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'fileSize'">
+        <template v-else-if="column.key === 'fileSize'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -116,7 +116,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-button
               size="small"
@@ -442,7 +442,7 @@ export default {
               $notification.success({
                 message: res.msg
               })
-              this.$refs['editBackupForm'].resetFields()
+              this.$refs['editBackupForm'].restoreValidation()
               this.createBackupVisible = false
               this.loadData()
             }
@@ -450,7 +450,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 下载
     handleDownload(record) {

@@ -1,6 +1,6 @@
 import { GlobalWindow } from '@/interface/common'
 import { createDiscreteApi, darkTheme, lightTheme } from 'naive-ui'
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useUserStore } from '@/stores/user'
 import { useGuideStore } from '@/stores/guide'
@@ -64,15 +64,38 @@ export const $notification = {
 }
 
 // Ant Modal.confirm 字段 -> Naive dialog 字段
+// Ant 语义：onOk 返回 Promise 时确认按钮显示 loading，resolve 后才关闭；返回 false 时不关闭。
+// Naive 的 onPositiveClick 支持返回 Promise（resolve 非 false 即关闭），但不会自动 loading，
+// 这里用 reactive 的 loading 标志补齐 Ant 的 loading 语义。
 const adaptDialog = (props: any) => {
   const { onOk, onCancel, okText, cancelText, okButtonProps, cancelButtonProps, zIndex, width, ...rest } = props || {}
+  const loadingState = reactive({ loading: false })
   return {
     ...rest,
     positiveText: okText,
     negativeText: cancelText,
     positiveButtonProps: okButtonProps,
     negativeButtonProps: cancelButtonProps,
-    onPositiveClick: onOk,
+    get loading() {
+      return loadingState.loading
+    },
+    onPositiveClick: (e: MouseEvent) => {
+      if (typeof onOk !== 'function') {
+        return undefined
+      }
+      const result = onOk(e)
+      if (result && typeof result.then === 'function') {
+        loadingState.loading = true
+        return result
+          .then((value: any) => {
+            return value
+          })
+          .finally(() => {
+            loadingState.loading = false
+          })
+      }
+      return result
+    },
     onNegativeClick: onCancel
   }
 }

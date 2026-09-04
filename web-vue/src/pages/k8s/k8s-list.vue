@@ -63,12 +63,7 @@
       <!-- 右栏：资源浏览 -->
       <n-grid-item :span="18">
         <n-card size="small">
-          <template #title>
-            <n-space wrap>
-              <span>资源浏览</span>
-              <n-tag v-if="current" color="blue">{{ current.name }}</n-tag>
-            </n-space>
-          </template>
+          
           <template #extra>
             <n-space>
               <n-select
@@ -90,14 +85,22 @@
             </n-space>
           </template>
 
-          <n-data-table
+                    <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
+            <n-space wrap>
+              <span>资源浏览</span>
+              <n-tag v-if="current" color="blue">{{ current.name }}</n-tag>
+            </n-space>
+          
+          </n-card>
+<n-data-table
             :data="resources"
             :columns="columns"
             :loading="loading"
             :pagination="false"
             size="small"
             :row-key="(row) => row.name"
-            :scroll="{ x: 'max-content' }"
+            
           />
           <n-empty
             v-if="current && !resources.length && !loading"

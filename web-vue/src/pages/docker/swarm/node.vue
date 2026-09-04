@@ -1,17 +1,7 @@
 <template>
   <div>
-    <n-data-table
-      :data="list"
-      size="medium"
-      :columns="columns"
-      bordered
-      :row-key="(row) => row.id"
-      :pagination="false"
-      :scroll="{
-        x: 'max-content'
-      }"
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space wrap class="search-box">
           <n-input
             v-model:value="listQuery['nodeId']"
@@ -44,7 +34,17 @@
             </template>
           </n-statistic>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      :data="list"
+      size="medium"
+      :columns="columns"
+      bordered
+      :row-key="(row) => row.id"
+      :pagination="false"
+      >
+      
       <template #bodyCell="{ column, text, record }">
         <template v-if="column.tooltip">
           <n-tooltip placement="topLeft">
@@ -59,7 +59,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'hostname'">
+        <template v-else-if="column.key === 'hostname'">
           <n-popover placement="top-start">
             <template #trigger>
               <span class="tw">
@@ -94,7 +94,7 @@
           </n-popover>
         </template>
 
-        <template v-else-if="column.dataIndex === 'state'">
+        <template v-else-if="column.key === 'state'">
           <n-tooltip placement="top-start">
             <template #trigger>
               <span class="tw">
@@ -120,7 +120,7 @@
           </n-tooltip>
         </template>
         <!-- 角色显示 -->
-        <template v-else-if="column.dataIndex === 'role'">
+        <template v-else-if="column.key === 'role'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -136,7 +136,7 @@
             record.managerStatus.reachability : '' }`
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'address'">
+        <template v-else-if="column.key === 'address'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               {{ record.status && record.status.address }}
@@ -145,7 +145,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'os'">
+        <template v-else-if="column.key === 'os'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -163,7 +163,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'updatedAt'">
+        <template v-else-if="column.key === 'updatedAt'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -178,7 +178,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <template v-if="record.managerStatus && record.managerStatus.leader">
               <n-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_8347a927c0') }}</n-button>
@@ -379,7 +379,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     //
     handleLeava(record) {

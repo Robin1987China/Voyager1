@@ -26,60 +26,7 @@
       "
       @refresh="loadData"
     >
-      <template #title>
-        <n-space wrap class="search-box">
-          <n-input
-            v-model:value="listQuery['%name%']"
-            class="search-input-item"
-            :placeholder="$t('i18n_f967131d9d')"
-            @press-enter="loadData"
-          />
-          <n-input
-            v-model:value="listQuery['%gitUrl%']"
-            class="search-input-item"
-            :placeholder="$t('i18n_e4bea943de')"
-            @press-enter="loadData"
-          />
-          <n-select
-            v-model:value="listQuery.repoType"
-            clearable
-            :placeholder="$t('i18n_4ce606413e')"
-            class="search-input-item"
-            :options="[
-              { label: 'GIT', value: '0' },
-              { label: 'SVN', value: '1' }
-            ]"
-          />
-          <n-select
-            v-model:value="listQuery.group"
-            filterable
-            clearable
-            :placeholder="$t('i18n_829abe5a8d')"
-            class="search-input-item"
-            :options="groupList"
-          />
-
-          <n-tooltip>
-            <template #trigger>
-              <span class="tw">
-                <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
-              </span>
-            </template>
-            $t('i18n_4838a3bd20')
-          </n-tooltip>
-          <n-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</n-button>
-          <n-tooltip>
-            <template #trigger>
-              <span class="tw">
-                <n-button type="primary" @click="handleAddGitee"
-                  ><QuestionCircleOutlined />{{ $t('i18n_e354969500') }}</n-button
-                >
-              </span>
-            </template>
-            {{ $t('i18n_77c262950c') }}
-          </n-tooltip>
-        </n-space>
-      </template>
+      
       <template #toolPrefix>
         <n-button type="primary" size="small" @click="handlerExportData"
           ><DownloadOutlined />{{ $t('i18n_55405ea6ff') }}</n-button
@@ -454,7 +401,63 @@
           <n-input v-model:value="giteeImportForm.condition" :placeholder="$t('i18n_e72f2b8806')" />
         </n-form-item>
       </n-form>
-      <n-data-table
+            <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
+        <n-space wrap class="search-box">
+          <n-input
+            v-model:value="listQuery['%name%']"
+            class="search-input-item"
+            :placeholder="$t('i18n_f967131d9d')"
+            @press-enter="loadData"
+          />
+          <n-input
+            v-model:value="listQuery['%gitUrl%']"
+            class="search-input-item"
+            :placeholder="$t('i18n_e4bea943de')"
+            @press-enter="loadData"
+          />
+          <n-select
+            v-model:value="listQuery.repoType"
+            clearable
+            :placeholder="$t('i18n_4ce606413e')"
+            class="search-input-item"
+            :options="[
+              { label: 'GIT', value: '0' },
+              { label: 'SVN', value: '1' }
+            ]"
+          />
+          <n-select
+            v-model:value="listQuery.group"
+            filterable
+            clearable
+            :placeholder="$t('i18n_829abe5a8d')"
+            class="search-input-item"
+            :options="groupList"
+          />
+
+          <n-tooltip>
+            <template #trigger>
+              <span class="tw">
+                <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
+              </span>
+            </template>
+            $t('i18n_4838a3bd20')
+          </n-tooltip>
+          <n-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</n-button>
+          <n-tooltip>
+            <template #trigger>
+              <span class="tw">
+                <n-button type="primary" @click="handleAddGitee"
+                  ><QuestionCircleOutlined />{{ $t('i18n_e354969500') }}</n-button
+                >
+              </span>
+            </template>
+            {{ $t('i18n_77c262950c') }}
+          </n-tooltip>
+        </n-space>
+      
+      </n-card>
+<n-data-table
         :loading="importLoading"
         size="medium"
         :columns="reposColumns"
@@ -465,10 +468,10 @@
         @change="reposChange"
       >
         <template #bodyCell="{ column, text, record }">
-          <template v-if="column.dataIndex === 'private'">
-            <n-switch size="small" :disabled="true" :checked="record.private" />
+          <template v-if="column.key === 'private'">
+            <n-switch size="small" :disabled="true" :value="record.private" />
           </template>
-          <template v-else-if="column.dataIndex === 'name'">
+          <template v-else-if="column.key === 'name'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -480,7 +483,7 @@
               text
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'full_name'">
+          <template v-else-if="column.key === 'full_name'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -492,7 +495,7 @@
               text
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'url'">
+          <template v-else-if="column.key === 'url'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -504,7 +507,7 @@
               text
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'description'">
+          <template v-else-if="column.key === 'description'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -517,7 +520,7 @@
             </n-tooltip>
           </template>
 
-          <template v-else-if="column.dataIndex === 'operation'">
+          <template v-else-if="column.key === 'operation'">
             <n-button type="primary" size="small" :disabled="record.exists" @click="handleGiteeRepoAdd(record)">{{
               record.exists ? $t('i18n_cb951984f2') : $t('i18n_66ab5e9f24')
             }}</n-button>
@@ -932,7 +935,7 @@ export default {
           .finally(() => {
             this.importLoading = false
           })
-      })
+      }).catch(() => {})
     },
     reposChange(pagination) {
       this.giteeImportForm.page = pagination.current
@@ -990,14 +993,14 @@ export default {
               })
               this.editVisible = false
               this.loadData()
-              this.$refs['editForm'].resetFields()
+              this.$refs['editForm'].restoreValidation()
               this.loadGroupList()
             }
           })
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除
     handleDelete(record) {

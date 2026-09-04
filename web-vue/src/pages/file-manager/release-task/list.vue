@@ -402,7 +402,7 @@ export default {
       releaseFileRules: {
         name: [{ required: true, message: this.$t('i18n_89d18c88a3'), trigger: 'blur' }],
 
-        taskDataIds: [{ required: true, message: this.$t('i18n_3e51d1bc9c'), trigger: 'blur' }]
+        taskDataIds: [{ required: true, type: 'array', message: this.$t('i18n_3e51d1bc9c'), trigger: ['blur', 'change'] }]
       },
       viewFileVisible: false,
       templateVisible: false
@@ -534,7 +534,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 取消
     handleCancelTask(record) {

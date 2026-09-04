@@ -1,19 +1,8 @@
 <template>
   <div>
     <!-- 数据表格 -->
-    <n-data-table
-      :data="list"
-      size="medium"
-      :columns="columns"
-      :pagination="pagination"
-      bordered
-      :row-key="(row) => row.id"
-      :scroll="{
-        x: 'max-content'
-      }"
-      @change="changePage"
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space wrap class="search-box">
           <n-input
             v-model:value="listQuery['%name%']"
@@ -32,7 +21,18 @@
           </n-tooltip>
           <n-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</n-button>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      :data="list"
+      size="medium"
+      :columns="columns"
+      :pagination="pagination"
+      bordered
+      :row-key="(row) => row.id"
+      @change="changePage"
+    >
+      
       <template #bodyCell="{ column, text, record }">
         <template v-if="column.tooltip">
           <n-tooltip placement="topLeft">
@@ -47,7 +47,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-button type="primary" size="small" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</n-button>
             <n-button type="primary" size="small" @click="handleLogRead(record)">{{ $t('i18n_607e7a4f37') }}</n-button>
@@ -322,7 +322,7 @@ export default {
               $notification.success({
                 message: res.msg
               })
-              this.$refs['editForm'].resetFields()
+              this.$refs['editForm'].restoreValidation()
               this.editVisible = false
               this.loadData()
             }
@@ -330,7 +330,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除
     handleDelete(record) {

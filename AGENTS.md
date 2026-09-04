@@ -73,8 +73,8 @@ node script/ui-regression.mjs --pwd <密码> [--baseline | --compare] [--base <u
 
 # 本地启动（JDK17 需 add-opens）
 export JAVA_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
-cd modules/server/target/server-0.0.1-release && ./bin/Server.sh start
-cd modules/agent/target/agent-0.0.1-release && ./bin/Agent.sh start
+cd modules/server/target/server-0.0.2-release && ./bin/Server.sh start
+cd modules/agent/target/agent-0.0.2-release && ./bin/Agent.sh start
 ```
 
 ## 关键约定（防回归，均有 OpenSpec 约束）

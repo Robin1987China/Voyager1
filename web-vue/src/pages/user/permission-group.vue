@@ -1,19 +1,8 @@
 <template>
   <div>
     <!-- 数据表格 -->
-    <n-data-table
-      :data="list"
-      size="medium"
-      :columns="columns"
-      :pagination="pagination"
-      bordered
-      :row-key="(row) => row.id"
-      :scroll="{
-        x: 'max-content'
-      }"
-      @change="changePage"
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space wrap class="search-box">
           <n-input
             v-model:value="listQuery['%name%']"
@@ -31,9 +20,20 @@
           </n-tooltip>
           <n-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</n-button>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      :data="list"
+      size="medium"
+      :columns="columns"
+      :pagination="pagination"
+      bordered
+      :row-key="(row) => row.id"
+      @change="changePage"
+    >
+      
       <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'operation'">
+        <template v-if="column.key === 'operation'">
           <n-space>
             <n-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</n-button>
             <n-button type="primary" danger size="small" @click="handleDelete(record)">{{
@@ -264,7 +264,6 @@ export default {
       editVisible: false,
       listQuery: Object.assign({}, PAGE_DEFAULT_LIST_QUERY),
       columns: [
-        { title: 'id', key: 'id', ellipsis: true },
         { title: this.$t('i18n_d7ec2d3fea'), key: 'name', ellipsis: true },
         { title: this.$t('i18n_3bdd08adab'), key: 'description', ellipsis: true },
 
@@ -374,7 +373,9 @@ export default {
 
       this.loadWorkSpaceListAll()
       this.editVisible = true
-      this.$refs['editForm'] && this.$refs['editForm'].resetFields()
+      this.$nextTick(() => {
+        this.$refs['editForm'] && this.$refs['editForm'].restoreValidation()
+      })
     },
     // 修改权限组
     handleEdit(record) {
@@ -445,15 +446,17 @@ export default {
               $notification.success({
                 message: res.msg
               })
-              this.$refs['editForm'].resetFields()
               this.editVisible = false
+              this.$nextTick(() => {
+                this.$refs['editForm'] && this.$refs['editForm'].restoreValidation()
+              })
               this.loadData()
             }
           })
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除
     handleDelete(record) {

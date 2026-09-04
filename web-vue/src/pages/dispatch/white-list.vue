@@ -11,7 +11,7 @@
       </n-alert>
       <!-- <n-alert title=",不支持软链" type="info" /> -->
 
-      <n-form ref="editForm" :model="temp" @finish="onSubmit">
+      <n-form ref="editForm" :model="temp" @submit.prevent="onSubmit">
         <n-form-item :label="$t('i18n_28e1eec677')" path="outGiving">
           <template #help>{{ $t('i18n_5b1f0fd370') }}</template>
           <n-input

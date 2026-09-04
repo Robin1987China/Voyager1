@@ -1,20 +1,8 @@
 <template>
   <div>
     <!-- 数据表格 -->
-    <n-data-table
-      :data="viewOperationLogList"
-      :loading="viewOperationLoading"
-      :columns="viewOperationLogColumns"
-      :pagination="viewOperationLogPagination"
-      bordered
-      :row-key="(row) => row.id"
-      size="medium"
-      :scroll="{
-        x: 'max-content'
-      }"
-      @change="changeListLog"
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space wrap class="search-box">
           <n-input
             v-model:value="viewOperationLogListQuery['userId']"
@@ -43,9 +31,21 @@
           />
           <n-button type="primary" @click="handleListLog">{{ $t('i18n_e5f71fc31e') }}</n-button>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      :data="viewOperationLogList"
+      :loading="viewOperationLoading"
+      :columns="viewOperationLogColumns"
+      :pagination="viewOperationLogPagination"
+      bordered
+      :row-key="(row) => row.id"
+      size="medium"
+      @change="changeListLog"
+    >
+      
       <template #bodyCell="{ column, text, record }">
-        <template v-if="column.dataIndex === 'commands'">
+        <template v-if="column.key === 'commands'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -69,7 +69,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-button size="small" type="primary" danger @click="handleDelete(record)">{{
               $t('i18n_2f4aaddde3')

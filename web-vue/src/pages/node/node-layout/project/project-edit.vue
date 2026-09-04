@@ -556,7 +556,7 @@ export default {
     initData() {
       this.loadAccesList()
       this.loadGroupList()
-      this.$refs['editProjectForm']?.resetFields()
+      this.$refs['editProjectForm']?.restoreValidation()
 
       if (this.projectId) {
         // 修改

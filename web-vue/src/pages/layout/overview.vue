@@ -48,10 +48,10 @@
               {{ $t('i18n_fb1f3b5125') }}
             </n-tooltip>
           </template>
-          <n-list :data="statNames">
-            <template #renderItem="{ item }">
-              <n-list-item> {{ item.name }}：{{ statData[item.field] || '-' }} </n-list-item>
-            </template>
+          <n-list>
+            <n-list-item v-for="item in statNames" :key="item.field">
+              {{ item.name }}：{{ statData[item.field] || '-' }}
+            </n-list-item>
           </n-list>
         </n-card>
       </n-grid-item>

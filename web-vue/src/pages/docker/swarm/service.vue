@@ -1,17 +1,7 @@
 <template>
   <div>
-    <n-data-table
-      :data="list"
-      size="medium"
-      :columns="columns"
-      bordered
-      :row-key="(row) => row.id"
-      :pagination="false"
-      :scroll="{
-        x: 'max-content'
-      }"
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space wrap class="search-box">
           <n-input
             v-model:value="listQuery['serviceId']"
@@ -34,7 +24,17 @@
             </template>
           </n-statistic>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      :data="list"
+      size="medium"
+      :columns="columns"
+      bordered
+      :row-key="(row) => row.id"
+      :pagination="false"
+      >
+      
 
       <template #bodyCell="{ column, text, record }">
         <template v-if="column.tooltip">
@@ -49,7 +49,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'id'">
+        <template v-else-if="column.key === 'id'">
           <n-tooltip placement="topLeft" @click="handleLog(record)">
             <template #trigger>
               <span class="tw">
@@ -63,7 +63,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'status'">
+        <template v-else-if="column.key === 'status'">
           <n-tooltip placement="top-start">
             <template #trigger>
               <span class="tw">
@@ -81,7 +81,7 @@
           </n-tooltip>
         </template>
         <!-- 角色显示 -->
-        <template v-else-if="column.dataIndex === 'role'">
+        <template v-else-if="column.key === 'role'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -96,7 +96,7 @@
             'REACHABLE' ? $t('i18n_88c5680d0d') + record.managerStatus.reachability : '' }`
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'address'">
+        <template v-else-if="column.key === 'address'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -109,7 +109,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'os'">
+        <template v-else-if="column.key === 'os'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -127,7 +127,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'updatedAt'">
+        <template v-else-if="column.key === 'updatedAt'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               {{ text }}
@@ -149,7 +149,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_8347a927c0') }}</n-button>
             <n-button size="small" type="primary" danger @click="handleDel(record)">{{
@@ -241,17 +241,17 @@
                           <n-grid-item :span="7">
                             <n-input
                               v-model:value="item.publishedPort"
-                              :addon-before="$t('i18n_c76cfefe72')"
                               :placeholder="$t('i18n_c76cfefe72')"
                             >
+                              <template #prefix>{{ $t('i18n_c76cfefe72') }}</template>
                             </n-input>
                           </n-grid-item>
                           <n-grid-item :span="8" :offset="1">
                             <n-input
                               v-model:value="item.targetPort"
-                              :addon-before="$t('i18n_22c799040a')"
                               :placeholder="$t('i18n_31691a647c', { slot1: $t('i18n_22c799040a') })"
                             >
+                              <template #prefix>{{ $t('i18n_22c799040a') }}</template>
                               <template #suffix>
                                 <n-select
                                   v-model:value="item.protocol"
@@ -310,16 +310,16 @@
                           <n-grid-item :span="7">
                             <n-input
                               v-model:value="item.source"
-                              :addon-before="$t('i18n_ad4b4a5b3b')"
+                              
                               :placeholder="$t('i18n_ec537c957a', { slot1: $t('i18n_ad4b4a5b3b') })"
-                            />
+                            ><template #prefix>{{ $t('i18n_ad4b4a5b3b') }}</template></n-input>
                           </n-grid-item>
                           <n-grid-item :span="8" :offset="1">
                             <n-input
                               v-model:value="item.target"
-                              :addon-before="$t('i18n_22c799040a')"
+                              
                               :placeholder="$t('i18n_368ffad051', { slot1: $t('i18n_22c799040a') })"
-                            />
+                            ><template #prefix>{{ $t('i18n_22c799040a') }}</template></n-input>
                           </n-grid-item>
                         </n-grid>
                       </n-input-group>
@@ -354,9 +354,9 @@
                     <n-grid-item :span="20">
                       <n-input
                         v-model:value="item.value"
-                        :addon-before="$t('i18n_bfed4943c5')"
+                        
                         :placeholder="$t('i18n_d65d977f1d')"
-                      />
+                      ><template #prefix>{{ $t('i18n_bfed4943c5') }}</template></n-input>
                     </n-grid-item>
 
                     <n-grid-item :span="2" :offset="1">
@@ -388,9 +388,9 @@
                     <n-grid-item :span="20">
                       <n-input
                         v-model:value="item.value"
-                        :addon-before="$t('i18n_579a6d0d92')"
+                        
                         :placeholder="$t('i18n_2a6a516f9d')"
-                      />
+                      ><template #prefix>{{ $t('i18n_579a6d0d92') }}</template></n-input>
                     </n-grid-item>
 
                     <n-grid-item :span="2" :offset="1">
@@ -421,16 +421,16 @@
                     <n-grid-item :span="10">
                       <n-input
                         v-model:value="item.name"
-                        :addon-before="$t('i18n_d7ec2d3fea')"
+                        
                         :placeholder="$t('i18n_7cb8d163bb')"
-                      />
+                      ><template #prefix>{{ $t('i18n_d7ec2d3fea') }}</template></n-input>
                     </n-grid-item>
                     <n-grid-item :span="10" :offset="1">
                       <n-input
                         v-model:value="item.value"
-                        :addon-before="$t('i18n_9a2ee7044f')"
+                        
                         :placeholder="$t('i18n_9a2ee7044f')"
-                      />
+                      ><template #prefix>{{ $t('i18n_9a2ee7044f') }}</template></n-input>
                     </n-grid-item>
                     <n-grid-item :span="2" :offset="1">
                       <n-space>
@@ -561,16 +561,16 @@
                     <n-grid-item :span="8">
                       <n-input
                         v-model:value="temp.resources.reservations.nanoCPUs"
-                        addon-before="CPUs"
+                        
                         :placeholder="$t('i18n_9e6b699597')"
-                      />
+                      ><template #prefix>CPUs</template></n-input>
                     </n-grid-item>
                     <n-grid-item :span="8" :offset="1">
                       <n-input
                         v-model:value="temp.resources.reservations.memoryBytes"
-                        addon-before="memory"
+                        
                         :placeholder="$t('i18n_18eb76c8a0')"
-                      />
+                      ><template #prefix>memory</template></n-input>
                     </n-grid-item>
                   </n-grid>
                 </n-form-item>
@@ -579,16 +579,16 @@
                     <n-grid-item :span="8">
                       <n-input
                         v-model:value="temp.resources.limits.nanoCPUs"
-                        addon-before="CPUs"
+                        
                         :placeholder="$t('i18n_9e6b699597')"
-                      />
+                      ><template #prefix>CPUs</template></n-input>
                     </n-grid-item>
                     <n-grid-item :span="8" :offset="1">
                       <n-input
                         v-model:value="temp.resources.limits.memoryBytes"
-                        addon-before="memory"
+                        
                         :placeholder="$t('i18n_18eb76c8a0')"
-                      />
+                      ><template #prefix>memory</template></n-input>
                     </n-grid-item>
                   </n-grid>
                 </n-form-item>
@@ -936,7 +936,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除
     handleDel(record) {

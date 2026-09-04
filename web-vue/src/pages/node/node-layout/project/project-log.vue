@@ -25,12 +25,9 @@
         :columns="columns"
         :pagination="false"
         bordered
-        :scroll="{
-          x: 'max-content'
-        }"
-      >
-        <template #bodyCell="{ column, text, record }">
-          <template v-if="column.dataIndex === 'filename'">
+        >
+        <template #bodyCell="{ column, text, row, record }">
+          <template v-if="column.key === 'filename'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -42,15 +39,15 @@
               text
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'fileSizeLong'">
+          <template v-else-if="column.key === 'fileSizeLong'">
             <n-tooltip placement="topLeft">
               <template #trigger>
-                {{ text ? renderSize(text) : item.fileSize }}
+                {{ text ? renderSize(text) : row.fileSize }}
               </template>
-              `${text ? renderSize(text) : item.fileSize}`
+              `${text ? renderSize(text) : row.fileSize}`
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'modifyTimeLong'">
+          <template v-else-if="column.key === 'modifyTimeLong'">
             <n-tooltip>
               <template #trigger>
                 <span class="tw">
@@ -62,7 +59,7 @@
               `${parseTime(record.modifyTimeLong)}}`
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'operation'">
+          <template v-else-if="column.key === 'operation'">
             <n-space>
               <n-button type="primary" @click="handleDownloadLogback(record)">{{ $t('i18n_f26ef91424') }}</n-button>
               <n-button type="primary" danger @click="handleDelete(record)">{{ $t('i18n_2f4aaddde3') }}</n-button>

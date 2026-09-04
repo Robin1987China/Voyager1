@@ -225,7 +225,7 @@
               <template #trigger>
                 <span class="tw">
                   <n-switch
-                    :checked="
+                    :value="
                       projectStatusMap[record.nodeId] &&
                       projectStatusMap[record.nodeId][record.projectId] &&
                       projectStatusMap[record.nodeId][record.projectId].pid > 0
@@ -407,23 +407,18 @@
       :footer="null"
       @cancel="batchClose"
     >
-      <n-list bordered :data="temp.data">
-        <template #renderItem="{ item }">
-          <n-list-item>
-            <n-list-item>
-              <!-- <template #description> :="item.whitelistDirectory" </template> -->
-              <template #title>
-                <a> {{ item.name }}</a>
-              </template>
-            </n-list-item>
+      <n-list bordered>
+        <n-list-item v-for="(item, index) in temp.data" :key="index">
+          <div>
+            <a> {{ item.name }}</a>
             <div>
               <n-tooltip>
                 <template #trigger>{{ item.cause || $t('i18n_dd4e55c39c') }} </template>
                 {{ `${item.cause || $t('i18n_dd4e55c39c')}` }}
               </n-tooltip>
             </div>
-          </n-list-item>
-        </template>
+          </div>
+        </n-list-item>
       </n-list>
     </CustomModal>
     <!-- 触发器 -->
@@ -891,9 +886,9 @@ export default {
             const nodeProjects = itemGroupBy(this.projList, 'nodeId')
             this.getRuningProjectInfo(nodeProjects)
 
-            // 重新计算倒计时
+            // 重新计算倒计时（无节点数据时表格未渲染，ref 可能为空，需判空）
             // this.countdownTime = Date.now() + this.refreshInterval * 1000
-            this.$refs.nodeProjectSearch.countDownChange()
+            this.$refs.nodeProjectSearch && this.$refs.nodeProjectSearch.countDownChange()
           }
         })
         .finally(() => {

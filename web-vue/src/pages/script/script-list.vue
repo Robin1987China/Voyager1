@@ -765,13 +765,13 @@ export default {
 
               this.editScriptVisible = false
               this.loadData()
-              this.$refs['editScriptForm'].resetFields()
+              this.$refs['editScriptForm'].restoreValidation()
             }
           })
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     handleDelete(record) {
       $confirm({

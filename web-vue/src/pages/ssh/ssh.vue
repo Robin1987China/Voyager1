@@ -632,7 +632,7 @@ export default {
 
       this.editSshVisible = true
       // @author jzy 08-04
-      this.$refs['editSshForm'] && this.$refs['editSshForm'].resetFields()
+      this.$refs['editSshForm'] && this.$refs['editSshForm'].restoreValidation()
     },
     // 提交 SSH 数据
     handleEditSshOk() {
@@ -646,7 +646,7 @@ export default {
               $notification.success({
                 message: res.msg
               })
-              //this.$refs['editSshForm'].resetFields();
+              //this.$refs['editSshForm'].restoreValidation();
               // this.fileList = [];
               this.editSshVisible = false
               this.loadData()
@@ -656,7 +656,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 进入终端
     handleTerminal(record, terminalFullscreen) {

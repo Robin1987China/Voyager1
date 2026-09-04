@@ -208,7 +208,7 @@ public class LoginControl extends BaseServerController implements InitializingBe
                     updateModel = userModel.errorLock(userConfig.getAlwaysLoginError());
                     this.ipError();
                     userLoginLogServer.fail(userModel, 2, request);
-                    return new ApiResult<>(400, String.format("该账户登录失败次数过多，已被锁定{}, 请不要再次尝试", msg));
+                    return new ApiResult<>(400, String.format("该账户登录失败次数过多，已被锁定%s, 请不要再次尝试", msg));
                 }
                 // 验证
                 if (userService.simpleLogin(loginName, userPwd) != null) {

@@ -1,6 +1,8 @@
 <template>
   <div>
-    <CustomTable
+    <n-tabs v-model:value="activeTab" type="line" animated>
+      <n-tab-pane name="list" tab="分发">
+        <CustomTable
       is-show-tools
       default-auto-refresh
       :auto-refresh-time="5"
@@ -162,7 +164,7 @@
                 :checked-label="$t('i18n_0a60ac8f02')"
                 :unchecked-label="$t('i18n_c9744f45e7')"
                 disabled
-                :checked="text"
+                :value="text"
               />
             </template>
           </n-tooltip>
@@ -242,6 +244,11 @@
         </template>
       </template>
     </CustomTable>
+      </n-tab-pane>
+      <n-tab-pane name="log" tab="分发日志">
+        <dispatch-log />
+      </n-tab-pane>
+    </n-tabs>
     <!-- 新增/编辑关联项目 -->
     <CustomModal
       v-if="linkDispatchVisible"
@@ -329,68 +336,58 @@
         </n-form-item>
 
         <n-form-item :label="$t('i18n_6a6c857285')" required>
-          <n-list
-            item-layout="horizontal"
-            :data="dispatchList"
-            :locale="{
-              emptyText: $t('i18n_cfd482e5ef')
-            }"
-            :row-key="
-              (item) => {
-                return item.nodeId + item.projectId + item.index
-              }
-            "
-          >
-            <template #renderItem="{ item, index }">
-              <n-list-item>
-                <n-space>
-                  <div>{{ $t('i18n_9b280a6d2d') }}</div>
-                  <n-select
-                    :placeholder="$t('i18n_f8a613d247')"
-                    :not-found-content="$t('i18n_8f8f88654f')"
-                    style="width: 140px"
-                    :value="item.nodeId ? item.nodeId : undefined"
-                    :disabled="
-                      item.nodeId || (nodeIdMap[item.nodeId] && nodeIdMap[item.nodeId].openStatus !== 1) ? true : false
-                    "
-                    :options="
-                      nodeProjectsList.map((nodeItemList) => ({
-                        label: nodeNameMap[nodeItemList.id],
-                        value: nodeItemList.id
-                      }))
-                    "
-                    @update:value="(nodeId) => handleNodeListChange(nodeId, index)"
-                  />
-                  <span>{{ $t('i18n_8198e4461a') }} </span>
-                  <n-select
-                    style="width: 300px"
-                    :placeholder="item.placeholder"
-                    :value="item.projectId ? item.projectId : undefined"
-                    :disabled="dispatchList[index].disabled"
-                    :options="
-                      (
-                        (nodeProjectsList.filter((nitem) => nitem.id == item.nodeId)[0] &&
-                          nodeProjectsList.filter((nitem) => nitem.id == item.nodeId)[0].projects) ||
-                        []
-                      ).map((project) => ({
-                        label: `${project.outGivingProject ? $t('i18n_8e2ed8ae0d') : ''} ${project.name}`,
-                        value: project.projectId,
-                        disabled:
-                          project.outGivingProject ||
-                          dispatchList.filter(
-                            (d, nowIndex) =>
-                              d.nodeId === project.nodeId && d.projectId === project.projectId && nowIndex !== index
-                          ).length > 0
-                      }))
-                    "
-                    @update:value="(projectId) => handleProjectChange(projectId, index)"
-                  />
-                  <n-button type="primary" danger size="small" @click="delDispachList(index)"
-                    ><DeleteOutlined />
-                  </n-button>
-                </n-space>
-              </n-list-item>
-            </template>
+          <n-list>
+            <n-list-item v-for="(item, index) in dispatchList" :key="item.nodeId + item.projectId + item.index">
+              <n-space>
+                <div>{{ $t('i18n_9b280a6d2d') }}</div>
+                <n-select
+                  :placeholder="$t('i18n_f8a613d247')"
+                  :not-found-content="$t('i18n_8f8f88654f')"
+                  style="width: 140px"
+                  :value="item.nodeId ? item.nodeId : undefined"
+                  :disabled="
+                    item.nodeId || (nodeIdMap[item.nodeId] && nodeIdMap[item.nodeId].openStatus !== 1) ? true : false
+                  "
+                  :options="
+                    nodeProjectsList.map((nodeItemList) => ({
+                      label: nodeNameMap[nodeItemList.id],
+                      value: nodeItemList.id
+                    }))
+                  "
+                  @update:value="(nodeId) => handleNodeListChange(nodeId, index)"
+                />
+                <span>{{ $t('i18n_8198e4461a') }} </span>
+                <n-select
+                  style="width: 300px"
+                  :placeholder="item.placeholder"
+                  :value="item.projectId ? item.projectId : undefined"
+                  :disabled="dispatchList[index].disabled"
+                  :options="
+                    (
+                      (nodeProjectsList.filter((nitem) => nitem.id == item.nodeId)[0] &&
+                        nodeProjectsList.filter((nitem) => nitem.id == item.nodeId)[0].projects) ||
+                      []
+                    ).map((project) => ({
+                      label: `${project.outGivingProject ? $t('i18n_8e2ed8ae0d') : ''} ${project.name}`,
+                      value: project.projectId,
+                      disabled:
+                        project.outGivingProject ||
+                        dispatchList.filter(
+                          (d, nowIndex) =>
+                            d.nodeId === project.nodeId && d.projectId === project.projectId && nowIndex !== index
+                        ).length > 0
+                    }))
+                  "
+                  @update:value="(projectId) => handleProjectChange(projectId, index)"
+                />
+                <n-button type="primary" danger size="small" @click="delDispachList(index)"
+                  ><DeleteOutlined />
+                </n-button>
+              </n-space>
+            </n-list-item>
+            <n-list-item v-if="!dispatchList || !dispatchList.length">
+              <n-empty size="small" :description="$t('i18n_cfd482e5ef')" style="width: 100%" />
+            </n-list-item>
           </n-list>
           <n-button type="primary" size="small" @click="addDispachList">{{ $t('i18n_66ab5e9f24') }}</n-button>
         </n-form-item>
@@ -1139,6 +1136,7 @@ import scriptPage from '@/pages/script/script-list'
 import CustomSelect from '@/components/customSelect'
 import whiteList from '@/pages/dispatch/white-list'
 import StartDispatch from './start'
+import DispatchLog from './log'
 export default {
   components: {
     codeEditor,
@@ -1146,10 +1144,12 @@ export default {
     whiteList,
     Status,
     StartDispatch,
-    scriptPage
+    scriptPage,
+    DispatchLog
   },
   data() {
     return {
+      activeTab: 'list',
       loading: false,
       confirmLoading: false,
       editDispatchLoading: false,
@@ -1365,7 +1365,7 @@ export default {
 
     // 关联分发
     handleLink() {
-      this.$refs['linkDispatchForm'] && this.$refs['linkDispatchForm'].resetFields()
+      this.$refs['linkDispatchForm'] && this.$refs['linkDispatchForm'].restoreValidation()
       this.temp = {
         type: 'add',
         id: '',
@@ -1380,7 +1380,7 @@ export default {
     // 编辑分发
     handleEditDispatch(record) {
       this.$nextTick(() => {
-        this.$refs['linkDispatchForm'] && this.$refs['linkDispatchForm'].resetFields()
+        this.$refs['linkDispatchForm'] && this.$refs['linkDispatchForm'].restoreValidation()
       })
       this.loadNodeList(() => {
         this.loadProjectListAll(() => {
@@ -1461,7 +1461,7 @@ export default {
                 message: res.msg
               })
               this.targetKeys = []
-              this.$refs['linkDispatchForm'].resetFields()
+              this.$refs['linkDispatchForm'].restoreValidation()
               this.linkDispatchVisible = false
               this.clearDispatchList()
               this.loadData()
@@ -1472,7 +1472,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 新增分发项目
     handleAdd() {
@@ -1497,13 +1497,13 @@ export default {
 
         this.editDispatchVisible = true
 
-        this.$refs['editDispatchForm']?.resetFields()
+        this.$refs['editDispatchForm']?.restoreValidation()
       })
     },
     // 编辑分发项目
     handleEditDispatchProject(record) {
       this.$nextTick(() => {
-        this.$refs['editDispatchForm'] && this.$refs['editDispatchForm'].resetFields()
+        this.$refs['editDispatchForm'] && this.$refs['editDispatchForm'].restoreValidation()
       })
       this.editDispatchLoading = true
       this.editDispatchVisible = true
@@ -1589,7 +1589,7 @@ export default {
               $notification.success({
                 message: res.msg
               })
-              this.$refs['editDispatchForm'].resetFields()
+              this.$refs['editDispatchForm'].restoreValidation()
               this.editDispatchVisible = false
               this.loadData()
             }
@@ -1597,7 +1597,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
 
     // 处理分发

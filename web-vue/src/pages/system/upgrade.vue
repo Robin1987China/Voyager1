@@ -387,25 +387,29 @@ export default {
       }
     },
     checkAgentFileVersion() {
-      // 获取是否有新版本
-      checkVersion().then((res) => {
-        if (res.code === 200) {
-          let upgrade = res.data?.upgrade
-          if (upgrade) {
-            //
-            this.temp = {
-              ...this.temp,
-              upgrade: upgrade,
-              newVersion: res.data.tagName,
-              downloadSource: res.data.downloadSource
+      // 获取是否有新版本（外网检查失败时静默，避免 Network Error 冒泡为页面错误）
+      checkVersion()
+        .then((res) => {
+          if (res.code === 200) {
+            let upgrade = res.data?.upgrade
+            if (upgrade) {
+              //
+              this.temp = {
+                ...this.temp,
+                upgrade: upgrade,
+                newVersion: res.data.tagName,
+                downloadSource: res.data.downloadSource
+              }
+              // this.temp.upgrade = upgrade;
+              // this.temp.newVersion = ;
+            } else {
+              this.temp = { ...this.temp, upgrade: false }
             }
-            // this.temp.upgrade = upgrade;
-            // this.temp.newVersion = ;
-          } else {
-            this.temp = { ...this.temp, upgrade: false }
           }
-        }
-      })
+        })
+        .catch(() => {
+          // 版本检查依赖外部网络，失败不影响页面使用
+        })
     },
     initHeart(ids) {
       this.sendMsg('getNodeList:' + ids.join(','))

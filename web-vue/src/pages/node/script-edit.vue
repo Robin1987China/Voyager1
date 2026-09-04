@@ -221,7 +221,7 @@ export default {
   methods: {
     // 修改
     handleEdit() {
-      this.$refs['editScriptForm']?.resetFields()
+      this.$refs['editScriptForm']?.restoreValidation()
       if (this.scriptId && this.nodeId) {
         itemScript({
           id: this.scriptId,
@@ -286,7 +286,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     }
   }
 }

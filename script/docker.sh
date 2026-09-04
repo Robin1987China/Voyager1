@@ -8,12 +8,12 @@
 # docker buildx create --use
 
 # 服务端
-docker buildx build --platform linux/amd64,linux/arm64,linux/ppc64le -t ${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1:0.0.1 -t ${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1:latest -f ./modules/server/DockerfileRelease --push .
+docker buildx build --platform linux/amd64,linux/arm64,linux/ppc64le -t ${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1:0.0.2 -t ${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1:latest -f ./modules/server/DockerfileRelease --push .
 
 # 插件端
-docker buildx build --platform linux/amd64,linux/arm64,linux/ppc64le -t ${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1-agent:0.0.1 -t ${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1-agent:latest -f ./modules/agent/DockerfileRelease --push .
+docker buildx build --platform linux/amd64,linux/arm64,linux/ppc64le -t ${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1-agent:0.0.2 -t ${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1-agent:latest -f ./modules/agent/DockerfileRelease --push .
 
-docker buildx build --platform linux/amd64,linux/arm64,linux/ppc64le -t registry.cn-chengdu.aliyuncs.com/${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1:0.0.1 -t registry.cn-chengdu.aliyuncs.com/${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1:latest -f ./modules/server/DockerfileRelease --push .
+docker buildx build --platform linux/amd64,linux/arm64,linux/ppc64le -t registry.cn-chengdu.aliyuncs.com/${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1:0.0.2 -t registry.cn-chengdu.aliyuncs.com/${VOYAGER1_IMAGE_REPO:-voyager1}/voyager1:latest -f ./modules/server/DockerfileRelease --push .
 
 
 

@@ -64,7 +64,7 @@
               </ul>
             </n-collapse-item>
           </n-collapse>
-          <n-form ref="form" :model="temp" :rules="rules" @finish="onSubmit">
+          <n-form ref="form" :model="temp" :rules="rules" @submit.prevent="onSubmit">
             <n-form-item :label="$t('i18n_3c6fa6f667')" path="cron">
               <n-input v-model:value="temp.cron" :placeholder="$t('i18n_cfa72dd73a')" />
             </n-form-item>
@@ -103,14 +103,15 @@
       </n-grid-item>
 
       <n-grid-item :span="10">
-        <n-list bordered :data="resultList" :locale="locale">
-          <template #renderItem="{ item }">
-            <n-list-item>
-              {{ parseTime(item, 'YYYY-MM-DD HH:mm:ss') }}
-            </n-list-item>
-          </template>
+        <n-list bordered>
           <template #header>
             <div>{{ $t('i18n_5ad7f5a8b2') }}</div>
+          </template>
+          <n-list-item v-for="(item, index) in resultList" :key="index">
+            {{ parseTime(item, 'YYYY-MM-DD HH:mm:ss') }}
+          </n-list-item>
+          <template #footer v-if="!resultList || !resultList.length">
+            <div class="empty-text">{{ locale.emptyText }}</div>
           </template>
         </n-list>
       </n-grid-item>
@@ -143,8 +144,9 @@ export default {
         count: [
           {
             required: true,
+            type: 'number',
             message: this.$t('i18n_25c6bd712c'),
-            trigger: 'blur'
+            trigger: ['blur', 'input']
           }
         ]
       }
@@ -162,6 +164,16 @@ export default {
   methods: {
     parseTime,
     onSubmit() {
+      // Naive 的 n-form 无 @finish 事件（Ant 写法迁移遗漏），提交前需手动校验
+      this.$refs['form'] &&
+        this.$refs['form']
+          .validate()
+          .then(() => {
+            this.submitCron()
+          })
+          .catch(() => {})
+    },
+    submitCron() {
       this.resultList = []
       this.locale = {
         emptyText: this.$t('i18n_21efd88b67')
@@ -182,3 +194,10 @@ export default {
   }
 }
 </script>
+<style scoped>
+.empty-text {
+  padding: 12px 16px;
+  color: rgba(0, 0, 0, 0.45);
+  text-align: center;
+}
+</style>

@@ -218,7 +218,7 @@ public class BuildInfoService extends JpaWorkspaceService<BuildInfoModel, BuildI
         entity.set("releaseMethod", BuildReleaseMethod.Project.getCode());
         String workspaceId = this.getCheckUserWorkspace(request);
         entity.set("workspaceId", workspaceId);
-        entity.set("releaseMethodDataId", String.format(" like '%s:%'", nodeId));
+        entity.set("releaseMethodDataId", "like " + nodeId + ":%");
         return super.exists(entity);
     }
 
@@ -235,7 +235,7 @@ public class BuildInfoService extends JpaWorkspaceService<BuildInfoModel, BuildI
         entity.set("releaseMethod", releaseMethod.getCode());
         String workspaceId = this.getCheckUserWorkspace(request);
         entity.set("workspaceId", workspaceId);
-        entity.set("releaseMethodDataId", String.format(" like '%%s%'", dataId));
+        entity.set("releaseMethodDataId", "like %" + dataId + "%");
         return super.exists(entity);
     }
 
@@ -249,7 +249,7 @@ public class BuildInfoService extends JpaWorkspaceService<BuildInfoModel, BuildI
     public boolean checkReleaseMethodByLike(String dataId, BuildReleaseMethod releaseMethod) {
         Entity entity = new Entity();
         entity.set("releaseMethod", releaseMethod.getCode());
-        entity.set("releaseMethodDataId", String.format(" like '%%s%'", dataId));
+        entity.set("releaseMethodDataId", "like %" + dataId + "%");
         return super.exists(entity);
     }
 

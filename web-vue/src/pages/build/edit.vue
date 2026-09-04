@@ -32,7 +32,7 @@
                 </ul>
               </template>
             </n-alert>
-            <n-form-item :name="['buildMode']">
+            <n-form-item path="buildMode">
               <template #label> {{ $t('i18n_17a74824de') }} </template>
               <n-space>
                 <n-radio-group
@@ -1460,9 +1460,8 @@
         "
       >
         <n-collapse-item v-for="(group, index) in buildScipts" :key="`${index}`" :header="group.title">
-          <n-list size="small" bordered :data="group.children">
-            <template #renderItem="{ item }">
-              <n-list-item>
+          <n-list size="small" bordered>
+<n-list-item v-for="(item, index) in group.children" :key="index">
                 <n-space>
                   {{ item.title }}
 
@@ -1476,8 +1475,7 @@
                   />
                 </n-space>
               </n-list-item>
-            </template>
-          </n-list>
+</n-list>
         </n-collapse-item>
       </n-collapse>
     </CustomModal>
@@ -1840,11 +1838,11 @@ export default {
         resultKeepCount: 0,
         fileStorageKeepDay: 0
       }
-      this.$refs['editBuildForm']?.resetFields()
+      this.$refs['editBuildForm']?.restoreValidation()
     },
     // 修改
     handleEdit(record) {
-      this.$refs['editBuildForm']?.resetFields()
+      this.$refs['editBuildForm']?.restoreValidation()
       this.temp = Object.assign({}, record)
       this.temp.buildMode = this.temp.buildMode || 0
       if (this.temp.buildMode === 1) {

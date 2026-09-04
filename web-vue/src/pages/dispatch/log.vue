@@ -184,19 +184,13 @@
       :title="$t('i18n_3032257aa3')"
       :footer="null"
     >
-      <n-list item-layout="horizontal" :data="detailData">
-        <template #renderItem="{ item }">
-          <n-list-item>
-            <n-list-item>
-              <template #title>
-                <h4>{{ item.title }}</h4>
-              </template>
-              <template #description>
-                <code>{{ item.description }}</code>
-              </template>
-            </n-list-item>
-          </n-list-item>
-        </template>
+      <n-list>
+        <n-list-item v-for="(item, index) in detailData" :key="index">
+          <div style="width: 100%">
+            <h4 style="margin: 4px 0">{{ item.title }}</h4>
+            <code v-if="item.description">{{ item.description }}</code>
+          </div>
+        </n-list-item>
       </n-list>
     </CustomModal>
   </div>

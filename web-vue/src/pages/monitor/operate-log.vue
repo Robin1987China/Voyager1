@@ -1,20 +1,8 @@
 <template>
   <div>
     <!-- 数据表格 -->
-    <n-data-table
-      size="medium"
-      :data="list"
-      :columns="columns"
-      :pagination="pagination"
-      bordered
-      :row-key="(row) => row.id"
-      :scroll="{
-        x: 'max-content'
-      }"
-      @update:page="(page) => changePage({ ...pagination, current: page })"
-      @update:page-size="(pageSize) => changePage({ ...pagination, current: 1, pageSize })"
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space wrap class="search-box">
           <n-input
             v-model:value="listQuery['%name%']"
@@ -42,9 +30,21 @@
           </n-tooltip>
           <n-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</n-button>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      size="medium"
+      :data="list"
+      :columns="columns"
+      :pagination="pagination"
+      bordered
+      :row-key="(row) => row.id"
+      @update:page="(page) => changePage({ ...pagination, current: page })"
+      @update:page-size="(pageSize) => changePage({ ...pagination, current: 1, pageSize })"
+    >
+      
       <template #bodyCell="{ column, text, record }">
-        <template v-if="column.dataIndex === 'name'">
+        <template v-if="column.key === 'name'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -56,16 +56,16 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'status'">
+        <template v-else-if="column.key === 'status'">
           <n-switch
             size="small"
-            :checked="text"
+            :value="text"
             :checked-label="$t('i18n_cc42dd3170')"
             :unchecked-label="$t('i18n_b15d91274e')"
           />
         </template>
 
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</n-button>
             <n-button size="small" type="primary" danger @click="handleDelete(record)">{{
@@ -399,7 +399,7 @@ export default {
               $notification.success({
                 message: res.msg
               })
-              this.$refs['editMonitorForm'].resetFields()
+              this.$refs['editMonitorForm'].restoreValidation()
               this.editOperateMonitorVisible = false
               this.loadData()
             }
@@ -407,7 +407,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除
     handleDelete(record) {

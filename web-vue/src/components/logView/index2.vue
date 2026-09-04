@@ -27,7 +27,7 @@
             <!-- <n-tooltip>
 <template #trigger>
 
-                  <n-switch v-model="temp.wordBreak" checked-children="自动换行" un-checked-children="不换行" @change="onChange" />
+                  <n-switch v-model:value="temp.wordBreak" :checked-label="自动换行" :unchecked-label="不换行" @change="onChange" />
                 
 </template>
 内容超过边界自动换行

@@ -73,9 +73,8 @@
         <triggerPage v-if="id" v-show="menuKey.includes('trigger')" :id="id" />
 
         <div v-show="menuKey.includes('environment')">
-          <n-list size="small" bordered :data="Object.keys(environment)">
-            <template #renderItem="{ item }">
-              <n-list-item style="display: block">
+          <n-list size="small" bordered>
+<n-list-item v-for="(item, index) in Object.keys(environment)" :key="index" style="display: block">
                 <n-grid :wrap="true">
                   <n-grid-item :span="12" :flex="12" class="text-overflow-hidden">
                     <n-tooltip placement="topLeft">
@@ -100,8 +99,7 @@
                   </n-grid-item>
                 </n-grid>
               </n-list-item>
-            </template>
-            <template #header>
+<template #header>
               <b>{{ $t('i18n_c0ad27a701') }}</b>
               <n-alert type="warning">
                 <template #message>
@@ -117,7 +115,8 @@
             <!-- <template #footer>
         <div>Footer</div>
       </template> -->
-          </n-list>
+          
+</n-list>
         </div>
       </div>
       <!-- <template> </template> -->

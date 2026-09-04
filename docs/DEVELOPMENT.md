@@ -57,10 +57,10 @@ export JAVA_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED \
   --add-opens=java.base/jdk.internal.ref=ALL-UNNAMED \
   --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
 
-cd modules/server/target/server-0.0.1-release
+cd modules/server/target/server-0.0.2-release
 ./bin/Server.sh start    # Server 默认端口 2122
 
-cd modules/agent/target/agent-0.0.1-release
+cd modules/agent/target/agent-0.0.2-release
 ./bin/Agent.sh start     # Agent 默认端口 2123
 ```
 

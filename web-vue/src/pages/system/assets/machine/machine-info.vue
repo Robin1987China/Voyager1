@@ -13,9 +13,7 @@
       </template>
       <n-tab-pane name="info" :tab="$t('i18n_6ea1fe6baa')">
         <n-card size="small">
-          <template #title>
-            {{ machineInfo && machineInfo.name }}
-          </template>
+          
           <template #extra>
             <n-tag
               v-if="machineInfo"
@@ -262,16 +260,18 @@
             </n-grid>
           </template>
 
-          <n-data-table
+                    <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
+            {{ machineInfo && machineInfo.name }}
+          
+          </n-card>
+<n-data-table
             size="medium"
             :loading="loading"
             :columns="processColumns"
             :data="processList"
             bordered
             :row-key="(row) => row.processId"
-            :scroll="{
-              x: 'max-content'
-            }"
             :pagination="false"
           >
             <template #bodyCell="{ column, text, record }">
@@ -316,7 +316,7 @@
                   text
                 </n-tooltip>
               </template>
-              <template v-else-if="column.dataIndex === 'operation'">
+              <template v-else-if="column.key === 'operation'">
                 <n-button type="primary" size="small" @click="kill(record)">Kill</n-button>
               </template>
             </template>
@@ -331,9 +331,6 @@
           :data="diskList"
           bordered
           :row-key="(row) => row.uuid"
-          :scroll="{
-            x: 'max-content'
-          }"
           :pagination="false"
         >
           <template #bodyCell="{ column, text, record }">
@@ -362,7 +359,7 @@
                 text
               </n-tooltip>
             </template>
-            <template v-else-if="column.dataIndex === 'operation'">
+            <template v-else-if="column.key === 'operation'">
               <n-button type="primary" size="small" @click="kill(record)">Kill</n-button>
             </template>
           </template>
@@ -401,10 +398,7 @@
               :columns="hwDiskPartitionColumns"
               :data="item.partition"
               :pagination="false"
-              :scroll="{
-                x: 'max-content'
-              }"
-            >
+              >
               <template v-if="column.tooltip">
                 <n-tooltip placement="topLeft">
                   <template #trigger>

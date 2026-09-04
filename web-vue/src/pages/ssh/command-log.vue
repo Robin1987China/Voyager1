@@ -1,18 +1,7 @@
 <template>
   <div>
-    <n-data-table
-      size="medium"
-      :data="commandList"
-      :columns="columns"
-      bordered
-      :row-key="(row) => row.id"
-      :pagination="pagination"
-      :scroll="{
-        x: 'max-content'
-      }"
-      @change="changePage"
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space wrap class="search-box">
           <n-input
             v-model:value="listQuery['%commandName%']"
@@ -53,9 +42,20 @@
             $t('i18n_4838a3bd20')
           </n-tooltip>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      size="medium"
+      :data="commandList"
+      :columns="columns"
+      bordered
+      :row-key="(row) => row.id"
+      :pagination="pagination"
+      @change="changePage"
+    >
+      
       <template #bodyCell="{ column, text, record }">
-        <template v-if="column.dataIndex === 'sshName'">
+        <template v-if="column.key === 'sshName'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -67,7 +67,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'commandName'">
+        <template v-else-if="column.key === 'commandName'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -79,18 +79,18 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'status'">
+        <template v-else-if="column.key === 'status'">
           <span>{{ statusMap[text] || $t('i18n_1622dc9b6b') }}</span>
         </template>
-        <template v-else-if="column.dataIndex === 'triggerExecType'">
+        <template v-else-if="column.key === 'triggerExecType'">
           <span>{{ triggerExecTypeMap[text] || $t('i18n_1622dc9b6b') }}</span>
         </template>
-        <template v-else-if="column.dataIndex === 'exitCode'">
+        <template v-else-if="column.key === 'exitCode'">
           <n-tag v-if="text == 0" color="green">{{ $t('i18n_330363dfc5') }}</n-tag>
           <n-tag v-else color="orange">{{ text || '-' }}</n-tag>
         </template>
 
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-button type="primary" size="small" :disabled="!record.hasLog" @click="handleView(record)">{{
               $t('i18n_607e7a4f37')

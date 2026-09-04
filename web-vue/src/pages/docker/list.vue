@@ -406,7 +406,7 @@ export default {
       this.temp = {}
       this.editVisible = true
 
-      this.$refs['editForm']?.resetFields()
+      this.$refs['editForm']?.restoreValidation()
     },
     // 控制台
     handleConsole(record) {
@@ -440,7 +440,7 @@ export default {
       tagsArray = tagsArray.filter((item) => item.length)
       this.temp = { ...this.temp, tagsArray: tagsArray }
       //.tags = (this.temp.tagsArray || []).join(",");
-      this.$refs['editForm']?.resetFields()
+      this.$refs['editForm']?.restoreValidation()
     },
 
     // 提交  数据
@@ -468,7 +468,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除
     handleDelete(record) {

@@ -16,12 +16,12 @@
       },
       {
         "id": "machine_ssh_info",
-        "title": "SSH Management",
+        "title": "SSH Assets",
         "role": "system"
       },
       {
         "id": "machine_docker_info",
-        "title": "Docker Management",
+        "title": "Docker Assets",
         "role": "system"
       },
       {
@@ -31,7 +31,7 @@
       },
       {
         "id": "script_library",
-        "title": "Script Library",
+        "title": "Shared Script Library",
         "role": "system"
       }
     ]
@@ -75,12 +75,7 @@
       },
       {
         "id": "user_log",
-        "title": "operation log",
-        "role": "system"
-      },
-      {
-        "id": "user_login_log",
-        "title": "Login log",
+        "title": "Audit Log",
         "role": "system"
       }
     ]
@@ -125,11 +120,11 @@
         "title": "Database Backup",
         "role": "system",
         "storageMode": "H2"
-      },
-      {
-        "id": "about",
-        "title": "About the System"
       }
     ]
+  },
+  {
+    "id": "about",
+    "title": "About the System"
   }
 ]

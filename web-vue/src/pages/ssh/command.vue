@@ -610,7 +610,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 获取命令数据
     getCommandData(pointerEvent) {
@@ -637,13 +637,13 @@ export default {
       this.chooseSsh = []
       this.commandParams = []
       this.temp = {}
-      this.$refs['editCommandForm'] && this.$refs['editCommandForm'].resetFields()
+      this.$refs['editCommandForm'] && this.$refs['editCommandForm'].restoreValidation()
     },
     // 修改
     handleEdit(rowData) {
       const row = Object.assign({}, rowData)
       this.editCommandVisible = true
-      this.$refs['editCommandForm'] && this.$refs['editCommandForm'].resetFields()
+      this.$refs['editCommandForm'] && this.$refs['editCommandForm'].restoreValidation()
       this.commandParams = []
       if (row.defParams) {
         this.commandParams = JSON.parse(row.defParams)

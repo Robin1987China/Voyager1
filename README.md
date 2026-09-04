@@ -86,7 +86,7 @@ Voyager1 原生把核心运维能力暴露为 **MCP（Model Context Protocol）�
 
 ## 📥 安装 Voyager1
 
-Voyager1 采用 **Server + Agent** 架构，从源码构建即可部署。当前初始版本（v0.0.1）推荐**从源码编译安装**。
+Voyager1 采用 **Server + Agent** 架构，从源码构建即可部署。当前初始版本（v0.0.2）推荐**从源码编译安装**。
 
 ### 环境要求
 
@@ -123,14 +123,14 @@ mvn clean package
 ```
 
 打包完成后，产物位于：
-- 服务端：`modules/server/target/server-0.0.1-release/`
-- 插件端：`modules/agent/target/agent-0.0.1-release/`
+- 服务端：`modules/server/target/server-0.0.2-release/`
+- 插件端：`modules/agent/target/agent-0.0.2-release/`
 
 > 也可以使用 `script/release.sh`（Linux）或 `script/release.bat`（Windows）一键打包。
 
 #### 4. 安装并启动服务端
 
-将 `server-0.0.1-release` 目录上传到服务器（整个目录），进入目录后：
+将 `server-0.0.2-release` 目录上传到服务器（整个目录），进入目录后：
 
 ```shell
 ./bin/Server.sh start     # Linux
@@ -141,7 +141,7 @@ mvn clean package
 
 #### 5. 安装并启动插件端
 
-将 `agent-0.0.1-release` 目录上传到被管主机（整个目录，**与服务端不要放在同一目录**），进入目录后：
+将 `agent-0.0.2-release` 目录上传到被管主机（整个目录，**与服务端不要放在同一目录**），进入目录后：
 
 ```shell
 ./bin/Agent.sh start      # Linux

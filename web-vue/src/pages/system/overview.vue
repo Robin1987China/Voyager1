@@ -50,10 +50,9 @@
         <n-card size="small">
           <template #title> {{ $t('i18n_a6bf763ede') }} </template>
 
-          <n-list :data="['all', ...Object.keys(nodeStatusMap)]">
-            <template #renderItem="{ item }">
-              <n-list-item v-if="item === 'all'">
-                {{ $t('i18n_ec1f13ff6d')
+          <n-list>
+<template v-for="item in ['all', ...Object.keys(nodeStatusMap)]" :key="item">
+<n-list-item v-if="item === 'all'">{{ $t('i18n_ec1f13ff6d')
                 }}<n-badge
                   :color="item.color"
                   :count="
@@ -64,10 +63,8 @@
                     '0'
                   "
                   show-zero
-                />
-              </n-list-item>
-              <n-list-item v-else>
-                {{ nodeStatusMap[item] }}：<n-badge
+                /></n-list-item>
+<n-list-item v-else>{{ nodeStatusMap[item] }}：<n-badge
                   :color="Number(item) === 1 ? 'green' : ''"
                   :count="
                     (statData.nodeStat &&
@@ -80,20 +77,18 @@
                     '0'
                   "
                   show-zero
-                />
-              </n-list-item>
-            </template>
-          </n-list>
+                /></n-list-item>
+</template>
+</n-list>
         </n-card>
       </n-grid-item>
       <n-grid-item :span="6">
         <n-card size="small">
           <template #title> {{ $t('i18n_4ad6e58ebc') }} </template>
 
-          <n-list :data="['all', ...Object.keys(sshStatusMap)]">
-            <template #renderItem="{ item }">
-              <n-list-item v-if="item === 'all'">
-                {{ $t('i18n_ec1f13ff6d')
+          <n-list>
+<template v-for="item in ['all', ...Object.keys(sshStatusMap)]" :key="item">
+<n-list-item v-if="item === 'all'">{{ $t('i18n_ec1f13ff6d')
                 }}<n-badge
                   :color="item.color"
                   :count="
@@ -104,10 +99,8 @@
                     '0'
                   "
                   show-zero
-                />
-              </n-list-item>
-              <n-list-item v-else>
-                {{ sshStatusMap[item].desc }}：<n-badge
+                /></n-list-item>
+<n-list-item v-else>{{ sshStatusMap[item].desc }}：<n-badge
                   :color="sshStatusMap[item].color"
                   :count="
                     (statData.sshStat &&
@@ -120,20 +113,18 @@
                     '0'
                   "
                   show-zero
-                />
-              </n-list-item>
-            </template>
-          </n-list>
+                /></n-list-item>
+</template>
+</n-list>
         </n-card>
       </n-grid-item>
       <n-grid-item :span="6">
         <n-card size="small">
           <template #title> {{ $t('i18n_ea58a20cda') }} </template>
 
-          <n-list :data="['all', ...Object.keys(dockerStatusMap)]">
-            <template #renderItem="{ item }">
-              <n-list-item v-if="item === 'all'">
-                {{ $t('i18n_ec1f13ff6d')
+          <n-list>
+<template v-for="item in ['all', ...Object.keys(dockerStatusMap)]" :key="item">
+<n-list-item v-if="item === 'all'">{{ $t('i18n_ec1f13ff6d')
                 }}<n-badge
                   :color="item.color"
                   :count="
@@ -144,10 +135,8 @@
                     '0'
                   "
                   show-zero
-                />
-              </n-list-item>
-              <n-list-item v-else>
-                {{ dockerStatusMap[item].desc }}：<n-badge
+                /></n-list-item>
+<n-list-item v-else>{{ dockerStatusMap[item].desc }}：<n-badge
                   :color="dockerStatusMap[item].color"
                   :count="
                     (statData.dockerStat &&
@@ -160,28 +149,26 @@
                     '0'
                   "
                   show-zero
-                />
-              </n-list-item>
-            </template>
-          </n-list>
+                /></n-list-item>
+</template>
+</n-list>
         </n-card>
       </n-grid-item>
       <n-grid-item :span="6">
         <n-card size="small">
           <template #title> {{ $t('i18n_0da9b12963') }} </template>
 
-          <n-list
-            :data="[
-              { name: $t('i18n_1149274cbd'), field: 'userCount', color: 'red' },
-              { name: $t('i18n_a76b4f5000'), field: 'systemUserCount', color: 'pink' },
-              { name: $t('i18n_c03465ca03'), field: 'disableUserCount', color: 'yellow' }
-            ]"
-          >
-            <template #renderItem="{ item }">
-              <n-list-item>
-                {{ item.name }}：<n-badge :color="item.color" :count="statData[item.field] || '0'" show-zero />
-              </n-list-item>
-            </template>
+          <n-list>
+            <n-list-item
+              v-for="item in [
+                { name: $t('i18n_1149274cbd'), field: 'userCount', color: 'red' },
+                { name: $t('i18n_a76b4f5000'), field: 'systemUserCount', color: 'pink' },
+                { name: $t('i18n_c03465ca03'), field: 'disableUserCount', color: 'yellow' }
+              ]"
+              :key="item.field"
+            >
+              {{ item.name }}：<n-badge :color="item.color" :count="statData[item.field] || '0'" show-zero />
+            </n-list-item>
           </n-list>
         </n-card>
       </n-grid-item>

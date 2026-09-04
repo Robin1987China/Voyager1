@@ -1,21 +1,49 @@
 <template>
   <div>
     <div v-show="viewList">
-      <n-data-table
+            <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
+            <n-popconfirm
+              :positive-text="$t('i18n_587a63264b')"
+              :negative-text="$t('i18n_b1a09cee8e')"
+              :positive-button-props="{
+                loading: recoverLoading
+              }"
+              @positive-click="recoverNet('', uploadPath)"
+              @negative-click="recoverNet('clear', uploadPath)"
+            >
+              <template #trigger>
+                <span class="tw">
+                  <n-button size="small" type="primary">{{ $t('i18n_69de8d7f40') }}</n-button>
+                </span>
+              </template>
+              <template #icon>
+                <QuestionCircleOutlined style="color: red" />
+              </template>
+              {{
+                `${uploadPath ? $t('i18n_bdd4cddd22') + uploadPath + $t('i18n_dadd4907c2') : ''} ${$t(
+                  'i18n_aefd8f9f27'
+                )},${$t('i18n_500789168c')}`
+              }}
+            </n-popconfirm>
+
+            <n-space>
+              <n-tag v-if="uploadPath" color="#2db7f5">{{ $t('i18n_2c8109fa0b') }}{{ uploadPath || '' }}</n-tag>
+            </n-space>
+          
+      </n-card>
+<n-data-table
         size="medium"
         :data="backupListData.list"
         :loading="backupListLoading"
         :columns="columns"
         :pagination="false"
         bordered
-        :scroll="{
-          x: 'max-content'
-        }"
-      >
+        >
         <template v-if="backupListData.path" #title> {{ $t('i18n_1b38c0bc86') }}{{ backupListData.path }} </template>
 
-        <template #bodyCell="{ column, text, record }">
-          <template v-if="column.dataIndex === 'filename'">
+        <template #bodyCell="{ column, text, row, record }">
+          <template v-if="column.key === 'filename'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -27,15 +55,15 @@
               text
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'fileSizeLong'">
+          <template v-else-if="column.key === 'fileSizeLong'">
             <n-tooltip placement="topLeft">
               <template #trigger>
-                {{ text ? renderSize(text) : item.fileSize }}
+                {{ text ? renderSize(text) : row.fileSize }}
               </template>
-              `${text ? renderSize(text) : item.fileSize}`
+              `${text ? renderSize(text) : row.fileSize}`
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'modifyTimeLong'">
+          <template v-else-if="column.key === 'modifyTimeLong'">
             <n-tooltip>
               <template #trigger>
                 <span class="tw">
@@ -47,7 +75,7 @@
               `${parseTime(record.modifyTimeLong)}}`
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'operation'">
+          <template v-else-if="column.key === 'operation'">
             <n-space>
               <n-button size="small" type="primary" @click="handleBackupFile(record)">{{
                 $t('i18n_f26225bde6')
@@ -98,43 +126,12 @@
           :columns="fileColumns"
           :pagination="false"
           bordered
-          :scroll="{
-            x: 'max-content'
-          }"
-        >
-          <template #title>
-            <n-popconfirm
-              :positive-text="$t('i18n_587a63264b')"
-              :negative-text="$t('i18n_b1a09cee8e')"
-              :positive-button-props="{
-                loading: recoverLoading
-              }"
-              @positive-click="recoverNet('', uploadPath)"
-              @negative-click="recoverNet('clear', uploadPath)"
-            >
-              <template #trigger>
-                <span class="tw">
-                  <n-button size="small" type="primary">{{ $t('i18n_69de8d7f40') }}</n-button>
-                </span>
-              </template>
-              <template #icon>
-                <QuestionCircleOutlined style="color: red" />
-              </template>
-              {{
-                `${uploadPath ? $t('i18n_bdd4cddd22') + uploadPath + $t('i18n_dadd4907c2') : ''} ${$t(
-                  'i18n_aefd8f9f27'
-                )},${$t('i18n_500789168c')}`
-              }}
-            </n-popconfirm>
+          >
+          
 
-            <n-space>
-              <n-tag v-if="uploadPath" color="#2db7f5">{{ $t('i18n_2c8109fa0b') }}{{ uploadPath || '' }}</n-tag>
-            </n-space>
-          </template>
-
-          <template #bodyCell="{ column, text, record }">
-            <!-- <template v-if="column.dataIndex === 'filename'"> -->
-            <template v-if="column.dataIndex === 'filename'">
+          <template #bodyCell="{ column, text, row, record }">
+            <!-- <template v-if="column.key === 'filename'"> -->
+            <template v-if="column.key === 'filename'">
               <n-tooltip placement="topLeft">
                 <template #trigger>
                   <span class="tw">
@@ -146,7 +143,7 @@
                 text
               </n-tooltip>
             </template>
-            <template v-else-if="column.dataIndex === 'isDirectory'">
+            <template v-else-if="column.key === 'isDirectory'">
               <n-tooltip placement="topLeft">
                 <template #trigger>
                   <span class="tw">
@@ -158,15 +155,15 @@
                 text
               </n-tooltip>
             </template>
-            <template v-else-if="column.dataIndex === 'fileSizeLong'">
+            <template v-else-if="column.key === 'fileSizeLong'">
               <n-tooltip placement="topLeft">
                 <template #trigger>
-                  {{ text ? renderSize(text) : item.fileSize }}
+                  {{ text ? renderSize(text) : row.fileSize }}
                 </template>
-                `${text ? renderSize(text) : item.fileSize}`
+                `${text ? renderSize(text) : row.fileSize}`
               </n-tooltip>
             </template>
-            <template v-else-if="column.dataIndex === 'modifyTimeLong'">
+            <template v-else-if="column.key === 'modifyTimeLong'">
               <n-tooltip>
                 <template #trigger>
                   <span class="tw">
@@ -178,7 +175,7 @@
                 `${parseTime(record.modifyTimeLong)}}`
               </n-tooltip>
             </template>
-            <template v-else-if="column.dataIndex === 'operation'">
+            <template v-else-if="column.key === 'operation'">
               <n-space>
                 <template v-if="record.isDirectory">
                   <n-tooltip>

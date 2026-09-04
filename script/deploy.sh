@@ -30,7 +30,7 @@ SKIP_TESTS=false
 SKIP_FRONTEND=false
 NO_CAPTCHA=false
 LOGIN_PWD="${VOYAGER1_LOGIN_PWD:-nGetCEvj}"
-VOYAGER1_VERSION="0.0.1"
+VOYAGER1_VERSION="0.0.2"
 
 # ---------- 参数解析 ----------
 for arg in "$@"; do

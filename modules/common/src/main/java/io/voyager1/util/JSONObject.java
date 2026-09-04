@@ -16,6 +16,7 @@
 
 package io.voyager1.util;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -40,6 +41,11 @@ public class JSONObject implements JSON {
         this.node = node;
     }
 
+    /**
+     * Jackson 序列化入口：直接输出内部 ObjectNode 内容，
+     * 避免把本包装类当作普通 POJO（会多出 node/empty 等字段）。
+     */
+    @JsonValue
     ObjectNode node() {
         return node;
     }

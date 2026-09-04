@@ -392,7 +392,7 @@ export default {
       this.temp = {}
       this.editCertVisible = true
       this.uploadFileList = []
-      this.$refs['importCertForm']?.resetFields()
+      this.$refs['importCertForm']?.restoreValidation()
     },
     // // 修改
     // handleEdit(record) {
@@ -433,7 +433,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除
     handleDelete(record) {
@@ -474,7 +474,7 @@ export default {
         workspaceId: ''
       }
       this.editVisible = true
-      this.$refs['editForm']?.resetFields()
+      this.$refs['editForm']?.restoreValidation()
     },
     // 编辑确认
     handleEditOk() {
@@ -495,7 +495,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     handleDeployFile(record) {
       this.releaseFileVisible = true

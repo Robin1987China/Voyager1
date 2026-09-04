@@ -288,6 +288,23 @@ public class Voyager1Manifest {
  URL location = ClassUtil.getLocation(Voyager1Application.getAppClass());
  String file = location.getFile();
  String before = StrUtil.subBefore(file, "!", false);
+ // Spring Boot fat jar 的 codeSource location.getFile() 形如：
+ //   nested:/path/app.jar/!BOOT-INF/classes!/  （Spring Boot 3.2+ nested jar）
+ //   /path/app.jar!/BOOT-INF/classes!/         （普通 fat jar）
+ //   file:/path/app.jar!/BOOT-INF/classes!/    （旧版）
+ // 需去掉 nested:/file:/jar:file: 前缀与结尾的 /，否则 getManifest(File) 因 exists()==false 读不到版本号
+ if (before.startsWith("nested:")) {
+  before = before.substring("nested:".length());
+ } else if (before.startsWith("jar:nested:")) {
+  before = before.substring("jar:nested:".length());
+ } else if (before.startsWith("jar:file:")) {
+  before = before.substring("jar:file:".length());
+ } else if (before.startsWith("file:")) {
+  before = before.substring("file:".length());
+ }
+ while (before.endsWith("/")) {
+  before = before.substring(0, before.length() - 1);
+ }
  return FileUtil.file(before);
  }
 

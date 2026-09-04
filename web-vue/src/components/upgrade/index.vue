@@ -391,16 +391,20 @@ export default {
       checkVersion({
         nodeId: this.nodeId,
         machineId: this.machineId
-      }).then((res) => {
-        if (res.code === 200) {
-          this.showVersion(true, res.data).then((upgrade) => {
-            // 远程检测失败才本地检测
-            if (!upgrade) {
-              this.localCheckVersion(true)
-            }
-          })
-        }
       })
+        .then((res) => {
+          if (res.code === 200) {
+            this.showVersion(true, res.data).then((upgrade) => {
+              // 远程检测失败才本地检测
+              if (!upgrade) {
+                this.localCheckVersion(true)
+              }
+            })
+          }
+        })
+        .catch(() => {
+          // 版本检查依赖外部网络，失败不影响页面使用
+        })
     },
     // 本地网络检测
     localCheckVersion(tip) {
@@ -415,28 +419,32 @@ export default {
       executionRequest(url, {
         ...buildInfo,
         type: this.nodeId || this.machineId ? 'agent' : 'server'
-      }).then((data) => {
-        if (!data || !data.tag_name) {
-          return
-        }
-
-        const tagName = data.tag_name.replace('v', '')
-        const upgrade = compareVersion(this.temp.version, tagName) < 0
-
-        if (upgrade && tip) {
-          //
-          const dUrl = data.downloadUrl || 'https://voyager1.top'
-          const htmlAref = `<a href='${dUrl}' target='_blank'>${dUrl}</a>`
-          const title = this.$t('i18n_2314f99795')
-          const tip = this.$t('i18n_ab3615a5ad')
-          const html = `${title} ${tagName} ${htmlAref} ${tip}`
-
-          $notification.success({
-            duration: 10,
-            message: h('div', null, [h('p', { innerHTML: html }, null)])
-          })
-        }
       })
+        .then((data) => {
+          if (!data || !data.tag_name) {
+            return
+          }
+
+          const tagName = data.tag_name.replace('v', '')
+          const upgrade = compareVersion(this.temp.version, tagName) < 0
+
+          if (upgrade && tip) {
+            //
+            const dUrl = data.downloadUrl || 'https://voyager1.top'
+            const htmlAref = `<a href='${dUrl}' target='_blank'>${dUrl}</a>`
+            const title = this.$t('i18n_2314f99795')
+            const tip = this.$t('i18n_ab3615a5ad')
+            const html = `${title} ${tagName} ${htmlAref} ${tip}`
+
+            $notification.success({
+              duration: 10,
+              message: h('div', null, [h('p', { innerHTML: html }, null)])
+            })
+          }
+        })
+        .catch(() => {
+          // 版本检查依赖外部网络，失败不影响页面使用
+        })
     },
     showVersion(tip, data) {
       return new Promise((resolve) => {

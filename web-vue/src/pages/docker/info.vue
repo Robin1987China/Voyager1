@@ -56,34 +56,30 @@
         <div>
           {{ $t('i18n_b9bcb4d623') }}
 
-          <n-list item-layout="horizontal" :data="Object.keys(temp.plugins)" size="small">
-            <template #renderItem="{ item }">
-              <n-list-item>
-                {{ item }}
-                <n-tag v-for="(item1, index) in temp.plugins[item]" :key="index">{{ item1 }}</n-tag>
-              </n-list-item>
-            </template>
+          <n-list size="small">
+            <n-list-item v-for="(item, index) in Object.keys(temp.plugins)" :key="index">
+              {{ item }}
+              <n-tag v-for="(item1, index1) in temp.plugins[item]" :key="index1">{{ item1 }}</n-tag>
+            </n-list-item>
           </n-list>
         </div>
       </n-timeline-item>
       <n-timeline-item v-if="temp.registryConfig">
         <div>
           {{ $t('i18n_92f3fdb65f') }}
-          <n-list item-layout="horizontal" :data="Object.keys(temp.registryConfig.indexConfigs)" size="small">
-            <template #renderItem="{ item }">
-              <n-list-item>
-                {{ item }}
-                <n-tag v-if="temp.registryConfig.indexConfigs[item].official" color="green">{{
-                  $t('i18n_f5c3795be5')
-                }}</n-tag
-                ><n-tag v-if="temp.registryConfig.indexConfigs[item].secure" color="green">{{
-                  $t('i18n_fdbc77bd19')
-                }}</n-tag>
-                <n-tag v-for="(item1, index) in temp.registryConfig.indexConfigs[item].mirrors" :key="index">{{
-                  item1
-                }}</n-tag>
-              </n-list-item>
-            </template>
+          <n-list size="small">
+            <n-list-item v-for="(item, index) in Object.keys(temp.registryConfig.indexConfigs)" :key="index">
+              {{ item }}
+              <n-tag v-if="temp.registryConfig.indexConfigs[item].official" color="green">{{
+                $t('i18n_f5c3795be5')
+              }}</n-tag
+              ><n-tag v-if="temp.registryConfig.indexConfigs[item].secure" color="green">{{
+                $t('i18n_fdbc77bd19')
+              }}</n-tag>
+              <n-tag v-for="(item1, index1) in temp.registryConfig.indexConfigs[item].mirrors" :key="index1">{{
+                item1
+              }}</n-tag>
+            </n-list-item>
           </n-list>
         </div>
       </n-timeline-item>

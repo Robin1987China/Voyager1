@@ -257,6 +257,7 @@ public class IndexControl extends BaseServerController {
         //data.put("disabledCaptcha", webConfig.isDisabledCaptcha());
         data.put("notificationPlacement", webConfig.getNotificationPlacement());
         data.put("installId", Voyager1Manifest.getInstance().getInstallId());
+        data.put("version", Voyager1Manifest.getInstance().getVersion());
         // 用于判断是否属于容器部署
         boolean inDocker = (SystemUtil.get("VOYAGER1_PKG") != null && !SystemUtil.get("VOYAGER1_PKG").isEmpty());
         List<String> extendPlugins = new ArrayList<>();

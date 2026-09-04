@@ -60,10 +60,6 @@
         "title": "Build List"
       },
       {
-        "id": "buildHistory",
-        "title": "Building History"
-      },
-      {
         "id": "versionList",
         "title": "Version"
       },
@@ -84,31 +80,19 @@
     "childs": [
       {
         "id": "sshList",
-        "title": "SSH List"
+        "title": "SSH Session"
       },
       {
         "id": "commandList",
         "title": "Command Management"
       },
       {
-        "id": "commandLogList",
-        "title": "Command execution record"
-      },
-      {
-        "id": "scriptAllList",
-        "title": "List of node scripts"
-      },
-      {
         "id": "serverScriptList",
-        "title": "List of scripts"
-      },
-      {
-        "id": "serverScriptLogList",
-        "title": "Script execution record"
+        "title": "Scripts"
       },
       {
         "id": "configWorkspaceEnv",
-        "title": "Environment variable"
+        "title": "Workspace Variables"
       }
     ]
   },
@@ -120,10 +104,6 @@
       {
         "id": "outgivingList",
         "title": "Distribution List"
-      },
-      {
-        "id": "outgivingLog",
-        "title": "Distribution log"
       },
       {
         "id": "outgivingWhitelistDirectory",
@@ -144,10 +124,6 @@
       {
         "id": "monitorList",
         "title": "Watch list"
-      },
-      {
-        "id": "monitorLog",
-        "title": "Monitor log"
       },
       {
         "id": "userOptLog",

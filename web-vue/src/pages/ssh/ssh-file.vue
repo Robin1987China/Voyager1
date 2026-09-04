@@ -63,18 +63,8 @@
     <!-- 表格 -->
     <n-layout-content class="file-content">
       <!-- <div ref="filter" class="filter"></div> -->
-      <n-data-table
-        size="medium"
-        :data="sortFileList"
-        :loading="loading"
-        :columns="columns"
-        :pagination="false"
-        bordered
-        :scroll="{
-          x: 'max-content'
-        }"
-      >
-        <template #title>
+            <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
           <n-space>
             <n-dropdown
               :disabled="!tempNode.nextPath"
@@ -144,10 +134,20 @@
             <span v-if="nowPath">{{ $t('i18n_4e33dde280') }}{{ nowPath }}</span>
             <!-- <span v-if="this.nowPath">{{ this.tempNode.parentDir }}</span> -->
           </n-space>
-        </template>
+        
+      </n-card>
+<n-data-table
+        size="medium"
+        :data="sortFileList"
+        :loading="loading"
+        :columns="columns"
+        :pagination="false"
+        bordered
+        >
+        
 
         <template #bodyCell="{ column, text, record }">
-          <template v-if="column.dataIndex === 'name'">
+          <template v-if="column.key === 'name'">
             <n-tooltip placement="top-start">
               <template #trigger>
                 <span class="tw">
@@ -175,7 +175,7 @@
               <div>{{ $t('i18n_964d939a96') }}{{ record.longname }}</div>
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'dir'">
+          <template v-else-if="column.key === 'dir'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -189,7 +189,7 @@
               `${record.link ? $t('i18n_bfe68d5844') : text ? $t('i18n_767fa455bb') : $t('i18n_2a0c4740f1')}`
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'size'">
+          <template v-else-if="column.key === 'size'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -213,7 +213,7 @@
               text
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'operation'">
+          <template v-else-if="column.key === 'operation'">
             <n-space>
               <n-tooltip>
                 <template #trigger>

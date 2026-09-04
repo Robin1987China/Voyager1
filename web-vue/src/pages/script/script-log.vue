@@ -1,19 +1,8 @@
 <template>
   <div class="">
     <!-- 数据表格 -->
-    <n-data-table
-      :data="list"
-      size="medium"
-      :columns="columns"
-      :pagination="pagination"
-      bordered
-      :row-key="(row) => row.id"
-      :scroll="{
-        x: 'max-content'
-      }"
-      @change="changePage"
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space wrap class="search-box">
           <n-input
             v-model:value="listQuery['%scriptName%']"
@@ -63,9 +52,20 @@
             $t('i18n_4838a3bd20')
           </n-tooltip>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      :data="list"
+      size="medium"
+      :columns="columns"
+      :pagination="pagination"
+      bordered
+      :row-key="(row) => row.id"
+      @change="changePage"
+    >
+      
       <template #bodyCell="{ column, text, record }">
-        <template v-if="column.dataIndex === 'scriptName'">
+        <template v-if="column.key === 'scriptName'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -77,7 +77,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'modifyUser'">
+        <template v-else-if="column.key === 'modifyUser'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -89,14 +89,14 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'triggerExecType'">
+        <template v-else-if="column.key === 'triggerExecType'">
           <span>{{ triggerExecTypeMap[text] || $t('i18n_1622dc9b6b') }}</span>
         </template>
-        <template v-else-if="column.dataIndex === 'workspaceId'">
+        <template v-else-if="column.key === 'workspaceId'">
           <n-tag v-if="text === 'GLOBAL'">{{ $t('i18n_2be75b1044') }}</n-tag>
           <n-tag v-else>{{ $t('i18n_98d69f8b62') }}</n-tag>
         </template>
-        <template v-else-if="column.dataIndex === 'createTimeMillis'">
+        <template v-else-if="column.key === 'createTimeMillis'">
           <n-tooltip>
             <template #trigger>
               <span class="tw">
@@ -108,14 +108,14 @@
             `${parseTime(record.createTimeMillis)}`
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'exitCode'">
+        <template v-else-if="column.key === 'exitCode'">
           <n-tag v-if="text == 0" color="green">{{ $t('i18n_330363dfc5') }}</n-tag>
           <n-tag v-else color="orange">{{ text || '-' }}</n-tag>
         </template>
-        <template v-else-if="column.dataIndex === 'status'">
+        <template v-else-if="column.key === 'status'">
           <span>{{ statusMap[text] || '' }}</span>
         </template>
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-button type="primary" size="small" @click="viewLog(record)">{{ $t('i18n_0ea78e4279') }}</n-button>
 

@@ -162,11 +162,11 @@
         <!-- <n-form-item label="页面导航">
           <n-space>
             <n-switch
-              checked-children="开"
+              :checked-label="开"
               @click="toggleGuide"
-              :checked="!this.guideStatus"
+              :value="!this.guideStatus"
               :disabled="this.getDisabledGuide"
-              un-checked-children="关"
+              :unchecked-label="关"
             />
 
             <div v-if="!this.guideStatus">
@@ -180,7 +180,7 @@
 
           <n-switch
             :checked-label="$t('i18n_0a60ac8f02')"
-            :checked="menuMultipleFlag"
+            :value="menuMultipleFlag"
             :unchecked-label="$t('i18n_c9744f45e7')"
             @click="toggleMenuMultiple"
           />
@@ -189,10 +189,10 @@
           <n-space>
             自动撑开：
             <n-switch
-              checked-children="是"
+              :checked-label="是"
               @click="toggleFullScreenFlag"
-              :checked="this.fullScreenFlag"
-              un-checked-children="否"
+              :value="this.fullScreenFlag"
+              :unchecked-label="否"
             />
           </n-space>
         </n-form-item>
@@ -200,10 +200,10 @@
           <n-space>
             全局配置：
             <n-switch
-              checked-children="显示"
+              :checked-label="显示"
               @click="toggleScrollbarFlag"
-              :checked="this.scrollbarFlag"
-              un-checked-children="不显示"
+              :value="this.scrollbarFlag"
+              :unchecked-label="不显示"
             />
           </n-space>
         </n-form-item> -->
@@ -212,7 +212,7 @@
 
           <n-switch
             :checked-label="$t('i18n_185926bf98')"
-            :checked="fullscreenViewLog"
+            :value="fullscreenViewLog"
             :unchecked-label="$t('i18n_c5a2c23d89')"
             @click="toggleFullscreenViewLog"
           />
@@ -238,7 +238,7 @@
         <n-form-item :label="$t('i18n_4f50cd2a5e')">
           <n-switch
             :checked-label="$t('i18n_03e59bb33c')"
-            :checked="compactView"
+            :value="compactView"
             :unchecked-label="$t('i18n_43e534acf9')"
             @click="toggleCompactView"
           />
@@ -828,7 +828,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 加载修改用户资料对话框
     handleUpdateUser() {
@@ -880,7 +880,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 工作空间切换
     handleWorkspaceChange(item) {

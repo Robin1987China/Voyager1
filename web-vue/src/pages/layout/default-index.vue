@@ -44,6 +44,9 @@
           <div class="sider-menu">
             <side-menu :mode="mode" :theme="menuTheme" />
           </div>
+          <div v-if="version" class="sider-version">
+            {{ collapsed ? '' : $t('i18n_fe2df04a16') + ' ' }}{{ version }}
+          </div>
         </div>
       </n-layout-sider>
     </n-layout-sider>
@@ -166,6 +169,7 @@ watch(
 const collapsed = ref(false)
 const subTitle = ref($t('i18n_03d9de2834'))
 const logoUrl = ref('')
+const version = ref('')
 
 const _appStore = appStore()
 const _guideStore = guideStore()
@@ -209,6 +213,9 @@ const checkSystemHannder = () => {
       voyager1Window_.routerBase = res.data.routerBase || ''
       if (res.data.subTitle) {
         subTitle.value = res.data.subTitle
+      }
+      if (res.data.version) {
+        version.value = res.data.version
       }
 
       // 禁用导航
@@ -345,6 +352,17 @@ const changeCollapsed = () => {
 .sider-menu {
   flex: 1;
   overflow-y: auto;
+}
+.sider-version {
+  flex-shrink: 0;
+  padding: 8px 16px 12px;
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.7);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
 }
 /* 深色主题下的菜单/内容区滚动条（避免渲染成默认亮色/绿色块） */
 .sider-menu::-webkit-scrollbar,

@@ -2,25 +2,8 @@
   <div>
     <div>
       <!-- 数据表格 -->
-      <n-data-table
-        :data="list"
-        size="medium"
-        :columns="columns"
-        :pagination="pagination"
-        bordered
-        :row-key="(row) => row.id"
-        :row-selection="rowSelection"
-        :scroll="{
-          x: 'max-content'
-        }"
-        @change="
-          (pagination, filters, sorter) => {
-            listQuery = CHANGE_PAGE(listQuery, { pagination, sorter })
-            loadData()
-          }
-        "
-      >
-        <template #title>
+            <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
           <n-space>
             <n-input
               v-model:value="listQuery['%name%']"
@@ -72,7 +55,24 @@
               <InfoCircleOutlined /> {{ $t('i18n_1e5533c401') }}
             </n-button>
           </n-space>
-        </template>
+        
+      </n-card>
+<n-data-table
+        :data="list"
+        size="medium"
+        :columns="columns"
+        :pagination="pagination"
+        bordered
+        :row-key="(row) => row.id"
+        :row-selection="rowSelection"
+        @change="
+          (pagination, filters, sorter) => {
+            listQuery = CHANGE_PAGE(listQuery, { pagination, sorter })
+            loadData()
+          }
+        "
+      >
+        
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.tooltip">
             <n-tooltip placement="topLeft">
@@ -86,7 +86,7 @@
               text
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'id'">
+          <template v-else-if="column.key === 'id'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -99,7 +99,7 @@
               text
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'name'">
+          <template v-else-if="column.key === 'name'">
             <n-popover>
               <template #trigger>
                 <span class="tw">
@@ -115,7 +115,7 @@
             </n-popover>
           </template>
 
-          <template v-else-if="column.dataIndex === 'size'">
+          <template v-else-if="column.key === 'size'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -127,7 +127,7 @@
               renderSize(text)
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'source'">
+          <template v-else-if="column.key === 'source'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -140,17 +140,17 @@
             </n-tooltip>
           </template>
 
-          <template v-else-if="column.dataIndex === 'status'">
+          <template v-else-if="column.key === 'status'">
             <n-tag v-if="text === 1" color="green">{{ $t('i18n_df9497ea98') }}</n-tag>
             <n-tag v-else color="red">{{ $t('i18n_162e219f6d') }}</n-tag>
           </template>
 
-          <template v-else-if="column.dataIndex === 'type'">
+          <template v-else-if="column.key === 'type'">
             <n-tag v-if="text === 1">{{ $t('i18n_2a0c4740f1') }}</n-tag>
             <n-tag v-else>{{ $t('i18n_1f4c1042ed') }}</n-tag>
           </template>
 
-          <template v-else-if="column.dataIndex === 'operation'">
+          <template v-else-if="column.key === 'operation'">
             <n-space>
               <!-- <n-button type="primary" size="small" @click="handleEdit(record)">编辑</n-button> -->
               <n-button
@@ -483,7 +483,7 @@ export default {
         workspaceId: ''
       }
       this.editVisible = true
-      this.$refs['editForm']?.resetFields()
+      this.$refs['editForm']?.restoreValidation()
     },
     // 编辑确认
     handleEditOk() {
@@ -504,7 +504,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除文件
     handleDelete(record) {

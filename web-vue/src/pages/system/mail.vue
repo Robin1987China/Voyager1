@@ -14,7 +14,7 @@
       <n-form-item :label="$t('i18n_819767ada1')" path="user">
         <n-input v-model:value="temp.user" type="text" :placeholder="$t('i18n_b85b213579')" />
       </n-form-item>
-      <n-form-item :label="$t('i18n_a810520460')" :name="`${temp.type === 'add' ? 'pass' : 'pass-update'}`">
+      <n-form-item :label="$t('i18n_a810520460')" :path="`${temp.type === 'add' ? 'pass' : 'pass-update'}`">
         <n-input v-model:value="temp.pass" type="password" :placeholder="$t('i18n_fc5fb962da')" />
       </n-form-item>
       <n-form-item :label="$t('i18n_5893fa2280')" path="from">

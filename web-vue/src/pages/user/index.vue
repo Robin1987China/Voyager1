@@ -82,7 +82,7 @@
             :checked-label="$t('i18n_0a60ac8f02')"
             :unchecked-label="$t('i18n_c9744f45e7')"
             disabled
-            :checked="record.systemUser == 1"
+            :value="record.systemUser == 1"
           />
         </template>
         <template v-else-if="column.dataIndex === 'status'">
@@ -91,7 +91,7 @@
             :checked-label="$t('i18n_7854b52a88')"
             :unchecked-label="$t('i18n_710ad08b11')"
             disabled
-            :checked="record.status != 0"
+            :value="record.status != 0"
           />
         </template>
 
@@ -175,7 +175,7 @@
                 <template #trigger>
                   <span class="tw">
                     <n-switch
-                      :checked="temp.systemUser == 1"
+                      :value="temp.systemUser == 1"
                       :disabled="temp.parent === 'sys'"
                       :checked-label="$t('i18n_0a60ac8f02')"
                       :unchecked-label="$t('i18n_c9744f45e7')"
@@ -205,7 +205,7 @@
             <n-grid-item :span="4">
               <n-form-item>
                 <n-switch
-                  :checked="temp.status != 0"
+                  :value="temp.status != 0"
                   :disabled="temp.parent === 'sys'"
                   :checked-label="$t('i18n_7854b52a88')"
                   :unchecked-label="$t('i18n_710ad08b11')"
@@ -367,7 +367,7 @@ export default {
       rules: {
         id: [{ required: true, message: this.$t('i18n_693a06987c'), trigger: 'blur' }],
         name: [{ required: true, message: this.$t('i18n_c00fb0217d'), trigger: 'blur' }],
-        permissionGroup: [{ required: true, message: this.$t('i18n_e8073b3843'), trigger: 'blur' }]
+        permissionGroup: [{ required: true, type: 'array', message: this.$t('i18n_e8073b3843'), trigger: ['blur', 'change'] }]
       },
       showUserPwd: false,
       confirmLoading: false,
@@ -407,13 +407,15 @@ export default {
     handleAdd() {
       this.temp = { systemUser: 0 }
       this.createOption = true
-      this.listUserPermissionListAll()
-      this.editUserVisible = true
-      this.$refs['editUserForm'] && this.$refs['editUserForm'].resetFields()
+      this.listUserPermissionListAll().then(() => {
+        this.editUserVisible = true
+        this.$refs['editUserForm'] && this.$refs['editUserForm'].restoreValidation()
+      })
     },
     //
+    // 加载权限组列表（返回 Promise，供新增/编辑先加载再开弹框，避免 n-select 选项未就绪导致 placeholder 残留）
     listUserPermissionListAll() {
-      getUserPermissionListAll().then((res) => {
+      return getUserPermissionListAll().then((res) => {
         if (res.code === 200 && res.data) {
           this.permissionGroup = res.data
         }
@@ -421,6 +423,7 @@ export default {
           $notification.warn({
             message: this.$t('i18n_d4744ce461')
           })
+        return res
       })
     },
     // 修改用户
@@ -431,45 +434,51 @@ export default {
         permissionGroup: (record.permissionGroup || '').split('@').filter((item) => item),
         status: record.status === undefined ? 1 : record.status
       }
-      this.listUserPermissionListAll()
-      this.editUserVisible = true
-      this.$refs['editUserForm'] && this.$refs['editUserForm'].resetFields()
+      this.listUserPermissionListAll().then(() => {
+        this.editUserVisible = true
+        this.$refs['editUserForm'] && this.$refs['editUserForm'].restoreValidation()
+      })
     },
     // 提交用户数据
     handleEditUserOk() {
       // 检验表单
-      this.$refs['editUserForm'].validate().then(() => {
-        const paramsTemp = Object.assign({}, this.temp)
+      this.$refs['editUserForm']
+        .validate()
+        .then(() => {
+          const paramsTemp = Object.assign({}, this.temp)
 
-        paramsTemp.type = this.createOption ? 'add' : 'edit'
-        paramsTemp.permissionGroup = (paramsTemp.permissionGroup || []).join('@')
+          paramsTemp.type = this.createOption ? 'add' : 'edit'
+          paramsTemp.permissionGroup = (paramsTemp.permissionGroup || []).join('@')
 
-        // 需要判断当前操作是【新增】还是【修改】
-        this.confirmLoading = true
-        editUser(paramsTemp)
-          .then((res) => {
-            if (res.code === 200) {
-              if (paramsTemp.type === 'add') {
-                this.temp = {
-                  title: this.$t('i18n_2d2238d216'),
-                  randomPwd: res.data.randomPwd
+          // 需要判断当前操作是【新增】还是【修改】
+          this.confirmLoading = true
+          editUser(paramsTemp)
+            .then((res) => {
+              if (res.code === 200) {
+                if (paramsTemp.type === 'add') {
+                  this.temp = {
+                    title: this.$t('i18n_2d2238d216'),
+                    randomPwd: res.data.randomPwd
+                  }
+
+                  this.showUserPwd = true
+                } else {
+                  $notification.success({
+                    message: res.msg
+                  })
                 }
 
-                this.showUserPwd = true
-              } else {
-                $notification.success({
-                  message: res.msg
-                })
+                this.editUserVisible = false
+                this.loadData()
               }
-
-              this.editUserVisible = false
-              this.loadData()
-            }
-          })
-          .finally(() => {
-            this.confirmLoading = false
-          })
-      })
+            })
+            .finally(() => {
+              this.confirmLoading = false
+            })
+        })
+        .catch(() => {
+          // 校验失败：n-form-item 已展示具体错误，静默处理，避免 Uncaught (in promise)
+        })
     },
     // 删除用户
     handleDelete(record) {

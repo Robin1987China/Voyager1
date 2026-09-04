@@ -399,7 +399,7 @@
           <n-input v-model:value="temp.voyager1Username" :placeholder="$t('i18n_f8460626f0')" />
           <template #help>{{ $t('i18n_eec342f34e') }}</template>
         </n-form-item>
-        <n-form-item :name="`${temp.id ? 'loginPwd-update' : 'loginPwd'}`">
+        <n-form-item :path="`${temp.id ? 'loginPwd-update' : 'loginPwd'}`">
           <template #label>
             <n-tooltip>
               <template #trigger>
@@ -532,9 +532,8 @@
     >
       <n-space direction="vertical" style="width: 100%">
         <n-alert v-if="nodeList && nodeList.length" :title="$t('i18n_566c67e764')" type="info" show-icon />
-        <n-list bordered :data="nodeList">
-          <template #renderItem="{ item }">
-            <n-list-item style="display: block">
+        <n-list bordered>
+<n-list-item v-for="(item, index) in nodeList" :key="index" style="display: block">
               <n-grid>
                 <n-grid-item :span="10">{{ $t('i18n_5d83794cfa') }}{{ item.name }}</n-grid-item>
                 <n-grid-item :span="10"
@@ -546,8 +545,7 @@
                 ></n-grid-item>
               </n-grid>
             </n-list-item>
-          </template>
-        </n-list>
+</n-list>
       </n-space>
     </CustomModal>
     <!-- 分发节点授权 -->
@@ -906,7 +904,7 @@ export default {
               $notification.success({
                 message: res.msg
               })
-              this.$refs['editNodeForm'].resetFields()
+              this.$refs['editNodeForm'].restoreValidation()
               this.editVisible = false
               this.loadGroupList()
               this.getMachineList()
@@ -915,7 +913,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     showMachineInfo(item) {
       this.temp = { ...item }

@@ -565,7 +565,7 @@
 
         <n-form-item :label="$t('i18n_b86224e030')" path="openStatus">
           <n-switch
-            :checked="temp.openStatus == 1"
+            :value="temp.openStatus == 1"
             :checked-label="$t('i18n_7854b52a88')"
             :unchecked-label="$t('i18n_5c56a88945')"
             default-checked
@@ -983,7 +983,7 @@ export default {
               $notification.success({
                 message: res.msg
               })
-              this.$refs['editNodeForm'].resetFields()
+              this.$refs['editNodeForm'].restoreValidation()
               this.editNodeVisible = false
               this.loadData()
               this.loadGroupList()
@@ -992,7 +992,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     handleDelete(record) {
       $confirm({

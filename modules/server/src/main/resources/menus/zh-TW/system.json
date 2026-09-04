@@ -16,12 +16,12 @@
       },
       {
         "id": "machine_ssh_info",
-        "title": "SSH管理",
+        "title": "SSH 資產",
         "role": "system"
       },
       {
         "id": "machine_docker_info",
-        "title": "Docker管理",
+        "title": "Docker 資產",
         "role": "system"
       },
       {
@@ -31,7 +31,7 @@
       },
       {
         "id": "script_library",
-        "title": "指令碼庫",
+        "title": "共享指令碼庫",
         "role": "system"
       }
     ]
@@ -75,12 +75,7 @@
       },
       {
         "id": "user_log",
-        "title": "操作日誌",
-        "role": "system"
-      },
-      {
-        "id": "user_login_log",
-        "title": "登入日誌",
+        "title": "稽核日誌",
         "role": "system"
       }
     ]
@@ -125,11 +120,11 @@
         "title": "資料庫備份",
         "role": "system",
         "storageMode": "H2"
-      },
-      {
-        "id": "about",
-        "title": "關於系統"
       }
     ]
+  },
+  {
+    "id": "about",
+    "title": "關於系統"
   }
 ]

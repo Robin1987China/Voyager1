@@ -97,38 +97,34 @@
               </ul>
             </template>
           </n-alert>
-          <n-list size="small" bordered :data="machineLonelyData.projects">
-            <template #renderItem="{ item }">
-              <n-list-item>
-                <n-space>
-                  <span>{{ $t('i18n_fa7f6fccfd') }}{{ item.name }}</span>
-                  <span>{{ $t('i18n_116d22f2ab') }}{{ item.id }}</span>
-                  <span>{{ $t('i18n_e0fcbca309') }}{{ item.workspaceId }}</span>
-                  <span>{{ $t('i18n_2256690a28') }}{{ item.nodeId }}</span>
-                  <n-button type="primary" size="small" danger @click="openCorrectLonely(item, 'project')">{{
-                    $t('i18n_23231543a4')
-                  }}</n-button>
-                </n-space>
-              </n-list-item>
-            </template>
+          <n-list size="small" bordered>
+            <n-list-item v-for="(item, index) in machineLonelyData.projects" :key="index">
+              <n-space>
+                <span>{{ $t('i18n_fa7f6fccfd') }}{{ item.name }}</span>
+                <span>{{ $t('i18n_116d22f2ab') }}{{ item.id }}</span>
+                <span>{{ $t('i18n_e0fcbca309') }}{{ item.workspaceId }}</span>
+                <span>{{ $t('i18n_2256690a28') }}{{ item.nodeId }}</span>
+                <n-button type="primary" size="small" danger @click="openCorrectLonely(item, 'project')">{{
+                  $t('i18n_23231543a4')
+                }}</n-button>
+              </n-space>
+            </n-list-item>
             <template #header>
               <div>{{ $t('i18n_45fbb7e96a') }}</div>
             </template>
           </n-list>
-          <n-list size="small" bordered :data="machineLonelyData.scripts">
-            <template #renderItem="{ item }">
-              <n-list-item
-                ><n-space>
-                  <span>{{ $t('i18n_b61a7e3ace') }}{{ item.name }}</span>
-                  <span>{{ $t('i18n_d0f53484dc') }}{{ item.id }}</span>
-                  <span>{{ $t('i18n_e0fcbca309') }}{{ item.workspaceId }}</span>
-                  <span>{{ $t('i18n_2256690a28') }}{{ item.nodeId }}</span>
-                  <n-button type="primary" size="small" danger @click="openCorrectLonely(item, 'script')">{{
-                    $t('i18n_23231543a4')
-                  }}</n-button>
-                </n-space>
-              </n-list-item>
-            </template>
+          <n-list size="small" bordered>
+            <n-list-item v-for="(item, index) in machineLonelyData.scripts" :key="index">
+              <n-space>
+                <span>{{ $t('i18n_b61a7e3ace') }}{{ item.name }}</span>
+                <span>{{ $t('i18n_d0f53484dc') }}{{ item.id }}</span>
+                <span>{{ $t('i18n_e0fcbca309') }}{{ item.workspaceId }}</span>
+                <span>{{ $t('i18n_2256690a28') }}{{ item.nodeId }}</span>
+                <n-button type="primary" size="small" danger @click="openCorrectLonely(item, 'script')">{{
+                  $t('i18n_23231543a4')
+                }}</n-button>
+              </n-space>
+            </n-list-item>
             <template #header>
               <div>{{ $t('i18n_c2b2f87aca') }}</div>
             </template>

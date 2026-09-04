@@ -134,7 +134,7 @@ public class ScriptLibraryServer implements DataService<ScriptLibraryModel> {
                     map.put(tag, scriptLibraryModel);
                 }
             }
-            Assert.notNull(scriptLibraryModel, String.format("未找到脚本库信息:{}, 请检查引用标记是否正确或者脚本是否被删除", tag));
+            Assert.notNull(scriptLibraryModel, String.format("未找到脚本库信息:%s, 请检查引用标记是否正确或者脚本是否被删除", tag));
             String modelScript = scriptLibraryModel.getScript();
             modelScript = modelScript.replace("${", placeholder);
             matcher.appendReplacement(modified, modelScript);

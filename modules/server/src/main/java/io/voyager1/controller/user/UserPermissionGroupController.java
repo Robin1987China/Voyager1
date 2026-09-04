@@ -195,7 +195,7 @@ public class UserPermissionGroupController extends BaseServerController {
         Assert.notNull(groupBean, "数据不存在");
         // 判断是否绑定用户
         Entity entity = Entity.create();
-        entity.set("permissionGroup", String.format(" like '%%s%s%s%'", "@", id, "@"));
+        entity.set("permissionGroup", "like %@" + id + "@%");
         long count = userService.count(entity);
         Assert.state(count == 0, "当前权限组还绑定用户,不能直接删除（需要提前解绑或者删除关联数据后才能删除）");
         // 判断是否被 oauth2 绑定
@@ -204,7 +204,7 @@ public class UserPermissionGroupController extends BaseServerController {
             String dbKey = value.get(0);
             BaseOauth2Config baseOauth2Config = systemParametersServer.getConfigDefNewInstance(dbKey, value.get(1));
             String permissionGroup = baseOauth2Config.getPermissionGroup();
-            List<String> permissionGroupList = java.util.Arrays.asList(permissionGroup.split(java.util.regex.Pattern.quote("@")));
+            List<String> permissionGroupList = io.voyager1.util.StrUtil.splitTrim(permissionGroup, "@");
             Assert.state(!CollUtil.contains(permissionGroupList, groupBean.getId()), String.format("当前权限组被 oauth2[%s] 绑定，不能直接删除（需要提前解绑或者删除关联数据后才能删除）", baseOauth2Config.provide()));
         }
         //

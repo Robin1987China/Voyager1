@@ -757,7 +757,7 @@ export default {
             })
           return true
         }
-      })
+      }).catch(() => {})
     },
     //
     restForm(e) {

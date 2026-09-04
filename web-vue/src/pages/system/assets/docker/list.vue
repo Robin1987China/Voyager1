@@ -542,9 +542,8 @@
         />
         <n-tabs>
           <n-tab-pane name="1" tab="docker">
-            <n-list bordered :data="workspaceDockerData && workspaceDockerData.dockerList">
-              <template #renderItem="{ item }">
-                <n-list-item style="display: block">
+            <n-list bordered>
+<n-list-item v-for="(item, index) in workspaceDockerData && workspaceDockerData.dockerList" :key="index" style="display: block">
                   <n-grid>
                     <n-grid-item :span="10">Docker {{ $t('i18n_5b47861521') }}{{ item.name }}</n-grid-item>
                     <n-grid-item :span="10"
@@ -553,13 +552,11 @@
                     <n-grid-item :span="4"> </n-grid-item>
                   </n-grid>
                 </n-list-item>
-              </template>
-            </n-list>
+</n-list>
           </n-tab-pane>
           <n-tab-pane name="2" :tab="$t('i18n_85fe5099f6')">
-            <n-list bordered :data="workspaceDockerData && workspaceDockerData.swarmList">
-              <template #renderItem="{ item }">
-                <n-list-item style="display: block">
+            <n-list bordered>
+<n-list-item v-for="(item, index) in workspaceDockerData && workspaceDockerData.swarmList" :key="index" style="display: block">
                   <n-grid>
                     <n-grid-item :span="10">{{ $t('i18n_f668c8c881') }}{{ item.name }}</n-grid-item>
                     <n-grid-item :span="10"
@@ -568,8 +565,7 @@
                     <n-grid-item :span="4"> </n-grid-item>
                   </n-grid>
                 </n-list-item>
-              </template>
-            </n-list>
+</n-list>
           </n-tab-pane>
         </n-tabs>
       </n-space>
@@ -882,7 +878,7 @@ export default {
       this.temp = {}
       this.editVisible = true
       this.sshListData()
-      this.$refs['editForm']?.resetFields()
+      this.$refs['editForm']?.restoreValidation()
     },
     // 控制台
     handleConsole(record) {
@@ -933,7 +929,7 @@ export default {
       this.sshListData()
       // this.temp = { ...this.temp };
 
-      this.$refs['editForm']?.resetFields()
+      this.$refs['editForm']?.restoreValidation()
     },
 
     // 提交  数据
@@ -969,7 +965,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除
     handleDelete(record) {
@@ -1037,7 +1033,7 @@ export default {
         id: record.id
       }
       this.initSwarmVisible = true
-      this.$refs['initForm']?.resetFields()
+      this.$refs['initForm']?.restoreValidation()
     },
     handleSwarm() {
       this.$refs['initForm'].validate().then(() => {
@@ -1056,7 +1052,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 加入集群
     joinSwarm(record) {
@@ -1066,7 +1062,7 @@ export default {
           id: record.id
         }
         this.joinSwarmVisible = true
-        this.$refs['joinForm']?.resetFields()
+        this.$refs['joinForm']?.restoreValidation()
       })
     },
     // 处理加入集群
@@ -1088,7 +1084,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     //
     handleTryLocalDocker() {

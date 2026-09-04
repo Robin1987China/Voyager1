@@ -131,6 +131,6 @@ const handleEditOk = () => {
     if (temp.value.key !== temp.value.oldKey && temp.value.oldKey) {
       delete parameterMap.value[temp.value.oldKey]
     }
-  })
+  }).catch(() => {})
 }
 </script>

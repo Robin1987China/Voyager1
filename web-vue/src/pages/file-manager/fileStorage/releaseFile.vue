@@ -327,7 +327,7 @@ export default {
           }
         ],
 
-        taskDataIds: [{ required: true, message: this.$t('i18n_3e51d1bc9c'), trigger: 'blur' }]
+        taskDataIds: [{ required: true, type: 'array', message: this.$t('i18n_3e51d1bc9c'), trigger: ['blur', 'change'] }]
       },
       sshList: [],
       accessList: [],
@@ -385,7 +385,7 @@ export default {
           ...this.temp,
           taskDataIds: this.temp.taskDataIds?.join(',')
         })
-      })
+      }).catch(() => {})
     },
     // 加载项目授权列表
     loadAccesList() {

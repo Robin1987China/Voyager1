@@ -1,17 +1,7 @@
 <template>
   <div>
-    <n-data-table
-      :data="list"
-      size="medium"
-      :columns="columns"
-      bordered
-      :row-key="(row) => row.id"
-      :pagination="false"
-      :scroll="{
-        x: 'max-content'
-      }"
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space wrap class="search-box">
           <n-input
             v-if="!serviceId"
@@ -64,7 +54,17 @@
             </template>
           </n-statistic>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      :data="list"
+      size="medium"
+      :columns="columns"
+      bordered
+      :row-key="(row) => row.id"
+      :pagination="false"
+      >
+      
 
       <template #bodyCell="{ column, text, record }">
         <template v-if="column.tooltip">
@@ -80,7 +80,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'address'">
+        <template v-else-if="column.key === 'address'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -92,7 +92,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'desiredState'">
+        <template v-else-if="column.key === 'desiredState'">
           <n-popover placement="top-start">
             <template #trigger>
               <span class="tw">
@@ -120,7 +120,7 @@
           </n-popover>
         </template>
 
-        <template v-else-if="column.dataIndex === 'os'">
+        <template v-else-if="column.key === 'os'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -138,7 +138,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'updatedAt'">
+        <template v-else-if="column.key === 'updatedAt'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -153,7 +153,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-button size="small" type="primary" @click="handleLog(record)">{{ $t('i18n_456d29ef8b') }}</n-button>
           </n-space>

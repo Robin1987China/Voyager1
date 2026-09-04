@@ -1,6 +1,9 @@
 <template>
   <div>
-    <!-- 表格 -->
+    <n-tabs v-model:value="activeTab" type="line" animated>
+      <n-tab-pane name="list" :tab="$t('i18n_fcba60e773')">
+        <template #default>
+          <!-- 表格 -->
     <!-- <n-card :body-style="{ padding: '10px' }"> -->
 
     <!-- <template v-if="layoutType === 'card'">
@@ -480,6 +483,12 @@
         </template>
       </template>
     </CustomTable>
+        </template>
+      </n-tab-pane>
+      <n-tab-pane name="history" :tab="$t('i18n_a05c1667ca')">
+        <build-history />
+      </n-tab-pane>
+    </n-tabs>
     <!-- </template> -->
     <!-- </n-card> -->
 
@@ -664,6 +673,7 @@ import { NIcon } from 'naive-ui'
 
 import BuildLog from './log'
 import BuildItem from './item'
+import BuildHistory from './history'
 import CustomSelect from '@/components/customSelect'
 import {
   clearBuid,
@@ -696,6 +706,7 @@ export default {
   components: {
     BuildLog,
     BuildItem,
+    BuildHistory,
     CustomSelect
   },
   props: {
@@ -721,6 +732,7 @@ export default {
   data() {
     return {
       Empty,
+      activeTab: 'list',
       sizeOptions: ['8', '12', '16', '20', '24'],
       releaseMethodMap,
       loading: false,

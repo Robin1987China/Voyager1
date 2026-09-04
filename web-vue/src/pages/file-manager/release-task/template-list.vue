@@ -1,23 +1,7 @@
 <template>
   <div>
-    <n-data-table
-      size="medium"
-      :data="list"
-      :columns="columns"
-      bordered
-      :pagination="pagination"
-      :row-key="(row) => row.id"
-      :scroll="{
-        x: 'max-content'
-      }"
-      @change="
-        (pagination, filters, sorter) => {
-          listQuery = CHANGE_PAGE(listQuery, { pagination, sorter })
-          loadData()
-        }
-      "
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space wrap class="search-box">
           <n-input
             v-model:value="listQuery['%name%']"
@@ -52,7 +36,23 @@
             $t('i18n_4838a3bd20')
           </n-tooltip>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      size="medium"
+      :data="list"
+      :columns="columns"
+      bordered
+      :pagination="pagination"
+      :row-key="(row) => row.id"
+      @change="
+        (pagination, filters, sorter) => {
+          listQuery = CHANGE_PAGE(listQuery, { pagination, sorter })
+          loadData()
+        }
+      "
+    >
+      
       <template #bodyCell="{ column, text, record }">
         <template v-if="column.tooltip">
           <n-tooltip placement="topLeft">
@@ -67,7 +67,7 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'fileId'">
+        <template v-else-if="column.key === 'fileId'">
           <n-tooltip>
             <template #trigger>
               <span class="tw">
@@ -80,12 +80,12 @@
           </n-tooltip>
         </template>
 
-        <template v-else-if="column.dataIndex === 'fileType'">
+        <template v-else-if="column.key === 'fileType'">
           <span v-if="text == 2">{{ $t('i18n_28f6e7a67b') }}</span>
           <span v-else>{{ $t('i18n_26183c99bf') }}</span>
         </template>
 
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-button type="primary" danger size="small" @click="handleDelete(record)">{{
               $t('i18n_2f4aaddde3')

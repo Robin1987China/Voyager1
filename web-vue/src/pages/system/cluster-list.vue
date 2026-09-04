@@ -1,24 +1,8 @@
 <template>
   <div>
     <!-- 数据表格 -->
-    <n-data-table
-      :data="list"
-      :columns="columns"
-      size="medium"
-      :pagination="pagination"
-      bordered
-      :scroll="{
-        x: 'max-content'
-      }"
-      :row-key="(row) => row.id"
-      @change="
-        (pagination, filters, sorter) => {
-          listQuery = CHANGE_PAGE(listQuery, { pagination, sorter })
-          loadData()
-        }
-      "
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space direction="vertical" style="width: 100%">
           <div>
             <template v-for="(val, key) in groupMap" :key="key">
@@ -80,7 +64,23 @@
             </n-tooltip>
           </n-space>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      :data="list"
+      :columns="columns"
+      size="medium"
+      :pagination="pagination"
+      bordered
+      :row-key="(row) => row.id"
+      @change="
+        (pagination, filters, sorter) => {
+          listQuery = CHANGE_PAGE(listQuery, { pagination, sorter })
+          loadData()
+        }
+      "
+    >
+      
       <template #bodyCell="{ column, text, record }">
         <template v-if="column.tooltip">
           <n-tooltip placement="topLeft">
@@ -94,7 +94,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'url'">
+        <template v-else-if="column.key === 'url'">
           <n-tooltip>
             <template #trigger>
               <span class="tw">
@@ -111,7 +111,7 @@
             'i18n_8d13037eb7' )}${record.statusMsg || ''}`
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_95b351c862') }}</n-button>
             <n-button size="small" type="primary" danger @click="handleDelete(record)">{{
@@ -250,7 +250,7 @@ export default {
       // 表单校验规则
       rules: {
         name: [{ required: true, message: this.$t('i18n_debdfce084'), trigger: 'blur' }],
-        linkGroups: [{ required: true, message: this.$t('i18n_3d3d3ed34c'), trigger: 'blur' }]
+        linkGroups: [{ required: true, type: 'array', message: this.$t('i18n_3d3d3ed34c'), trigger: ['blur', 'change'] }]
         // url: [{ required: true, message: "请输入集群访问地址", trigger: "blur" }],
       },
       editVisible: false,
@@ -341,7 +341,7 @@ export default {
               $notification.success({
                 message: res.msg
               })
-              this.$refs['editForm'].resetFields()
+              this.$refs['editForm'].restoreValidation()
               this.editVisible = false
               this.loadData()
             }
@@ -349,7 +349,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     //
     openUrl(url) {

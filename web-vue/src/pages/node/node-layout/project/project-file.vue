@@ -39,18 +39,8 @@
         </n-layout-sider>
         <!-- 表格 -->
         <n-layout-content class="file-content">
-          <n-data-table
-            :data="fileList"
-            size="medium"
-            :loading="loading"
-            :columns="columns"
-            :pagination="false"
-            bordered
-            :scroll="{
-              x: 'max-content'
-            }"
-          >
-            <template #title>
+                    <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
               <!-- <n-tag color="#2db7f5">项目目录: {{ absPath }}</n-tag>-->
               <n-space>
                 <n-dropdown
@@ -125,10 +115,20 @@
                 <n-tag v-if="uploadPath" color="#2db7f5">{{ $t('i18n_2c8109fa0b') }}{{ uploadPath || '' }}</n-tag>
                 <div>{{ $t('i18n_9e98fa5c0d') }}</div>
               </n-space>
-            </template>
+            
+          </n-card>
+<n-data-table
+            :data="fileList"
+            size="medium"
+            :loading="loading"
+            :columns="columns"
+            :pagination="false"
+            bordered
+            >
+            
 
             <template #bodyCell="{ column, text, record }">
-              <template v-if="column.dataIndex === 'filename'">
+              <template v-if="column.key === 'filename'">
                 <n-tooltip placement="top-start">
                   <template #trigger>
                     <span class="tw">
@@ -190,10 +190,10 @@
                   <n-button text><CompressOutlined />{{ $t('i18n_072fa90836') }}</n-button>
                 </n-tooltip>
               </template>
-              <template v-else-if="column.dataIndex === 'isDirectory'">
+              <template v-else-if="column.key === 'isDirectory'">
                 <span>{{ text ? $t('i18n_767fa455bb') : $t('i18n_2a0c4740f1') }}</span>
               </template>
-              <template v-else-if="column.dataIndex === 'fileSizeLong'">
+              <template v-else-if="column.key === 'fileSizeLong'">
                 <n-tooltip placement="topLeft">
                   <template #trigger>
                     {{ text ? renderSize(text) : record.fileSize }}
@@ -201,7 +201,7 @@
                   `${text ? renderSize(text) : record.fileSize}`
                 </n-tooltip>
               </template>
-              <template v-else-if="column.dataIndex === 'modifyTimeLong'">
+              <template v-else-if="column.key === 'modifyTimeLong'">
                 <n-tooltip>
                   <template #trigger>
                     <span class="tw">
@@ -213,7 +213,7 @@
                   `${parseTime(record.modifyTimeLong)}}`
                 </n-tooltip>
               </template>
-              <template v-else-if="column.dataIndex === 'operation'">
+              <template v-else-if="column.key === 'operation'">
                 <n-space>
                   <template v-if="record.isDirectory">
                     <n-tooltip>
@@ -1098,12 +1098,12 @@ export default {
     },
     //打开远程上传
     openRemoteUpload() {
-      // this.$refs.ruleForm.resetFields();
+      // this.$refs.ruleForm.restoreValidation();
       this.uploadRemoteFileVisible = true
     },
     //关闭远程上传
     closeRemoteUpload() {
-      //   this.$refs.ruleForm.resetFields();
+      //   this.$refs.ruleForm.restoreValidation();
       this.uploadRemoteFileVisible = false
     },
     //处理上传文件
@@ -1132,7 +1132,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     /**
      * 根据key获取树节点

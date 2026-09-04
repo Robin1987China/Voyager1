@@ -18,13 +18,7 @@
         </template>
         <n-space direction="vertical" style="width: 100%">
           <template v-for="(item, index) in ipListArray" :key="index">
-            <n-list size="small" bordered :data="item.ips">
-              <template #renderItem="{ item }">
-                <n-list-item
-                  >{{ item.ip }}
-                  <n-tag v-for="(item, idx) in item.labels" :key="idx">{{ label }}</n-tag>
-                </n-list-item>
-              </template>
+            <n-list size="small" bordered>
               <template #header>
                 <div>
                   {{ item.name }} <n-tag>{{ item.displayName }}</n-tag>
@@ -32,12 +26,16 @@
                   <n-tag v-if="item.loopback">{{ $t('i18n_4393b5e25b') }}</n-tag>
                 </div>
               </template>
+              <n-list-item v-for="(ipItem, ipIndex) in item.ips" :key="ipIndex">
+                {{ ipItem.ip }}
+                <n-tag v-for="(labelItem, labelIdx) in ipItem.labels" :key="labelIdx">{{ labelItem }}</n-tag>
+              </n-list-item>
             </n-list>
           </template>
         </n-space>
       </n-collapse-item>
       <n-collapse-item key="ping" :header="$t('i18n_bc4b0fd88a')">
-        <n-form ref="form" :model="pingData" :rules="pingRules" @finish="onPingSubmit">
+        <n-form ref="form" :model="pingData" :rules="pingRules" @submit.prevent="onPingSubmit">
           <n-form-item :label="$t('i18n_02d9819dda')" path="">
             <n-alert :title="$t('i18n_1dc9514548')" banner />
           </n-form-item>
@@ -82,7 +80,7 @@
         </n-form>
       </n-collapse-item>
       <n-collapse-item key="telnet" :header="$t('i18n_97d08b02e7')">
-        <n-form ref="form" :model="telnetData" :rules="telnetRules" @finish="onTelnetSubmit">
+        <n-form ref="form" :model="telnetData" :rules="telnetRules" @submit.prevent="onTelnetSubmit">
           <n-form-item label="HOST" path="host">
             <n-input
               v-model:value="telnetData.host"
@@ -200,10 +198,10 @@ const pingRules = ref({
 const pingLoading = ref(false)
 const pingReulst = ref({})
 
-const onPingSubmit = (value) => {
+const onPingSubmit = () => {
   pingLoading.value = true
   pingReulst.value = {}
-  netPing(value)
+  netPing(pingData.value)
     .then((res) => {
       if (res.code !== 200) {
         $notification.warn({
@@ -242,10 +240,10 @@ const telnetRules = ref({
 const telnetLoading = ref(false)
 const telnetReulst = ref({})
 
-const onTelnetSubmit = (value) => {
+const onTelnetSubmit = () => {
   telnetLoading.value = true
   telnetReulst.value = {}
-  netTelnet(value)
+  netTelnet(telnetData.value)
     .then((res) => {
       if (res.code !== 200) {
         $notification.warn({

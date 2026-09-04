@@ -38,6 +38,27 @@ changeLang(defaultLocale).then(() => {
     }
   }
 
+  // 兜底捕获未处理的 Promise 拒绝与运行时异常，记录完整堆栈便于定位（不中断应用）
+  window.addEventListener('unhandledrejection', (event) => {
+    const reason = (event as PromiseRejectionEvent).reason
+    console.error('[unhandledrejection]', reason)
+    ;(window as any).__voyager1_lastError = {
+      time: new Date().toISOString(),
+      type: 'unhandledrejection',
+      message: String((reason as Error)?.message || reason),
+      stack: String((reason as Error)?.stack || '')
+    }
+  })
+  window.addEventListener('error', (event) => {
+    console.error('[window-error]', event.error || event.message)
+    ;(window as any).__voyager1_lastError = {
+      time: new Date().toISOString(),
+      type: 'error',
+      message: String(event.message || ''),
+      stack: String((event.error as Error)?.stack || event.message || '')
+    }
+  })
+
   app.mount('#app')
 })
 //console.log('app done', new Date().getTime())

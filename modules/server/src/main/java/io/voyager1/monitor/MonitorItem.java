@@ -222,9 +222,9 @@ public class MonitorItem implements Task {
                     if (reJson.success()) {
                         // 重启成功
                         runStatus = true;
-                        title = String.format("【{}】节点的【{}】项目{}已经停止，已经执行重启操作, 结果成功", nodeModel.getName(), projectName, copyMsg);
+                        title = String.format("【%s】节点的【%s】项目%s已经停止，已经执行重启操作, 结果成功", nodeModel.getName(), projectName, copyMsg);
                     } else {
-                        title = String.format("【{}】节点的【{}】项目{}已经停止，已经执行重启操作, 结果失败", nodeModel.getName(), projectName, copyMsg);
+                        title = String.format("【%s】节点的【%s】项目%s已经停止，已经执行重启操作, 结果失败", nodeModel.getName(), projectName, copyMsg);
                     }
                     context = "重启结果：" + reJson;
                 } catch (Exception e) {

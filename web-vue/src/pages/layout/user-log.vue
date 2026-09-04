@@ -3,24 +3,8 @@
     <n-tabs v-model:value="tabKey">
       <n-tab-pane :key="1" :tab="$t('i18n_cda84be2f6')">
         <!-- 数据表格 -->
-        <n-data-table
-          size="medium"
-          :data="operatelist"
-          :columns="operatecolumns"
-          :pagination="operatecpagination"
-          bordered
-          :row-key="(row) => row.id"
-          @change="
-            (pagination, filters, sorter) => {
-              operatelistQuery = CHANGE_PAGE(operatelistQuery, {
-                pagination,
-                sorter
-              })
-              operaterloadData()
-            }
-          "
-        >
-          <template #title>
+                <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
             <n-space>
               <n-select
                 v-model:value="operatelistQuery.classFeature"
@@ -59,9 +43,28 @@
                 $t('i18n_4838a3bd20')
               </n-tooltip>
             </n-space>
-          </template>
-          <template #bodyCell="{ column, text }">
-            <template v-if="column.dataIndex === 'classFeature'">
+          
+        </n-card>
+<n-data-table
+          size="medium"
+          :data="operatelist"
+          :columns="operatecolumns"
+          :pagination="operatecpagination"
+          bordered
+          :row-key="(row) => row.id"
+          @change="
+            (pagination, filters, sorter) => {
+              operatelistQuery = CHANGE_PAGE(operatelistQuery, {
+                pagination,
+                sorter
+              })
+              operaterloadData()
+            }
+          "
+        >
+          
+          <template #bodyCell="{ column, text, row }">
+            <template v-if="column.key === 'classFeature'">
               <n-tooltip placement="topLeft">
                 <template #trigger>
                   <span class="tw">
@@ -73,7 +76,7 @@
                 classFeatureMap[text]
               </n-tooltip>
             </template>
-            <template v-else-if="column.dataIndex === 'methodFeature'">
+            <template v-else-if="column.key === 'methodFeature'">
               <n-tooltip placement="topLeft">
                 <template #trigger>
                   <span class="tw">
@@ -86,12 +89,12 @@
               </n-tooltip>
             </template>
 
-            <template v-else-if="column.dataIndex === 'username'">
+            <template v-else-if="column.key === 'username'">
               <n-tooltip placement="topLeft">
                 <template #trigger>
                   <span class="tw">
                     <span class="tw">
-                      <span>{{ text || item.userId }}</span>
+                      <span>{{ text || row.userId }}</span>
                     </span>
                   </span>
                 </template>
@@ -99,7 +102,7 @@
               </n-tooltip>
             </template>
 
-            <template v-else-if="column.dataIndex === 'optStatus'">
+            <template v-else-if="column.key === 'optStatus'">
               <n-tooltip placement="topLeft">
                 <template #trigger>
                   <span class="tw">
@@ -180,8 +183,8 @@
               </n-tooltip>
             </n-space>
           </template>
-          <template #bodyCell="{ column, text }">
-            <template v-if="column.dataIndex === 'success'">
+          <template #bodyCell="{ column, text, row }">
+            <template v-if="column.key === 'success'">
               <n-tooltip placement="topLeft">
                 <template #trigger>
                   <span class="tw">
@@ -205,7 +208,7 @@
               </n-tooltip>
             </template>
 
-            <template v-else-if="column.dataIndex === 'operateCode'">
+            <template v-else-if="column.key === 'operateCode'">
               <n-tooltip placement="topLeft">
                 <template #trigger>
                   {{ operateCode[text] || $t('i18n_1622dc9b6b') }}
@@ -287,8 +290,8 @@ export default {
           title: this.$t('i18n_7e951d56d9'),
           key: 'createTimeMillis',
           sorter: true,
-          customRender: ({ text, item }) => {
-            return parseTime(text || item.optTime)
+          render: (row) => {
+            return parseTime(row.createTimeMillis || row.optTime)
           },
           width: '170px'
         }
@@ -335,8 +338,8 @@ export default {
           title: this.$t('i18n_9fca7c455f'),
           key: 'createTimeMillis',
           sorter: true,
-          customRender: ({ text, item }) => {
-            return parseTime(text || item.optTime)
+          render: (row) => {
+            return parseTime(row.createTimeMillis || row.optTime)
           },
           width: '170px'
         }

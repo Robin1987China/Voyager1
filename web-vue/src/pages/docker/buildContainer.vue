@@ -614,7 +614,7 @@ export default {
           extraHosts: extraHosts,
           ...this.temp
         }
-        this.$refs['editForm']?.resetFields()
+        this.$refs['editForm']?.restoreValidation()
       })
     },
     // inspect image
@@ -641,7 +641,7 @@ export default {
           commands: [{}],
           extraHosts: ['']
         }
-        this.$refs['editForm']?.resetFields()
+        this.$refs['editForm']?.restoreValidation()
       })
     },
     // 创建容器
@@ -730,7 +730,7 @@ export default {
               this.loading = false
             })
         }
-      })
+      }).catch(() => {})
     }
   }
 }

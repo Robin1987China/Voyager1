@@ -2,25 +2,8 @@
   <div>
     <div>
       <!-- 数据表格 -->
-      <n-data-table
-        :data="list"
-        size="medium"
-        :columns="columns"
-        :pagination="pagination"
-        bordered
-        :row-key="(row) => row.id"
-        :row-selection="rowSelection"
-        :scroll="{
-          x: 'max-content'
-        }"
-        @change="
-          (pagination, filters, sorter) => {
-            listQuery = CHANGE_PAGE(listQuery, { pagination, sorter })
-            loadData()
-          }
-        "
-      >
-        <template #title>
+            <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
           <n-space>
             <n-input
               v-model:value="listQuery['%name%']"
@@ -65,7 +48,24 @@
               {{ $t('i18n_7fb62b3011') }}
             </n-button>
           </n-space>
-        </template>
+        
+      </n-card>
+<n-data-table
+        :data="list"
+        size="medium"
+        :columns="columns"
+        :pagination="pagination"
+        bordered
+        :row-key="(row) => row.id"
+        :row-selection="rowSelection"
+        @change="
+          (pagination, filters, sorter) => {
+            listQuery = CHANGE_PAGE(listQuery, { pagination, sorter })
+            loadData()
+          }
+        "
+      >
+        
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.tooltip">
             <n-tooltip placement="topLeft">
@@ -79,7 +79,7 @@
               text
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'id'">
+          <template v-else-if="column.key === 'id'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -92,7 +92,7 @@
               text
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'name'">
+          <template v-else-if="column.key === 'name'">
             <n-popover>
               <template #trigger>
                 <span class="tw">
@@ -111,7 +111,7 @@
             </n-popover>
           </template>
 
-          <template v-else-if="column.dataIndex === 'size'">
+          <template v-else-if="column.key === 'size'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -123,7 +123,7 @@
               renderSize(text)
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'source'">
+          <template v-else-if="column.key === 'source'">
             <n-tooltip placement="topLeft">
               <template #trigger>
                 <span class="tw">
@@ -136,15 +136,15 @@
             </n-tooltip>
           </template>
 
-          <template v-else-if="column.dataIndex === 'exists'">
+          <template v-else-if="column.key === 'exists'">
             <n-tag v-if="text" color="green">{{ $t('i18n_df9497ea98') }}</n-tag>
             <n-tag v-else color="red">{{ $t('i18n_162e219f6d') }}</n-tag>
           </template>
-          <template v-else-if="column.dataIndex === 'workspaceId'">
+          <template v-else-if="column.key === 'workspaceId'">
             <n-tag v-if="text === 'GLOBAL'">{{ $t('i18n_2be75b1044') }}</n-tag>
             <n-tag v-else>{{ $t('i18n_98d69f8b62') }}</n-tag>
           </template>
-          <template v-else-if="column.dataIndex === 'operation'">
+          <template v-else-if="column.key === 'operation'">
             <n-space>
               <!-- <n-button type="primary" size="small" @click="handleEdit(record)">编辑</n-button> -->
               <n-button size="small" :disabled="!record.exists" type="primary" @click="handleDownloadUrl(record)">{{
@@ -684,7 +684,7 @@ export default {
         global: false
       }
       this.uploadVisible = true
-      this.$refs['form']?.resetFields()
+      this.$refs['form']?.restoreValidation()
     },
     // 上传文件
     handleUploadOk() {
@@ -791,7 +791,7 @@ export default {
         })
 
         return true
-      })
+      }).catch(() => {})
     },
     // 编辑
     handleEdit(item) {
@@ -801,7 +801,7 @@ export default {
         workspaceId: ''
       }
       this.editVisible = true
-      this.$refs['editForm']?.resetFields()
+      this.$refs['editForm']?.restoreValidation()
     },
     // 编辑确认
     handleEditOk() {
@@ -822,7 +822,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 删除文件
     handleDelete(record) {
@@ -879,7 +879,7 @@ export default {
       this.temp = {
         global: false
       }
-      this.$refs['remoteForm']?.resetFields()
+      this.$refs['remoteForm']?.restoreValidation()
     },
     // 开始远程下载
     handleRemoteUpload() {
@@ -901,7 +901,7 @@ export default {
           .finally(() => {
             this.confirmLoading = false
           })
-      })
+      }).catch(() => {})
     },
     // 下载地址
     handleDownloadUrl(record) {

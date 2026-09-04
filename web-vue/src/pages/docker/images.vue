@@ -1,18 +1,7 @@
 <template>
   <div>
-    <n-data-table
-      size="medium"
-      :data="list"
-      :columns="columns"
-      :pagination="false"
-      bordered
-      :row-key="(row) => row.id"
-      :row-selection="rowSelection"
-      :scroll="{
-        x: 'max-content'
-      }"
-    >
-      <template #title>
+        <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
         <n-space wrap class="search-box">
           <!-- <n-input v-model="listQuery['name']" @pressEnter="loadData" placeholder="名称" class="search-input-item" /> -->
           <div>
@@ -67,10 +56,21 @@
             <n-button v-else type="primary"> <UploadOutlined />{{ $t('i18n_8d9a071ee2') }} </n-button>
           </n-upload>
         </n-space>
-      </template>
+      
+    </n-card>
+<n-data-table
+      size="medium"
+      :data="list"
+      :columns="columns"
+      :pagination="false"
+      bordered
+      :row-key="(row) => row.id"
+      :row-selection="rowSelection"
+      >
+      
 
       <template #bodyCell="{ column, text, record }">
-        <template v-if="column.dataIndex === 'repoTags'">
+        <template v-if="column.key === 'repoTags'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -82,7 +82,7 @@
             (text || []).join(',')
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'size'">
+        <template v-else-if="column.key === 'size'">
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
@@ -120,7 +120,7 @@
             text
           </n-tooltip>
         </template>
-        <template v-else-if="column.dataIndex === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <n-space>
             <n-tooltip>
               <template #trigger>
@@ -457,7 +457,7 @@ export default {
             this.buildVisible = false
           }
         })
-      })
+      }).catch(() => {})
     },
     // 拉取镜像
     pullImage() {

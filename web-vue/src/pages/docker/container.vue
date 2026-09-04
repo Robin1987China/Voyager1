@@ -1,18 +1,8 @@
 <template>
   <div>
     <template v-if="type === 'container'">
-      <n-data-table
-        :data="list"
-        size="medium"
-        :columns="columns"
-        :pagination="false"
-        bordered
-        :row-key="(row) => row.id"
-        :scroll="{
-          x: 'max-content'
-        }"
-      >
-        <template #title>
+            <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
+
           <n-space>
             <n-input
               v-model:value="listQuery['name']"
@@ -47,9 +37,19 @@
               </template>
             </n-statistic>
           </n-space>
-        </template>
+        
+      </n-card>
+<n-data-table
+        :data="list"
+        size="medium"
+        :columns="columns"
+        :pagination="false"
+        bordered
+        :row-key="(row) => row.id"
+        >
+        
         <template #bodyCell="{ column, text, record }">
-          <template v-if="column.dataIndex === 'names'">
+          <template v-if="column.key === 'names'">
             <n-popover>
               <template #trigger>
                 <span class="tw">
@@ -66,7 +66,7 @@
             </n-popover>
           </template>
 
-          <template v-else-if="column.dataIndex === 'labels'">
+          <template v-else-if="column.key === 'labels'">
             <n-popover>
               <template #trigger>
                 <template v-if="record.labels && Object.keys(record.labels).length">
@@ -86,7 +86,7 @@
               </template>
             </n-popover>
           </template>
-          <template v-else-if="column.dataIndex === 'mounts'">
+          <template v-else-if="column.key === 'mounts'">
             <n-popover>
               <template #trigger>
                 <template v-if="record.mounts && Object.keys(record.mounts).length">
@@ -136,7 +136,7 @@
             </n-tooltip>
           </template>
 
-          <template v-else-if="column.dataIndex === 'ports'">
+          <template v-else-if="column.key === 'ports'">
             <n-popover placement="top-start">
               <template #trigger>
                 <span class="tw">
@@ -213,14 +213,14 @@
             </n-popover>
           </template>
 
-          <template v-else-if="column.dataIndex === 'state'">
+          <template v-else-if="column.key === 'state'">
             <n-tooltip @click="viewLog(record)">
               <template #trigger>
-                <n-switch :checked="text === 'running'" :disabled="true">
-                  <template #checkedChildren>
+                <n-switch :value="text === 'running'" :disabled="true">
+                  <template #checked>
                     <CheckCircleOutlined />
                   </template>
-                  <template #unCheckedChildren>
+                  <template #unchecked>
                     <WarningOutlined />
                   </template>
                 </n-switch>
@@ -228,7 +228,7 @@
               {{ (record.status || '') + $t('i18n_aac62bc255') }}
             </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'operation'">
+          <template v-else-if="column.key === 'operation'">
             <n-space>
               <template v-if="record.state === 'running'">
                 <n-tooltip>
@@ -397,12 +397,9 @@
               :pagination="false"
               bordered
               :row-key="(row) => row.id"
-              :scroll="{
-                x: 'max-content'
-              }"
-            >
+              >
               <template #bodyCell="{ column, text, record }">
-                <template v-if="column.dataIndex === 'names'">
+                <template v-if="column.key === 'names'">
                   <n-popover>
                     <template #trigger>
                       <span class="tw">
@@ -419,7 +416,7 @@
                   </n-popover>
                 </template>
 
-                <template v-else-if="column.dataIndex === 'labels'">
+                <template v-else-if="column.key === 'labels'">
                   <n-popover>
                     <template #trigger>
                       <template v-if="record.labels && Object.keys(record.labels).length">
@@ -439,7 +436,7 @@
                     </template>
                   </n-popover>
                 </template>
-                <template v-else-if="column.dataIndex === 'mounts'">
+                <template v-else-if="column.key === 'mounts'">
                   <n-popover>
                     <template #trigger>
                       <template v-if="record.mounts && Object.keys(record.mounts).length">
@@ -491,7 +488,7 @@
                   </n-tooltip>
                 </template>
 
-                <template v-else-if="column.dataIndex === 'ports'">
+                <template v-else-if="column.key === 'ports'">
                   <n-popover placement="top-start">
                     <template #trigger>
                       <span class="tw">
@@ -569,14 +566,14 @@
                   </n-popover>
                 </template>
 
-                <template v-else-if="column.dataIndex === 'state'">
+                <template v-else-if="column.key === 'state'">
                   <n-tooltip @click="viewLog(record)">
                     <template #trigger>
-                      <n-switch :checked="record.state === 'running'" :disabled="true">
-                        <template #checkedChildren>
+                      <n-switch :value="record.state === 'running'" :disabled="true">
+                        <template #checked>
                           <CheckCircleOutlined />
                         </template>
-                        <template #unCheckedChildren>
+                        <template #unchecked>
                           <WarningOutlined />
                         </template>
                       </n-switch>
@@ -584,7 +581,7 @@
                     {{ (record.status || '') + $t('i18n_aac62bc255') }}
                   </n-tooltip>
                 </template>
-                <template v-else-if="column.dataIndex === 'operation'">
+                <template v-else-if="column.key === 'operation'">
                   <n-space>
                     <template v-if="record.state === 'running'">
                       <n-tooltip>
@@ -693,10 +690,7 @@
         :columns="parentColumns"
         :pagination="false"
         bordered
-        :scroll="{
-          x: 'max-content'
-        }"
-      >
+        >
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.tooltip">
             <n-tooltip placement="topLeft">
@@ -716,7 +710,7 @@
 text
 </n-tooltip>
           </template>
-          <template v-else-if="column.dataIndex === 'state'"> </template>
+          <template v-else-if="column.key === 'state'"> </template>
         </template>
         <template #expandedRowRender="{ record }"> </template>
       </n-data-table> -->

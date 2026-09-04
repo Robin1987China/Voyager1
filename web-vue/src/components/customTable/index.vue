@@ -98,7 +98,7 @@
                         >
                           <VerticalLeftOutlined v-if="!!item.fixed" class="custom-column-list__icon" />
                           <HolderOutlined v-else class="custom-column-list__icon" />
-                          <n-checkbox :value="item.dataIndex" :disabled="!!item.fixed">
+                          <n-checkbox :value="item.key" :disabled="!!item.fixed">
                             {{ item.title }}
                           </n-checkbox>
                           <n-divider style="margin: 2px 0" />
@@ -246,7 +246,7 @@ export default defineComponent({
         if (
           storageObject?.column?.length === 0 ||
           JSON.stringify(storageObject?.column?.filter((item) => item.checked)?.map((item) => item.key) || []) ===
-            JSON.stringify(props.columns.map((item) => item.dataIndex))
+            JSON.stringify(props.columns.map((item) => item.key))
         ) {
           storageObject.column = defaultConfig.column
         }
@@ -381,10 +381,19 @@ export default defineComponent({
           const cellSlot = slots.tableBodyCell || slots.bodyCell
           if (cellSlot) {
             // slot 内的 v-if/v-else-if 可能没有命中该列（如普通文本列），
-            // 返回空 VNode 数组时回退为纯文本，避免整列空白。
+            // Vue 会把未命中的分支渲染成注释节点（<!---->）而非空数组，
+            // 旧逻辑 length===0 判断失效导致普通文本列整列空白。
+            // 过滤注释/空节点后若确无真实内容，则回退为纯文本。
             const slotResult = cellSlot({ text, value: text, record: row, index, column: columnForSlot })
-            if (Array.isArray(slotResult) && slotResult.length === 0) return text
-            if (slotResult === undefined || slotResult === null) return text
+            const list = (Array.isArray(slotResult) ? slotResult : [slotResult]).filter((vnode: any) => vnode != null)
+            const hasRealContent = list.some(
+              (vnode: any) =>
+                // 注释节点 type 为 Symbol（如 Comment），过滤掉
+                !(typeof vnode.type === 'symbol') &&
+                // 无 type 且无 children 的空 VNode 也过滤
+                !(vnode.type === undefined && !vnode.children)
+            )
+            if (slotResult === undefined || slotResult === null || !hasRealContent) return text
             return slotResult
           }
           return text
@@ -435,7 +444,15 @@ export default defineComponent({
       }
     })
 
-    const scrollX = computed(() => (props.scroll as any)?.x)
+    // Ant Table 的 scroll.x 常用 'max-content'，但 Naive 的 n-data-table scroll-x 需要数字（像素）。
+    // 传 'max-content' 会让 Naive 把表格宽度设成 1000000px 且 fixed 布局列宽失效，
+    // 导致所有非 fixed 列被撑到几万像素、被推到视口外（只剩 fixed 操作列可见）。
+    // 这里把这类非法值归一化：非数字（如 'max-content'）时不设 scroll-x，让 Naive 自适应列宽。
+    const scrollX = computed(() => {
+      const x = (props.scroll as any)?.x
+      if (typeof x === 'number') return x
+      return undefined
+    })
 
     const onPageChange = (page: number) => {
       emit('change', { ...(props.pagination as any), current: page }, {}, {})
@@ -469,7 +486,7 @@ export default defineComponent({
     const customCheckColumnList = computed(() => {
       return customColumnList.value
         .filter((item: CustomColumnType) => item.checked)
-        .map((item: CustomColumnType) => String(item.dataIndex))
+        .map((item: CustomColumnType) => String(item.key))
     })
     const customColumn = computed(() => {
       if (!storageService.exitOpenStorage()) return props.columns
@@ -481,7 +498,7 @@ export default defineComponent({
     const onCheckChange = (checkedValues: (string | number)[]) => {
       customColumnList.value = customColumnList.value.map((item: CustomColumnType) => ({
         ...item,
-        checked: checkedValues.includes(String(item.dataIndex))
+        checked: checkedValues.includes(String(item.key))
       }))
     }
     const onDrop = (dropResult: any) => {
@@ -501,7 +518,7 @@ export default defineComponent({
           catchStorage.length == 0 ||
           (catchStorage.length > 0 && catchStorage.some((key) => typeof key === 'string')) ||
           !compareArrays(
-            val.map((item: CustomColumnType) => String(item.dataIndex)),
+            val.map((item: CustomColumnType) => String(item.key)),
             catchStorage.filter((item) => item.key).map((item) => String(item.key))
           )
         ) {
@@ -509,7 +526,7 @@ export default defineComponent({
         } else {
           const tmpObj: { [key: string]: CustomColumnType } = {}
           val.forEach((item: CustomColumnType) => {
-            tmpObj[String(item.dataIndex || '_d')] = item
+            tmpObj[String(item.key || '_d')] = item
           })
           customColumnList.value = catchStorage.map((item) => {
             const key = item.key
@@ -534,7 +551,7 @@ export default defineComponent({
           storageService.setColumnConfig(
             customColumnList.value.map((item) => {
               return {
-                key: item.dataIndex,
+                key: item.key,
                 checked: item.checked
               } as CatchStorageType
             })

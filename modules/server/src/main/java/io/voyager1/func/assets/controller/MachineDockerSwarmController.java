@@ -180,7 +180,7 @@ public class MachineDockerSwarmController extends BaseServerController {
         DockerSwarmInfoMode dockerSwarmInfoMode = new DockerSwarmInfoMode();
         dockerSwarmInfoMode.setSwarmId(dockerInfoModel.getSwarmId());
         long count = dockerSwarmInfoService.count(dockerSwarmInfoMode);
-        Assert.state(count <= 0, String.format("当前 docker 集群还关联 {} 个工作空间集群, 不能退出集群", count));
+        Assert.state(count <= 0, String.format("当前 docker 集群还关联 %s 个工作空间集群, 不能退出集群", count));
         //
         IPlugin plugin = PluginFactory.getPlugin(DockerSwarmInfoService.DOCKER_PLUGIN_NAME);
         Map<String, Object> parameter = machineDockerServer.toParameter(dockerInfoModel);

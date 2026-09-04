@@ -1,89 +1,67 @@
 [
   {
+    "id": "system-overview",
     "title": "Asset Overview",
-    "icon_v3": "laptop",
-    "id": "system-overview"
+    "icon_v3": "laptop"
   },
   {
-    "title": "Asset Management",
-    "icon_v3": "hdd",
     "id": "assets-manager",
+    "title": "Assets",
+    "icon_v3": "hdd",
     "childs": [
       {
         "id": "machine_node_info",
-        "title": "Machine Management",
+        "title": "Hosts",
         "role": "system"
       },
       {
         "id": "machine_ssh_info",
-        "title": "SSH Assets",
+        "title": "SSH",
         "role": "system"
       },
       {
         "id": "machine_docker_info",
-        "title": "Docker Assets",
+        "title": "Docker",
         "role": "system"
       },
       {
         "id": "global_repository",
-        "title": "Shared warehouse",
+        "title": "Shared Repositories",
         "role": "system"
       },
       {
         "id": "script_library",
-        "title": "Shared Script Library",
+        "title": "Shared Scripts",
         "role": "system"
       }
     ]
   },
   {
-    "title": "Configuration Management",
-    "icon_v3": "save",
-    "id": "config",
-    "childs": [
-      {
-        "id": "authConfig",
-        "title": "Certification Management",
-        "role": "system"
-      },
-      {
-        "id": "monitorConfigEmail",
-        "title": "Mailbox configuration",
-        "role": "system"
-      },
-      {
-        "id": "systemExtConfig",
-        "title": "System configuration directory",
-        "role": "system"
-      }
-    ]
-  },
-  {
-    "title": "User Management",
-    "icon_v3": "user",
     "id": "user",
+    "title": "Users & Permissions",
+    "icon_v3": "user",
     "childs": [
       {
         "id": "userList",
-        "title": "User List",
+        "title": "Users",
         "role": "system"
       },
       {
         "id": "permission_group",
-        "title": "permission group",
+        "title": "Permission Groups",
         "role": "system"
       },
       {
         "id": "user_log",
-        "title": "Audit Log",
+        "title": "Audit Logs",
         "role": "system"
       }
     ]
   },
   {
-    "title": "Server Level Configuration",
-    "icon_v3": "setting",
     "id": "setting",
+    "title": "System Settings",
+    "icon_v3": "setting",
     "childs": [
       {
         "id": "workspace",
@@ -92,32 +70,47 @@
       },
       {
         "id": "globalEnv",
-        "title": "Global Variable",
+        "title": "Global Variables",
+        "role": "system"
+      },
+      {
+        "id": "authConfig",
+        "title": "Authentication",
+        "role": "system"
+      },
+      {
+        "id": "monitorConfigEmail",
+        "title": "Email",
+        "role": "system"
+      },
+      {
+        "id": "systemExtConfig",
+        "title": "Config Directory",
         "role": "system"
       },
       {
         "id": "cacheManage",
-        "title": "Cache Management",
+        "title": "Cache",
         "role": "system"
       },
       {
         "id": "logManage",
-        "title": "System log",
+        "title": "System Logs",
         "role": "system"
       },
       {
         "id": "update",
-        "title": "Online upgrade",
+        "title": "Update",
         "role": "sys"
       },
       {
         "id": "sysConfig",
-        "title": "System Configuration",
+        "title": "System Config",
         "role": "system"
       },
       {
         "id": "backup",
-        "title": "Database Backup",
+        "title": "Backup",
         "role": "system",
         "storageMode": "H2"
       }
@@ -125,6 +118,6 @@
   },
   {
     "id": "about",
-    "title": "About the System"
+    "title": "About"
   }
 ]

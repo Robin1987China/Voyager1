@@ -17,7 +17,11 @@ import {
   ProjectOutlined,
   GatewayOutlined,
   LaptopOutlined,
-  CloudOutlined
+  CloudOutlined,
+  RocketOutlined,
+  ClusterOutlined,
+  FolderOutlined,
+  AlertOutlined
 } from '@ant-design/icons-vue'
 
 const iconObj = {
@@ -38,7 +42,11 @@ const iconObj = {
   project: ProjectOutlined,
   gateway: GatewayOutlined,
   laptop: LaptopOutlined,
-  cloud: CloudOutlined
+  cloud: CloudOutlined,
+  rocket: RocketOutlined,
+  cluster: ClusterOutlined,
+  folder: FolderOutlined,
+  alert: AlertOutlined
 }
 
 const Icon = (props: { type: string }) => {

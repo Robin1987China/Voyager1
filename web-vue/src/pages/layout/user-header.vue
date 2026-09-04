@@ -274,6 +274,7 @@ import { ClusterOutlined, DownOutlined, SwitcherOutlined } from '@ant-design/ico
 import { h } from 'vue'
 import { NIcon } from 'naive-ui'
 import {
+  AppstoreOutlined,
   BarsOutlined,
   LockOutlined,
   LogoutOutlined,
@@ -433,6 +434,8 @@ export default {
       }
 
       options.push(
+        { label: this.$t('i18n_74bdccbb5d'), key: 'myworkspace', icon: icon(AppstoreOutlined) },
+        divider('d-myworkspace'),
         { label: this.$t('i18n_629a6ad325'), key: 'pwd', icon: icon(LockOutlined) },
         divider('d-pwd'),
         { label: this.$t('i18n_d7cc44bc02'), key: 'user', icon: icon(ProfileOutlined) },
@@ -550,6 +553,9 @@ export default {
         return
       }
       switch (k) {
+        case 'myworkspace':
+          this.$router.push('/my-workspace')
+          break
         case 'pwd':
           this.handleUpdatePwd()
           break

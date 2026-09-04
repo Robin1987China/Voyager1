@@ -1,27 +1,27 @@
 [
   {
+    "id": "system-overview",
     "title": "資產總覽",
-    "icon_v3": "laptop",
-    "id": "system-overview"
+    "icon_v3": "laptop"
   },
   {
-    "title": "資產管理",
-    "icon_v3": "hdd",
     "id": "assets-manager",
+    "title": "資產",
+    "icon_v3": "hdd",
     "childs": [
       {
         "id": "machine_node_info",
-        "title": "機器管理",
+        "title": "主機",
         "role": "system"
       },
       {
         "id": "machine_ssh_info",
-        "title": "SSH 資產",
+        "title": "SSH",
         "role": "system"
       },
       {
         "id": "machine_docker_info",
-        "title": "Docker 資產",
+        "title": "Docker",
         "role": "system"
       },
       {
@@ -31,41 +31,19 @@
       },
       {
         "id": "script_library",
-        "title": "共享腳本庫",
+        "title": "共享腳本",
         "role": "system"
       }
     ]
   },
   {
-    "title": "配置管理",
-    "icon_v3": "save",
-    "id": "config",
-    "childs": [
-      {
-        "id": "authConfig",
-        "title": "認證管理",
-        "role": "system"
-      },
-      {
-        "id": "monitorConfigEmail",
-        "title": "郵箱配置",
-        "role": "system"
-      },
-      {
-        "id": "systemExtConfig",
-        "title": "系統配置目錄",
-        "role": "system"
-      }
-    ]
-  },
-  {
-    "title": "用户管理",
-    "icon_v3": "user",
     "id": "user",
+    "title": "用戶與權限",
+    "icon_v3": "user",
     "childs": [
       {
         "id": "userList",
-        "title": "用户列表",
+        "title": "用戶列表",
         "role": "system"
       },
       {
@@ -81,18 +59,33 @@
     ]
   },
   {
-    "title": "服務端配置",
-    "icon_v3": "setting",
     "id": "setting",
+    "title": "系統設置",
+    "icon_v3": "setting",
     "childs": [
       {
         "id": "workspace",
-        "title": "工作空間&集羣",
+        "title": "工作空間與集群",
         "role": "system"
       },
       {
         "id": "globalEnv",
         "title": "全局變量",
+        "role": "system"
+      },
+      {
+        "id": "authConfig",
+        "title": "認證管理",
+        "role": "system"
+      },
+      {
+        "id": "monitorConfigEmail",
+        "title": "郵箱配置",
+        "role": "system"
+      },
+      {
+        "id": "systemExtConfig",
+        "title": "系統配置目錄",
         "role": "system"
       },
       {

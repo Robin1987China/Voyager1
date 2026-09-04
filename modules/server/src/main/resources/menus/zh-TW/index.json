@@ -1,17 +1,88 @@
 [
   {
-    "title": "概括總覽",
-    "icon_v3": "laptop",
-    "id": "overview"
+    "id": "overview",
+    "title": "總覽",
+    "icon_v3": "dashboard"
   },
   {
-    "title": "多雲管理",
-    "icon_v3": "cloud",
-    "id": "multiCloud",
+    "id": "delivery",
+    "title": "應用交付",
+    "icon_v3": "rocket",
     "childs": [
       {
+        "id": "repository",
+        "title": "代碼倉庫"
+      },
+      {
+        "id": "buildList",
+        "title": "構建任務"
+      },
+      {
+        "id": "versionList",
+        "title": "版本管理"
+      },
+      {
+        "id": "pipelineList",
+        "title": "流水線"
+      },
+      {
+        "id": "swimlane",
+        "title": "版本晉升"
+      },
+      {
+        "id": "outgivingList",
+        "title": "應用分發"
+      },
+      {
+        "id": "outgivingWhitelistDirectory",
+        "title": "分發授權",
+        "role": "system"
+      },
+      {
+        "id": "logRead",
+        "title": "分發日誌"
+      }
+    ]
+  },
+  {
+    "id": "host",
+    "title": "主機與終端",
+    "icon_v3": "desktop",
+    "childs": [
+      {
+        "id": "nodeList",
+        "title": "節點"
+      },
+      {
+        "id": "projectSearch",
+        "title": "項目"
+      },
+      {
+        "id": "sshList",
+        "title": "SSH 終端"
+      },
+      {
+        "id": "commandList",
+        "title": "命令管理"
+      }
+    ]
+  },
+  {
+    "id": "cloud",
+    "title": "容器與雲",
+    "icon_v3": "cloud",
+    "childs": [
+      {
+        "id": "dockerList",
+        "title": "Docker 容器"
+      },
+      {
+        "id": "dockerSwarm",
+        "title": "Docker 集群"
+      },
+      {
         "id": "cloudList",
-        "title": "雲帳號"
+        "title": "雲賬號"
       },
       {
         "id": "k8sList",
@@ -24,129 +95,29 @@
     ]
   },
   {
-    "title": "主機與專案",
-    "icon_v3": "apartment",
-    "id": "host",
+    "id": "artifact",
+    "title": "文件與腳本",
+    "icon_v3": "folder",
     "childs": [
-      {
-        "id": "nodeList",
-        "title": "邏輯節點"
-      },
-      {
-        "id": "projectSearch",
-        "title": "專案列表"
-      },
-      {
-        "id": "dockerList",
-        "title": "Docker列表"
-      },
-      {
-        "id": "dockerSwarm",
-        "title": "Docker 叢集"
-      }
-    ]
-  },
-  {
-    "title": "構建發佈",
-    "icon_v3": "build",
-    "id": "build",
-    "childs": [
-      {
-        "id": "repository",
-        "title": "倉庫資訊"
-      },
-      {
-        "id": "buildList",
-        "title": "構建列表"
-      },
-      {
-        "id": "versionList",
-        "title": "版本管理"
-      },
-      {
-        "id": "pipelineList",
-        "title": "Pipeline"
-      },
-      {
-        "id": "swimlane",
-        "title": "版本晉升"
-      }
-    ]
-  },
-  {
-    "title": "運維管理",
-    "icon_v3": "code",
-    "id": "ops",
-    "childs": [
-      {
-        "id": "sshList",
-        "title": "SSH 會話"
-      },
-      {
-        "id": "commandList",
-        "title": "命令管理"
-      },
       {
         "id": "serverScriptList",
-        "title": "指令碼"
+        "title": "腳本"
       },
       {
         "id": "configWorkspaceEnv",
-        "title": "工作空間變數"
-      }
-    ]
-  },
-  {
-    "title": "分發管理",
-    "icon_v3": "gateway",
-    "id": "dispatch",
-    "childs": [
-      {
-        "id": "outgivingList",
-        "title": "分發列表"
+        "title": "環境變量"
       },
-      {
-        "id": "outgivingWhitelistDirectory",
-        "title": "授權配置",
-        "role": "system"
-      },
-      {
-        "id": "logRead",
-        "title": "日誌搜尋"
-      }
-    ]
-  },
-  {
-    "title": "監控管理",
-    "icon_v3": "monitor",
-    "id": "monitor",
-    "childs": [
-      {
-        "id": "monitorList",
-        "title": "監控列表"
-      },
-      {
-        "id": "userOptLog",
-        "title": "操作監控"
-      }
-    ]
-  },
-  {
-    "title": "檔案與製品",
-    "icon_v3": "file",
-    "id": "file",
-    "childs": [
       {
         "id": "fileStorage",
-        "title": "檔案列表"
+        "title": "文件"
       },
       {
         "id": "staticFileStorage",
-        "title": "靜態檔案"
+        "title": "靜態文件"
       },
       {
         "id": "fileReleaseTask",
-        "title": "釋出任務"
+        "title": "發布任務"
       },
       {
         "id": "certificate",
@@ -155,21 +126,32 @@
     ]
   },
   {
-    "title": "系統工具",
-    "icon_v3": "tool",
-    "id": "tools",
+    "id": "monitor",
+    "title": "監控告警",
+    "icon_v3": "monitor",
     "childs": [
       {
-        "id": "myWorkspaceList",
-        "title": "我的工作空間"
+        "id": "monitorList",
+        "title": "監控列表"
       },
       {
+        "id": "userOptLog",
+        "title": "操作日誌"
+      }
+    ]
+  },
+  {
+    "id": "tools",
+    "title": "工具箱",
+    "icon_v3": "tool",
+    "childs": [
+      {
         "id": "netTools",
-        "title": "網路工具"
+        "title": "網絡工具"
       },
       {
         "id": "cronTools",
-        "title": "Cron表示式"
+        "title": "Cron 表達式"
       }
     ]
   }

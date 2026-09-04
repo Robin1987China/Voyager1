@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <n-space direction="vertical" style="width: 100%">
+  <div style="width: 100%">
+    <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
       <n-alert :title="$t('i18n_c8c6e37071')" type="info" show-icon>
         <template #description>
           <ul>
@@ -11,7 +11,7 @@
       </n-alert>
       <!-- <n-alert title=",不支持软链" type="info" /> -->
 
-      <n-form ref="editForm" :model="temp" @submit.prevent="onSubmit">
+      <n-form ref="editForm" :model="temp" style="width: 100%" @submit.prevent="onSubmit">
         <n-form-item :label="$t('i18n_28e1eec677')" path="outGiving">
           <template #help>{{ $t('i18n_5b1f0fd370') }}</template>
           <n-input
@@ -46,7 +46,7 @@
           <n-button type="primary" attr-type="submit" :disabled="submitAble">{{ $t('i18n_939d5345ad') }}</n-button>
         </n-form-item>
       </n-form>
-    </n-space>
+    </div>
   </div>
 </template>
 <script>

@@ -1,14 +1,85 @@
 [
   {
-    "title": "概括总览",
-    "icon_v3": "laptop",
-    "id": "overview"
+    "id": "overview",
+    "title": "总览",
+    "icon_v3": "dashboard"
   },
   {
-    "title": "多云管理",
-    "icon_v3": "cloud",
-    "id": "multiCloud",
+    "id": "delivery",
+    "title": "应用交付",
+    "icon_v3": "rocket",
     "childs": [
+      {
+        "id": "repository",
+        "title": "代码仓库"
+      },
+      {
+        "id": "buildList",
+        "title": "构建任务"
+      },
+      {
+        "id": "versionList",
+        "title": "版本管理"
+      },
+      {
+        "id": "pipelineList",
+        "title": "流水线"
+      },
+      {
+        "id": "swimlane",
+        "title": "版本晋升"
+      },
+      {
+        "id": "outgivingList",
+        "title": "应用分发"
+      },
+      {
+        "id": "outgivingWhitelistDirectory",
+        "title": "分发授权",
+        "role": "system"
+      },
+      {
+        "id": "logRead",
+        "title": "分发日志"
+      }
+    ]
+  },
+  {
+    "id": "host",
+    "title": "主机与终端",
+    "icon_v3": "desktop",
+    "childs": [
+      {
+        "id": "nodeList",
+        "title": "节点"
+      },
+      {
+        "id": "projectSearch",
+        "title": "项目"
+      },
+      {
+        "id": "sshList",
+        "title": "SSH 终端"
+      },
+      {
+        "id": "commandList",
+        "title": "命令管理"
+      }
+    ]
+  },
+  {
+    "id": "cloud",
+    "title": "容器与云",
+    "icon_v3": "cloud",
+    "childs": [
+      {
+        "id": "dockerList",
+        "title": "Docker 容器"
+      },
+      {
+        "id": "dockerSwarm",
+        "title": "Docker 集群"
+      },
       {
         "id": "cloudList",
         "title": "云账号"
@@ -24,121 +95,21 @@
     ]
   },
   {
-    "title": "主机与项目",
-    "icon_v3": "apartment",
-    "id": "host",
+    "id": "artifact",
+    "title": "文件与脚本",
+    "icon_v3": "folder",
     "childs": [
-      {
-        "id": "nodeList",
-        "title": "逻辑节点"
-      },
-      {
-        "id": "projectSearch",
-        "title": "项目列表"
-      },
-      {
-        "id": "dockerList",
-        "title": "Docker 列表"
-      },
-      {
-        "id": "dockerSwarm",
-        "title": "Docker 集群"
-      }
-    ]
-  },
-  {
-    "title": "构建发布",
-    "icon_v3": "build",
-    "id": "build",
-    "childs": [
-      {
-        "id": "repository",
-        "title": "仓库信息"
-      },
-      {
-        "id": "buildList",
-        "title": "构建列表"
-      },
-      {
-        "id": "versionList",
-        "title": "版本管理"
-      },
-      {
-        "id": "pipelineList",
-        "title": "Pipeline"
-      },
-      {
-        "id": "swimlane",
-        "title": "版本晋升"
-      }
-    ]
-  },
-  {
-    "title": "运维管理",
-    "icon_v3": "code",
-    "id": "ops",
-    "childs": [
-      {
-        "id": "sshList",
-        "title": "SSH 会话"
-      },
-      {
-        "id": "commandList",
-        "title": "命令管理"
-      },
       {
         "id": "serverScriptList",
         "title": "脚本"
       },
       {
         "id": "configWorkspaceEnv",
-        "title": "工作空间变量"
-      }
-    ]
-  },
-  {
-    "title": "分发管理",
-    "icon_v3": "gateway",
-    "id": "dispatch",
-    "childs": [
-      {
-        "id": "outgivingList",
-        "title": "分发列表"
+        "title": "环境变量"
       },
-      {
-        "id": "outgivingWhitelistDirectory",
-        "title": "授权配置",
-        "role": "system"
-      },
-      {
-        "id": "logRead",
-        "title": "日志搜索"
-      }
-    ]
-  },
-  {
-    "title": "监控管理",
-    "icon_v3": "monitor",
-    "id": "monitor",
-    "childs": [
-      {
-        "id": "monitorList",
-        "title": "监控列表"
-      },
-      {
-        "id": "userOptLog",
-        "title": "操作监控"
-      }
-    ]
-  },
-  {
-    "title": "文件与制品",
-    "icon_v3": "file",
-    "id": "file",
-    "childs": [
       {
         "id": "fileStorage",
-        "title": "文件列表"
+        "title": "文件"
       },
       {
         "id": "staticFileStorage",
@@ -155,14 +126,25 @@
     ]
   },
   {
-    "title": "系统工具",
-    "icon_v3": "tool",
-    "id": "tools",
+    "id": "monitor",
+    "title": "监控告警",
+    "icon_v3": "monitor",
     "childs": [
       {
-        "id": "myWorkspaceList",
-        "title": "我的工作空间"
+        "id": "monitorList",
+        "title": "监控列表"
       },
+      {
+        "id": "userOptLog",
+        "title": "操作日志"
+      }
+    ]
+  },
+  {
+    "id": "tools",
+    "title": "工具箱",
+    "icon_v3": "tool",
+    "childs": [
       {
         "id": "netTools",
         "title": "网络工具"

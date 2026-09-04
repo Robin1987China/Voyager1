@@ -1,27 +1,27 @@
 [
   {
+    "id": "system-overview",
     "title": "資產總覽",
-    "icon_v3": "laptop",
-    "id": "system-overview"
+    "icon_v3": "laptop"
   },
   {
-    "title": "資產管理",
-    "icon_v3": "hdd",
     "id": "assets-manager",
+    "title": "資產",
+    "icon_v3": "hdd",
     "childs": [
       {
         "id": "machine_node_info",
-        "title": "機器管理",
+        "title": "主機",
         "role": "system"
       },
       {
         "id": "machine_ssh_info",
-        "title": "SSH 資產",
+        "title": "SSH",
         "role": "system"
       },
       {
         "id": "machine_docker_info",
-        "title": "Docker 資產",
+        "title": "Docker",
         "role": "system"
       },
       {
@@ -31,16 +31,48 @@
       },
       {
         "id": "script_library",
-        "title": "共享指令碼庫",
+        "title": "共享腳本",
         "role": "system"
       }
     ]
   },
   {
-    "title": "配置管理",
-    "icon_v3": "save",
-    "id": "config",
+    "id": "user",
+    "title": "用戶與權限",
+    "icon_v3": "user",
     "childs": [
+      {
+        "id": "userList",
+        "title": "用戶列表",
+        "role": "system"
+      },
+      {
+        "id": "permission_group",
+        "title": "權限組",
+        "role": "system"
+      },
+      {
+        "id": "user_log",
+        "title": "審計日誌",
+        "role": "system"
+      }
+    ]
+  },
+  {
+    "id": "setting",
+    "title": "系統設置",
+    "icon_v3": "setting",
+    "childs": [
+      {
+        "id": "workspace",
+        "title": "工作空間與集群",
+        "role": "system"
+      },
+      {
+        "id": "globalEnv",
+        "title": "全局變量",
+        "role": "system"
+      },
       {
         "id": "authConfig",
         "title": "認證管理",
@@ -55,49 +87,10 @@
         "id": "systemExtConfig",
         "title": "系統配置目錄",
         "role": "system"
-      }
-    ]
-  },
-  {
-    "title": "使用者管理",
-    "icon_v3": "user",
-    "id": "user",
-    "childs": [
-      {
-        "id": "userList",
-        "title": "使用者列表",
-        "role": "system"
-      },
-      {
-        "id": "permission_group",
-        "title": "許可權組",
-        "role": "system"
-      },
-      {
-        "id": "user_log",
-        "title": "稽核日誌",
-        "role": "system"
-      }
-    ]
-  },
-  {
-    "title": "服務端配置",
-    "icon_v3": "setting",
-    "id": "setting",
-    "childs": [
-      {
-        "id": "workspace",
-        "title": "工作空間&叢集",
-        "role": "system"
-      },
-      {
-        "id": "globalEnv",
-        "title": "全域性變數",
-        "role": "system"
       },
       {
         "id": "cacheManage",
-        "title": "快取管理",
+        "title": "緩存管理",
         "role": "system"
       },
       {
@@ -107,7 +100,7 @@
       },
       {
         "id": "update",
-        "title": "線上升級",
+        "title": "在線升級",
         "role": "sys"
       },
       {
@@ -117,7 +110,7 @@
       },
       {
         "id": "backup",
-        "title": "資料庫備份",
+        "title": "數據庫備份",
         "role": "system",
         "storageMode": "H2"
       }

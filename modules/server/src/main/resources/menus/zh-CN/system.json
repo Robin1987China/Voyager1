@@ -1,27 +1,27 @@
 [
   {
+    "id": "system-overview",
     "title": "资产总览",
-    "icon_v3": "laptop",
-    "id": "system-overview"
+    "icon_v3": "laptop"
   },
   {
-    "title": "资产管理",
-    "icon_v3": "hdd",
     "id": "assets-manager",
+    "title": "资产",
+    "icon_v3": "hdd",
     "childs": [
       {
         "id": "machine_node_info",
-        "title": "机器管理",
+        "title": "主机",
         "role": "system"
       },
       {
         "id": "machine_ssh_info",
-        "title": "SSH 资产",
+        "title": "SSH",
         "role": "system"
       },
       {
         "id": "machine_docker_info",
-        "title": "Docker 资产",
+        "title": "Docker",
         "role": "system"
       },
       {
@@ -31,37 +31,15 @@
       },
       {
         "id": "script_library",
-        "title": "共享脚本库",
+        "title": "共享脚本",
         "role": "system"
       }
     ]
   },
   {
-    "title": "配置管理",
-    "icon_v3": "save",
-    "id": "config",
-    "childs": [
-      {
-        "id": "authConfig",
-        "title": "认证管理",
-        "role": "system"
-      },
-      {
-        "id": "monitorConfigEmail",
-        "title": "邮箱配置",
-        "role": "system"
-      },
-      {
-        "id": "systemExtConfig",
-        "title": "系统配置目录",
-        "role": "system"
-      }
-    ]
-  },
-  {
-    "title": "用户管理",
-    "icon_v3": "user",
     "id": "user",
+    "title": "用户与权限",
+    "icon_v3": "user",
     "childs": [
       {
         "id": "userList",
@@ -81,18 +59,33 @@
     ]
   },
   {
-    "title": "服务端配置",
-    "icon_v3": "setting",
     "id": "setting",
+    "title": "系统设置",
+    "icon_v3": "setting",
     "childs": [
       {
         "id": "workspace",
-        "title": "工作空间&集群",
+        "title": "工作空间与集群",
         "role": "system"
       },
       {
         "id": "globalEnv",
         "title": "全局变量",
+        "role": "system"
+      },
+      {
+        "id": "authConfig",
+        "title": "认证管理",
+        "role": "system"
+      },
+      {
+        "id": "monitorConfigEmail",
+        "title": "邮箱配置",
+        "role": "system"
+      },
+      {
+        "id": "systemExtConfig",
+        "title": "系统配置目录",
         "role": "system"
       },
       {

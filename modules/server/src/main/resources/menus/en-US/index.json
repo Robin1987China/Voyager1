@@ -1,14 +1,85 @@
 [
   {
+    "id": "overview",
     "title": "Overview",
-    "icon_v3": "laptop",
-    "id": "overview"
+    "icon_v3": "dashboard"
   },
   {
-    "title": "Multi-Cloud",
-    "icon_v3": "cloud",
-    "id": "multiCloud",
+    "id": "delivery",
+    "title": "Application Delivery",
+    "icon_v3": "rocket",
     "childs": [
+      {
+        "id": "repository",
+        "title": "Repositories"
+      },
+      {
+        "id": "buildList",
+        "title": "Builds"
+      },
+      {
+        "id": "versionList",
+        "title": "Versions"
+      },
+      {
+        "id": "pipelineList",
+        "title": "Pipelines"
+      },
+      {
+        "id": "swimlane",
+        "title": "Release Promotion"
+      },
+      {
+        "id": "outgivingList",
+        "title": "Distribution"
+      },
+      {
+        "id": "outgivingWhitelistDirectory",
+        "title": "Distribution Authorization",
+        "role": "system"
+      },
+      {
+        "id": "logRead",
+        "title": "Distribution Logs"
+      }
+    ]
+  },
+  {
+    "id": "host",
+    "title": "Hosts & Terminals",
+    "icon_v3": "desktop",
+    "childs": [
+      {
+        "id": "nodeList",
+        "title": "Nodes"
+      },
+      {
+        "id": "projectSearch",
+        "title": "Projects"
+      },
+      {
+        "id": "sshList",
+        "title": "SSH Terminal"
+      },
+      {
+        "id": "commandList",
+        "title": "Commands"
+      }
+    ]
+  },
+  {
+    "id": "cloud",
+    "title": "Containers & Cloud",
+    "icon_v3": "cloud",
+    "childs": [
+      {
+        "id": "dockerList",
+        "title": "Docker Containers"
+      },
+      {
+        "id": "dockerSwarm",
+        "title": "Docker Swarm"
+      },
       {
         "id": "cloudList",
         "title": "Cloud Accounts"
@@ -24,152 +95,63 @@
     ]
   },
   {
-    "title": "Hosts & Projects",
-    "icon_v3": "apartment",
-    "id": "host",
+    "id": "artifact",
+    "title": "Files & Scripts",
+    "icon_v3": "folder",
     "childs": [
-      {
-        "id": "nodeList",
-        "title": "Logical node"
-      },
-      {
-        "id": "projectSearch",
-        "title": "List of projects"
-      },
-      {
-        "id": "dockerList",
-        "title": "List of Docker"
-      },
-      {
-        "id": "dockerSwarm",
-        "title": "Docker Cluster"
-      }
-    ]
-  },
-  {
-    "title": "Build & Deploy",
-    "icon_v3": "build",
-    "id": "build",
-    "childs": [
-      {
-        "id": "repository",
-        "title": "Warehouse information"
-      },
-      {
-        "id": "buildList",
-        "title": "Build List"
-      },
-      {
-        "id": "versionList",
-        "title": "Version"
-      },
-      {
-        "id": "pipelineList",
-        "title": "Pipeline"
-      },
-      {
-        "id": "swimlane",
-        "title": "Release Promotion"
-      }
-    ]
-  },
-  {
-    "title": "Operations",
-    "icon_v3": "code",
-    "id": "ops",
-    "childs": [
-      {
-        "id": "sshList",
-        "title": "SSH Session"
-      },
-      {
-        "id": "commandList",
-        "title": "Command Management"
-      },
       {
         "id": "serverScriptList",
         "title": "Scripts"
       },
       {
         "id": "configWorkspaceEnv",
-        "title": "Workspace Variables"
-      }
-    ]
-  },
-  {
-    "title": "Distribution",
-    "icon_v3": "gateway",
-    "id": "dispatch",
-    "childs": [
-      {
-        "id": "outgivingList",
-        "title": "Distribution List"
+        "title": "Environment Variables"
       },
-      {
-        "id": "outgivingWhitelistDirectory",
-        "title": "Authorization configuration",
-        "role": "system"
-      },
-      {
-        "id": "logRead",
-        "title": "Log Search"
-      }
-    ]
-  },
-  {
-    "title": "Monitoring and management",
-    "icon_v3": "monitor",
-    "id": "monitor",
-    "childs": [
-      {
-        "id": "monitorList",
-        "title": "Watch list"
-      },
-      {
-        "id": "userOptLog",
-        "title": "Operation monitoring"
-      }
-    ]
-  },
-  {
-    "title": "Files & Artifacts",
-    "icon_v3": "file",
-    "id": "file",
-    "childs": [
       {
         "id": "fileStorage",
-        "title": "List of files"
+        "title": "Files"
       },
       {
         "id": "staticFileStorage",
-        "title": "Static file"
+        "title": "Static Files"
       },
       {
         "id": "fileReleaseTask",
-        "title": "Publish task"
+        "title": "Release Tasks"
       },
       {
         "id": "certificate",
-        "title": "Certificate Management"
+        "title": "Certificates"
       }
     ]
   },
   {
-    "title": "System Tools",
-    "icon_v3": "tool",
-    "id": "tools",
+    "id": "monitor",
+    "title": "Monitoring",
+    "icon_v3": "monitor",
     "childs": [
       {
-        "id": "myWorkspaceList",
-        "title": "My working space"
+        "id": "monitorList",
+        "title": "Monitors"
       },
       {
+        "id": "userOptLog",
+        "title": "Operation Logs"
+      }
+    ]
+  },
+  {
+    "id": "tools",
+    "title": "Tools",
+    "icon_v3": "tool",
+    "childs": [
+      {
         "id": "netTools",
-        "title": "Network tools"
+        "title": "Network Tools"
       },
       {
         "id": "cronTools",
-        "title": "Cron expression"
+        "title": "Cron Expression"
       }
     ]
   }

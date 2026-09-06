@@ -22,8 +22,12 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import io.voyager1.build.BuildExecuteService;
+import io.voyager1.build.BuildUtil;
 import io.voyager1.common.BaseServerController;
+import io.voyager1.model.data.BuildInfoModel;
 import io.voyager1.model.user.UserModel;
+import io.voyager1.util.FileUtil;
+import io.voyager1.util.FileUtils;
 import io.voyager1.service.agent.AgentApprovalService;
 import io.voyager1.service.agent.SelfHealService;
 import io.voyager1.service.cloud.CloudInstanceService;
@@ -37,6 +41,7 @@ import io.voyager1.service.version.VersionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.Set;
 
 /**
@@ -186,7 +191,7 @@ public class McpToolRegistry {
             case "pipeline.approval":
                 return this.pipelineApproval(args);
             case "log.get":
-                return "日志查询能力待接入，请通过 Web GUI 查看日志";
+                return this.logGet(args);
             case "ssh.execute":
                 return this.sshExecute(args);
             case "monitor.list":
@@ -223,6 +228,35 @@ public class McpToolRegistry {
         String buildId = args.getString("buildId");
         return SpringContextHolder.getBean(BuildExecuteService.class)
             .start(buildId, this.currentUser(), null, 1, "MCP 触发", new Object[0]);
+    }
+
+    /**
+     * 查询日志：当前支持构建日志（type=build），targetId 为构建配置 id。
+     * 返回该构建最近一次执行的控制台日志。
+     */
+    private Object logGet(JSONObject args) {
+        String type = args.getString("type");
+        String targetId = args.getString("targetId");
+        if (targetId == null || targetId.isEmpty()) {
+            throw new IllegalArgumentException("targetId 不能为空");
+        }
+        if (!"build".equalsIgnoreCase(type == null ? "build" : type)) {
+            throw new IllegalArgumentException("不支持的日志类型: " + type + "（当前仅支持 build）");
+        }
+        BuildInfoModel build = SpringContextHolder.getBean(BuildInfoService.class).getByKey(targetId);
+        if (build == null) {
+            return "构建配置不存在: " + targetId;
+        }
+        Integer buildId = build.getBuildId();
+        if (buildId == null || buildId <= 0) {
+            return "该构建尚未执行过，暂无日志";
+        }
+        File logFile = BuildUtil.getLogFile(build.getId(), buildId);
+        if (logFile == null || !FileUtil.isFile(logFile)) {
+            return "日志文件不存在: " + build.getId() + " #" + buildId;
+        }
+        // line=0 表示读取全部日志
+        return FileUtils.readLogFile(logFile, 0);
     }
 
     private Object deployPublish(JSONObject args) {

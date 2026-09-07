@@ -556,13 +556,15 @@ public class FileUtil {
 
     public static File move(File src, File target, boolean isOverride) {
         try {
-            mkParentDirs(target);
+            // target 为目录时，移动进目录（保留原文件名），而非用文件替换目录
+            File realTarget = target.isDirectory() ? new File(target, src.getName()) : target;
+            mkParentDirs(realTarget);
             if (isOverride) {
-                Files.move(src.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Files.move(src.toPath(), realTarget.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } else {
-                Files.move(src.toPath(), target.toPath());
+                Files.move(src.toPath(), realTarget.toPath());
             }
-            return target;
+            return realTarget;
         } catch (IOException e) {
             throw new RuntimeException("移动文件失败: " + src + " -> " + target, e);
         }

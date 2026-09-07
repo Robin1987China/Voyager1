@@ -38,6 +38,7 @@ import io.voyager1.model.log.MonitorNotifyLog;
 import io.voyager1.model.node.ProjectInfoCacheModel;
 import io.voyager1.model.user.UserModel;
 import io.voyager1.plugin.PluginFactory;
+import io.voyager1.service.agent.SelfHealService;
 import io.voyager1.service.dblog.DbMonitorNotifyLogService;
 import io.voyager1.service.monitor.MonitorService;
 import io.voyager1.service.node.NodeService;
@@ -65,6 +66,7 @@ public class MonitorItem implements Task {
     private final MonitorService monitorService;
     private final ProjectInfoCacheService projectInfoCacheService;
     private final NodeService nodeService;
+    private final SelfHealService selfHealService;
     private final String monitorId;
     private MonitorModel monitorModel;
 
@@ -74,6 +76,7 @@ public class MonitorItem implements Task {
         this.monitorService = SpringContextHolder.getBean(MonitorService.class);
         this.nodeService = SpringContextHolder.getBean(NodeService.class);
         this.projectInfoCacheService = SpringContextHolder.getBean(ProjectInfoCacheService.class);
+        this.selfHealService = SpringContextHolder.getBean(SelfHealService.class);
         this.monitorId = id;
     }
 
@@ -235,6 +238,13 @@ public class MonitorItem implements Task {
             } else {
                 title = String.format("【%s】节点的【%s】项目%s已经没有运行", nodeModel.getName(), projectName, copyMsg);
                 context = "请及时检查";
+                // AIOps 自愈：进程停止告警自动触发诊断，生成根因与修复动作建议
+                try {
+                    JSONObject diagnose = selfHealService.diagnose("process_down", projectName);
+                    context += "；自愈诊断：" + diagnose.toJSONString();
+                } catch (Exception e) {
+                    log.warn("自愈诊断失败: {}", e.getMessage());
+                }
             }
         }
         if (!pre && !runStatus) {

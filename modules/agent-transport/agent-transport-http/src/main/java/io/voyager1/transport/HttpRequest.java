@@ -84,6 +84,10 @@ public class HttpRequest {
 
     public HttpRequest form(Map<String, Object> formData) {
         this.formData = formData;
+        if (formData != null && !formData.isEmpty()) {
+            // 表单提交必须携带 application/x-www-form-urlencoded，否则接收端无法解析参数
+            this.header("Content-Type", "application/x-www-form-urlencoded");
+        }
         return this;
     }
 

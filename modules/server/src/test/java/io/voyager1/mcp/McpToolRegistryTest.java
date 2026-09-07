@@ -43,7 +43,45 @@ public class McpToolRegistryTest extends ApplicationStartTest {
     @Test
     public void testListTools() {
         JSONObject result = toolRegistry.listTools();
-        Assertions.assertEquals(12, result.getJSONArray("tools").size());
+        Assertions.assertEquals(13, result.getJSONArray("tools").size());
+    }
+
+    @Test
+    public void testSchemaEnumAndBoolean() {
+        JSONObject result = toolRegistry.listTools();
+        JSONObject deployPublish = null;
+        JSONObject approval = null;
+        JSONObject selfHeal = null;
+        for (Object o : result.getJSONArray("tools")) {
+            JSONObject t = (JSONObject) o;
+            if ("deploy.publish".equals(t.getString("name"))) deployPublish = t;
+            if ("pipeline.approval".equals(t.getString("name"))) approval = t;
+            if ("selfHeal.diagnose".equals(t.getString("name"))) selfHeal = t;
+        }
+        Assertions.assertNotNull(deployPublish, "deploy.publish 应存在");
+        JSONObject env = deployPublish.getJSONObject("inputSchema").getJSONObject("properties").getJSONObject("environment");
+        Assertions.assertEquals("部署环境", env.getString("description"));
+        Assertions.assertEquals("[\"dev\",\"test\",\"prod\"]", env.getJSONArray("enum").toString());
+
+        Assertions.assertNotNull(approval, "pipeline.approval 应存在");
+        JSONObject approve = approval.getJSONObject("inputSchema").getJSONObject("properties").getJSONObject("approve");
+        Assertions.assertEquals("boolean", approve.getString("type"));
+
+        Assertions.assertNotNull(selfHeal, "selfHeal.diagnose 应存在");
+        JSONObject alertType = selfHeal.getJSONObject("inputSchema").getJSONObject("properties").getJSONObject("alertType");
+        Assertions.assertEquals("[\"process_down\",\"high_cpu\",\"deploy_failed\"]", alertType.getJSONArray("enum").toString());
+    }
+
+    @Test
+    public void testCallToolLogGetMissingTarget() {
+        JSONObject params = new JSONObject();
+        params.put("name", "log.get");
+        JSONObject args = new JSONObject();
+        args.put("type", "build");
+        params.put("arguments", args);
+        JSONObject resp = toolRegistry.callTool(3, params, "test-session");
+        String text = resp.getJSONObject("result").getJSONArray("content").getJSONObject(0).getString("text");
+        Assertions.assertTrue(text.contains("targetId 不能为空"), "缺 targetId 应报错");
     }
 
     @Test

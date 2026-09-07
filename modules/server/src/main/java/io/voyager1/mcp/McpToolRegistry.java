@@ -111,20 +111,94 @@ public class McpToolRegistry {
         return t;
     }
 
+    /**
+     * 生成字段的 JSON Schema。除 type 外，为常见字段补充描述与枚举，
+     * 提升 AI Agent 调用时的参数准确性。
+     */
     private JSONObject schema(String[] required) {
         JSONObject s = new JSONObject();
         s.put("type", "object");
         JSONObject props = new JSONObject();
         JSONArray req = new JSONArray();
         for (String r : required) {
-            JSONObject p = new JSONObject();
-            p.put("type", "string");
+            JSONObject p = fieldSchema(r);
             props.put(r, p);
             req.add(r);
         }
         s.put("properties", props);
         s.put("required", req);
         return s;
+    }
+
+    /**
+     * 单字段 schema：类型、描述、可选枚举。布尔字段（approve 等）单独处理。
+     */
+    private JSONObject fieldSchema(String field) {
+        JSONObject p = new JSONObject();
+        switch (field) {
+            case "buildId":
+                p.put("type", "string");
+                p.put("description", "构建配置 ID");
+                break;
+            case "versionId":
+                p.put("type", "string");
+                p.put("description", "版本 ID");
+                break;
+            case "environment":
+                p.put("type", "string");
+                p.put("description", "部署环境");
+                p.put("enum", JSONArray.of("dev", "test", "prod"));
+                break;
+            case "pipelineId":
+                p.put("type", "string");
+                p.put("description", "流水线配置 ID");
+                break;
+            case "executeId":
+                p.put("type", "string");
+                p.put("description", "流水线执行记录 ID");
+                break;
+            case "approve":
+                p.put("type", "boolean");
+                p.put("description", "是否批准（true=通过，false=拒绝）");
+                break;
+            case "type":
+                p.put("type", "string");
+                p.put("description", "日志类型（build=构建日志）或 K8s 资源类型");
+                break;
+            case "targetId":
+                p.put("type", "string");
+                p.put("description", "目标 ID（日志查询时为构建配置 ID）");
+                break;
+            case "nodeId":
+                p.put("type", "string");
+                p.put("description", "节点 ID");
+                break;
+            case "command":
+                p.put("type", "string");
+                p.put("description", "要执行的命令（危险命令会被黑名单拦截）");
+                break;
+            case "clusterId":
+                p.put("type", "string");
+                p.put("description", "K8s 集群 ID");
+                break;
+            case "accountId":
+                p.put("type", "string");
+                p.put("description", "云账号 ID");
+                break;
+            case "alertType":
+                p.put("type", "string");
+                p.put("description", "告警类型");
+                p.put("enum", JSONArray.of("process_down", "high_cpu", "deploy_failed"));
+                break;
+            case "target":
+                p.put("type", "string");
+                p.put("description", "告警目标（节点/项目/版本）");
+                break;
+            default:
+                p.put("type", "string");
+                p.put("description", field);
+        }
+        return p;
     }
 
     /**

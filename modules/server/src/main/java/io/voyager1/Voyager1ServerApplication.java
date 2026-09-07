@@ -36,9 +36,9 @@ import org.springframework.context.ApplicationContext;
  */
 @SpringBootApplication(
     scanBasePackages = {"io.voyager1"},
-    // Phase 1: 旧存储（StorageServiceFactory）在启动阶段才初始化 DataSource，
+    // 旧存储（StorageServiceFactory）在启动阶段才初始化 DataSource，
     // Spring Boot 的 JPA/Flyway 自动装配会过早连接 DataSource 导致启动失败，
-    // 故先排除，待手动编排（在 InitDb 之后初始化）再逐步启用。
+    // 故先排除，改为手动编排（FlywayRunner 建表 + CoreJpaConfig 组装 JPA）。
     exclude = {
         org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.class,
         org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.class,

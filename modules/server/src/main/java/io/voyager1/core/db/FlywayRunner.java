@@ -27,16 +27,14 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 
 /**
- * Flyway 手动编排（Phase 1）
+ * Flyway 手动编排（schema 唯一权威）
  * <p>
- * 由于 Spring Boot 的 Flyway 自动装配会在 {@code InitDb} 初始化存储之前过早连库，
- * 这里改为 {@link ILoadEvent}：在 {@code InitDb}（{@code HIGHEST_PRECEDENCE}）创建完表结构之后、
- * 在 {@code DataInitEvent}（{@code HIGHEST_PRECEDENCE + 2}，触发 {@code statusRecover} 等业务初始化）之前执行。
+ * 应用未启用 Spring Boot 的 Flyway 自动装配（{@code FlywayAutoConfiguration} 被排除），
+ * 这里通过 {@link ILoadEvent} 在 Bean 加载完成后、业务初始化（{@code DataInitEvent}，{@code HIGHEST_PRECEDENCE + 2}）
+ * 之前执行 {@code db/migration/V1__init.sql}，确保业务读取数据时表结构已就绪。
  * <p>
- * 顺序保证：InitDb 用旧表名建表 → Flyway 执行 V2+ 重命名 → 业务层用新表名读写。
- * <p>
- * 采用 {@code baselineOnMigrate}：对已存在的 schema 只做基线标记（版本 1），不重建表，
- * 后续新表/改表通过 {@code db/migration/V2__xxx.sql} 增量演进。
+ * 未发布项目采用「单基线」策略：只保留一个 {@code V1__init.sql}（全量建表 + 索引，表名/列名均为 Voyager1 新命名）。
+ * 后续 schema 演进一律新增 {@code V2__xxx}、{@code V3__xxx} ...，不再修改已应用的 V1。
  */
 @Component
 public class FlywayRunner implements ILoadEvent {
@@ -51,7 +49,7 @@ public class FlywayRunner implements ILoadEvent {
 
     @Override
     public int getOrder() {
-        // 介于 InitDb（HIGHEST_PRECEDENCE）与 DataInitEvent（HIGHEST_PRECEDENCE + 2）之间
+        // 早于 DataInitEvent（HIGHEST_PRECEDENCE + 2），保证先建表、后做业务初始化
         return Ordered.HIGHEST_PRECEDENCE + 1;
     }
 
@@ -59,12 +57,9 @@ public class FlywayRunner implements ILoadEvent {
     public void afterPropertiesSet(ApplicationContext applicationContext) {
         Flyway flyway = Flyway.configure()
             .dataSource(dataSource)
-            .baselineOnMigrate(true)
-            .baselineVersion("0")
-            .baselineDescription("fresh-or-existing-schema")
             .locations("classpath:db/migration")
             .load();
         flyway.migrate();
-        log.info("Flyway 迁移完成（baseline 已建立，后续通过 V2+ 增量演进）");
+        log.info("Flyway 迁移完成（schema 由 V1__init.sql 单基线管理）");
     }
 }

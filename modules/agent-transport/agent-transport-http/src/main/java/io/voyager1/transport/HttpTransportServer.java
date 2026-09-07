@@ -86,7 +86,7 @@ public class HttpTransportServer implements TransportServer {
                                     valueStr[i] = encryptor.encrypt(valueStr[i]);
                                 }
                                 newValue = valueStr;
-                            } else if (value instanceof java.io.File || value instanceof byte[] || value instanceof java.io.InputStream) {
+                            } else if (value instanceof java.io.File || value instanceof byte[] || value instanceof java.io.InputStream || value instanceof io.voyager1.util.BytesResource || value instanceof org.springframework.core.io.Resource) {
                                 newValue = value;
                             } else {
                                 newValue = encryptor.encrypt(entry.getValue() == null ? null : entry.getValue().toString());

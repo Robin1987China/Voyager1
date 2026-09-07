@@ -84,10 +84,6 @@ public class HttpRequest {
 
     public HttpRequest form(Map<String, Object> formData) {
         this.formData = formData;
-        if (formData != null && !formData.isEmpty()) {
-            // 表单提交必须携带 application/x-www-form-urlencoded，否则接收端无法解析参数
-            this.header("Content-Type", "application/x-www-form-urlencoded");
-        }
         return this;
     }
 
@@ -141,28 +137,129 @@ public class HttpRequest {
         return builder.build();
     }
 
-    private java.net.http.HttpRequest buildRequest() {
+    private java.net.http.HttpRequest buildRequest() throws java.io.IOException {
         java.net.http.HttpRequest.Builder builder = java.net.http.HttpRequest.newBuilder().uri(URI.create(url));
         headers.forEach(builder::header);
         if (timeout > 0) {
             builder.timeout(Duration.ofMillis(timeout));
         }
-        String body = jsonBody;
-        if (body == null && formData != null) {
-            StringBuilder sb = new StringBuilder();
-            for (Map.Entry<String, Object> entry : formData.entrySet()) {
-                if (sb.length() > 0) {
-                    sb.append("&");
-                }
-                sb.append(encode(entry.getKey())).append("=").append(encode(String.valueOf(entry.getValue())));
-            }
-            body = sb.toString();
+        if (jsonBody != null) {
+            builder.method(method.name(), java.net.http.HttpRequest.BodyPublishers.ofString(jsonBody));
+            return builder.build();
         }
-        java.net.http.HttpRequest.BodyPublisher publisher = body == null
-            ? java.net.http.HttpRequest.BodyPublishers.noBody()
-            : java.net.http.HttpRequest.BodyPublishers.ofString(body);
-        builder.method(method.name(), publisher);
+        if (formData != null && !formData.isEmpty()) {
+            if (hasFileContent(formData)) {
+                // 含文件内容 → multipart/form-data（分片上传/文件分发）
+                String boundary = "----Voyager1FormBoundary" + Long.toHexString(System.nanoTime());
+                builder.setHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
+                builder.method(method.name(), java.net.http.HttpRequest.BodyPublishers.ofByteArray(buildMultipartBody(formData, boundary)));
+            } else {
+                // 普通表单 → application/x-www-form-urlencoded（接收端依赖该头解析参数）
+                builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
+                builder.method(method.name(), java.net.http.HttpRequest.BodyPublishers.ofString(buildFormBody(formData)));
+            }
+            return builder.build();
+        }
+        builder.method(method.name(), java.net.http.HttpRequest.BodyPublishers.noBody());
         return builder.build();
+    }
+
+    private static boolean hasFileContent(Map<String, Object> form) {
+        for (Object value : form.values()) {
+            if (isFileContent(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isFileContent(Object value) {
+        return value instanceof byte[] || value instanceof java.io.File
+            || value instanceof java.io.InputStream || value instanceof org.springframework.core.io.Resource
+            || value instanceof io.voyager1.util.BytesResource;
+    }
+
+    private static String buildFormBody(Map<String, Object> form) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Object> entry : form.entrySet()) {
+            if (sb.length() > 0) {
+                sb.append("&");
+            }
+            sb.append(encode(entry.getKey())).append("=").append(encode(String.valueOf(entry.getValue())));
+        }
+        return sb.toString();
+    }
+
+    private static byte[] buildMultipartBody(Map<String, Object> form, String boundary) throws java.io.IOException {
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        byte[] crlf = "\r\n".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        for (Map.Entry<String, Object> entry : form.entrySet()) {
+            out.write(("--" + boundary).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            out.write(crlf);
+            Object value = entry.getValue();
+            if (isFileContent(value)) {
+                byte[] bytes = readFileBytes(value);
+                String filename = resolveFilename(value, entry.getKey());
+                out.write(("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"; filename=\"" + filename + "\"").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                out.write(crlf);
+                out.write("Content-Type: application/octet-stream".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                out.write(crlf);
+                out.write(crlf);
+                out.write(bytes);
+                out.write(crlf);
+            } else {
+                out.write(("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                out.write(crlf);
+                out.write(crlf);
+                out.write(String.valueOf(value).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                out.write(crlf);
+            }
+        }
+        out.write(("--" + boundary + "--").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        out.write(crlf);
+        return out.toByteArray();
+    }
+
+    private static byte[] readFileBytes(Object value) throws java.io.IOException {
+        if (value instanceof byte[]) {
+            return (byte[]) value;
+        }
+        if (value instanceof java.io.File) {
+            return java.nio.file.Files.readAllBytes(((java.io.File) value).toPath());
+        }
+        if (value instanceof java.io.InputStream) {
+            try (java.io.InputStream is = (java.io.InputStream) value) {
+                return is.readAllBytes();
+            }
+        }
+        if (value instanceof org.springframework.core.io.Resource) {
+            try (java.io.InputStream is = ((org.springframework.core.io.Resource) value).getInputStream()) {
+                return is.readAllBytes();
+            }
+        }
+        if (value instanceof io.voyager1.util.BytesResource) {
+            return ((io.voyager1.util.BytesResource) value).readBytes();
+        }
+        return new byte[0];
+    }
+
+    private static String resolveFilename(Object value, String fieldName) {
+        if (value instanceof java.io.File) {
+            return ((java.io.File) value).getName();
+        }
+        if (value instanceof io.voyager1.util.BytesResource) {
+            String name = ((io.voyager1.util.BytesResource) value).getName();
+            if (name != null && !name.isEmpty()) {
+                return name;
+            }
+        }
+        if (value instanceof org.springframework.core.io.Resource) {
+            String filename = ((org.springframework.core.io.Resource) value).getFilename();
+            if (filename != null && !filename.isEmpty()) {
+                return filename;
+            }
+        }
+        return fieldName;
     }
 
     public Response execute() {

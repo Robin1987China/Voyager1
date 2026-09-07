@@ -48,6 +48,8 @@ public class AgentIntentService {
      * @return 工具调用序列（按执行顺序）
      */
     public List<JSONObject> parseIntent(String intent) {
+        // 防御性校验：controller 已用 @ValidatorItem 拦截，这里兜底避免空指针
+        org.springframework.util.Assert.hasText(intent, "意图描述不能为空");
         String lower = intent.toLowerCase();
         List<JSONObject> steps = new ArrayList<>();
         String env = extractEnv(intent);

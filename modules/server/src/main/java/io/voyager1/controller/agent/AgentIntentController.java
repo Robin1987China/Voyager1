@@ -19,6 +19,8 @@ package io.voyager1.controller.agent;
 import com.alibaba.fastjson2.JSONObject;
 import io.voyager1.core.api.ApiResult;
 import io.voyager1.common.BaseServerController;
+import io.voyager1.common.validator.ValidatorItem;
+import io.voyager1.common.validator.ValidatorRule;
 import io.voyager1.permission.ClassFeature;
 import io.voyager1.permission.Feature;
 import io.voyager1.permission.MethodFeature;
@@ -47,7 +49,7 @@ public class AgentIntentController extends BaseServerController {
 
     @PostMapping(value = "parse", produces = "application/json")
     @Feature(method = MethodFeature.EXECUTE)
-    public ApiResult<List<JSONObject>> parse(String intent) {
+    public ApiResult<List<JSONObject>> parse(@ValidatorItem(value = ValidatorRule.NOT_BLANK, msg = "请输入意图描述") String intent) {
         return ApiResult.success("", agentIntentService.parseIntent(intent));
     }
 }

@@ -55,4 +55,14 @@ public class AgentIntentServiceTest {
     public void testParseEmptyIntent() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> service.parseIntent("你好"));
     }
+
+    @Test
+    public void testParseNullIntent() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> service.parseIntent(null));
+    }
+
+    @Test
+    public void testParseBlankIntent() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> service.parseIntent("   "));
+    }
 }

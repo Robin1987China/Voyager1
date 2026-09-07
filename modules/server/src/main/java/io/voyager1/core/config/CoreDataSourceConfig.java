@@ -27,7 +27,7 @@ import javax.sql.DataSource;
  * 新持久层 DataSource 配置（Phase 1）
  * <p>
  * 直接创建 DataSource（H2 模式使用与旧实现一致的路径与连接串），供 Spring Data JPA / Flyway 使用。
- * 通过 {@link LazyDataSource} 延迟创建，避免与 InitDb 初始化顺序耦合。
+ * 通过 {@link LazyDataSource} 延迟创建，避免过早连库。
  */
 @Configuration
 public class CoreDataSourceConfig {

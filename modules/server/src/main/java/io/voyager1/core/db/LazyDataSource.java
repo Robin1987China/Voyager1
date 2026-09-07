@@ -29,7 +29,7 @@ import java.sql.SQLException;
 /**
  * 惰性 DataSource（清洁室实现，取代承继存储框架 {@code StorageServiceFactory} 持有的 DataSource）。
  * <p>
- * 底层 DataSource 在首次 {@link #getConnection()} 时才创建，从而避免与 {@code InitDb} 的初始化顺序耦合。
+ * 底层 DataSource 在首次 {@link #getConnection()} 时才创建，从而避免在 Flyway 建表之前过早连库。
  * H2 模式：使用与旧实现一致的路径（{@code ExtConfigBean.getPath()/db/Server}）与连接串；
  * 非 H2 模式：使用配置的 {@code voyager1.db.url}。
  */

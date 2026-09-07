@@ -1,12 +1,8 @@
-# Flyway 迁移目录（Phase 1/2）
+# Flyway 迁移目录（单基线）
 
-- 已存在的 schema 通过 `baselineOnMigrate` 基线化为版本 `1`（不重建表）。
-- 后续新增/修改表结构使用 `V2__描述`、`V3__描述` ... 命名（SQL 或 Java 迁移均可）。
-- 旧 `sql-view/*.csv`（InitDb CSV 建表）在 Phase 2 数据模型重构时逐步废弃，由这里的迁移脚本取代。
+Voyager1 未发布，schema 采用「单基线」策略：**只保留一个 `V1__init.sql`**，其中包含全量建表 + 索引，表名/列名均为 Voyager1 新命名（领域前缀 + 大写下划线）。
 
-## Phase 2 新命名约定
-
-领域前缀 + 大写下划线（与原表名区分，作为原创 schema 设计）：
+## 新命名约定
 
 | 前缀 | 领域 | 示例 |
 |---|---|---|
@@ -14,35 +10,28 @@
 | `INFRA_` | 基础设施（机器/节点/SSH/Docker） | `INFRA_MACHINE`、`INFRA_SSH` |
 | `CI_` | 构建发布（构建/仓库/版本/Pipeline） | `CI_BUILD`、`CI_REPOSITORY` |
 | `OPS_` | 运维（分发/监控/脚本/命令） | `OPS_MONITOR`、`OPS_SCRIPT` |
-| `STORAGE_` | 文件存储 | `STORAGE_FILE` |
+| `STORAGE_` | 文件存储 | `STORAGE_FILE`、`STORAGE_STATIC_FILE` |
 
-已迁移（Phase 2）：
-- `CERTIFICATE_INFO` → `SYS_CERTIFICATE`（V2，Java 迁移，见 `db.migration.V2__rename_sys_certificate`）。
-- 其余 38 张承继表批量重命名（V3，见 `db.migration.V3__rename_core_tables`，由 `script/rename-tables.mjs` 依据 `script/table-rename-map.json` 生成）。
-- 存量库残留列名 `PEGASUS*` → `VOYAGER1*`（V4，见 `db.migration.V4__rename_pegasus_columns`，修复集群/节点心跳 `voyager1Version` 等列不存在）。
+## 职责划分
 
-## 执行顺序（重要）
+- **schema 唯一权威是 Flyway**（`V1__init.sql`）。Hibernate 的 `hbm2ddl.auto=none`，不参与建表/校验。
+- `sql-view/*.csv` 仅作为生成 `V1__init.sql` 的**原料**（历史遗留，逐步废弃），运行时不再被读取建表。
+- 旧 `InitDb`（CSV 建表）已移除；早期的表/列改名迁移（V2/V3/V4）也已删除——全新库直接按新表名建表，不再需要运行时重命名。
 
-Flyway 通过 `FlywayRunner`（实现 `ILoadEvent`，`getOrder() = HIGHEST_PRECEDENCE + 1`）手动编排，保证：
+## 执行顺序
 
-1. `InitDb`（`HIGHEST_PRECEDENCE`）用 CSV 建表（迁移后的表已按新名建）；
-2. `FlywayRunner`（`HIGHEST_PRECEDENCE + 1`）执行 V2+ 迁移；
-3. `DataInitEvent`（`HIGHEST_PRECEDENCE + 2`）触发 `statusRecover` 等业务初始化，此时模型 `@TableName` 已指向新表名。
+Flyway 通过 `FlywayRunner`（实现 `ILoadEvent`，`getOrder() = HIGHEST_PRECEDENCE + 1`）手动编排：
 
-> 若 Flyway 晚于业务初始化执行，会报 `Table "SYS_CERTIFICATE" not found`（业务用新表名、但表尚未改名）。
+1. `FlywayRunner`（`HIGHEST_PRECEDENCE + 1`）执行 `V1__init.sql` 建表；
+2. `DataInitEvent`（`HIGHEST_PRECEDENCE + 2`）触发 `statusRecover` 等业务初始化，此时表结构已就绪。
 
-## 单表重命名迁移配方（Phase 2 逐表复用）
+> 若 Flyway 晚于业务初始化执行，会报 `Table "XXX" not found`。
 
-每迁移一张表，三步联动：
+## 演进规则
 
-1. **改 CSV**：`sql-view/table.all.v1.0.csv` 首列旧表名 → 新表名（InitDb 后续在全新库上直接建新名）。
-2. **加 Java 迁移**：`db.migration.V(n)__rename_<xxx>.java`，条件重命名——
-   - 旧表存在 → 删除 InitDb 刚建的空白新表（如有）→ `ALTER TABLE 旧表 RENAME TO 新表`（保留数据）；
-   - 旧表不存在（全新库）→ 跳过。
-3. **改模型**：对应 Model 的 `@TableName` → 新表名。
-
-参考实现：`db.migration.V2__rename_sys_certificate.java`。回归测试：`io.voyager1.core.db.FlywayRenameMigrationTest`（覆盖存量库改名保留数据 + 全新库跳过两种场景）。
+- `V1__init.sql` **一旦在某环境落地就不可再修改**，只能新增 `V2__xxx`、`V3__xxx` ...（SQL 或 Java 迁移均可）。
+- 因未发布，若需要调整 V1，直接改 `V1__init.sql` 并**清空本地 dev 库重建**（删除数据目录下的 H2 文件，或 `flyway clean`）。
 
 ## 测试库注意事项
 
-采用“CSV 新名建表 + 条件重命名”后，全新库与存量库均幂等，持久化测试库（`$TMPDIR/voyager1-test-data`）可跨运行复用，无需手动清理。若遇 Flyway 校验失败（版本冲突），用 `mvn clean test` 清除 `target/` 里残留的旧迁移产物后重试。
+持久化测试库（`$TMPDIR/voyager1-test-data`）跨运行复用。若修改了 V1 后遇到 Flyway 校验失败（checksum mismatch），说明测试库仍残留旧迁移记录，删除对应 H2 数据文件重建即可。

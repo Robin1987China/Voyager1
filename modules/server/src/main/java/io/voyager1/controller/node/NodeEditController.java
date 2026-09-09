@@ -34,7 +34,6 @@ import io.voyager1.service.monitor.MonitorService;
 import io.voyager1.service.node.ProjectInfoCacheService;
 import io.voyager1.service.node.script.NodeScriptExecuteLogServer;
 import io.voyager1.service.node.script.NodeScriptServer;
-import io.voyager1.service.outgiving.LogReadServer;
 import io.voyager1.service.outgiving.OutGivingServer;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
@@ -57,7 +56,6 @@ public class NodeEditController extends BaseServerController {
     private final OutGivingServer outGivingServer;
     private final MonitorService monitorService;
     private final BuildInfoService buildService;
-    private final LogReadServer logReadServer;
     private final ProjectInfoCacheService projectInfoCacheService;
     private final NodeScriptServer nodeScriptServer;
     private final NodeScriptExecuteLogServer nodeScriptExecuteLogServer;
@@ -65,14 +63,12 @@ public class NodeEditController extends BaseServerController {
     public NodeEditController(OutGivingServer outGivingServer,
                               MonitorService monitorService,
                               BuildInfoService buildService,
-                              LogReadServer logReadServer,
                               ProjectInfoCacheService projectInfoCacheService,
                               NodeScriptServer nodeScriptServer,
                               NodeScriptExecuteLogServer nodeScriptExecuteLogServer) {
         this.outGivingServer = outGivingServer;
         this.monitorService = monitorService;
         this.buildService = buildService;
-        this.logReadServer = logReadServer;
         this.projectInfoCacheService = projectInfoCacheService;
         this.nodeScriptServer = nodeScriptServer;
         this.nodeScriptExecuteLogServer = nodeScriptExecuteLogServer;
@@ -149,8 +145,6 @@ public class NodeEditController extends BaseServerController {
         //  判断分发
         boolean checkNode = outGivingServer.checkNode(id, request);
         Assert.state(!checkNode, "该节点存在分发项目，不能" + msg);
-        boolean checkLogRead = logReadServer.checkNode(id, request);
-        Assert.state(!checkLogRead, "该节点存在日志搜索（阅读）项目，不能" + msg);
         // 监控
         boolean checkNode1 = monitorService.checkNode(id);
         Assert.state(!checkNode1, "该节点存在监控项，不能" + msg);

@@ -77,22 +77,6 @@ const children = [
     component: () => import('../pages/ssh/command-log.vue')
   },
   {
-    path: '/dispatch/list',
-    name: 'dispatch-list',
-    component: () => import('../pages/dispatch/list.vue')
-  },
-  {
-    path: '/dispatch/log',
-    name: 'dispatch-log',
-    component: () => import('../pages/dispatch/log.vue')
-  },
-  {
-    path: '/dispatch/log-read',
-    name: 'dispatch-log-read',
-    component: () => import('../pages/dispatch/logRead.vue')
-  },
-
-  {
     path: '/monitor/list',
     name: 'monitor-list',
     component: () => import('../pages/monitor/list.vue')
@@ -133,19 +117,29 @@ const children = [
     component: () => import('../pages/finops/finops-list.vue')
   },
   {
-    path: '/pipeline/swimlane',
-    name: 'pipeline-swimlane',
-    component: () => import('../pages/pipeline/swimlane.vue')
-  },
-  {
     path: '/pipeline/version-list',
     name: 'pipeline-version-list',
     component: () => import('../pages/pipeline/version-list.vue')
   },
   {
-    path: '/pipeline/pipeline-list',
-    name: 'pipeline-list',
-    component: () => import('../pages/pipeline/pipeline-list.vue')
+    path: '/environment/list',
+    name: 'environment-list',
+    component: () => import('../pages/environment/list.vue')
+  },
+  {
+    path: '/deploy/records',
+    name: 'deploy-records',
+    component: () => import('../pages/environment/deploy-records.vue')
+  },
+  {
+    path: '/application/list',
+    name: 'application-list',
+    component: () => import('../pages/application/list.vue')
+  },
+  {
+    path: '/application/detail',
+    name: 'application-detail',
+    component: () => import('../pages/application/detail.vue')
   },
   {
     path: '/build/history',
@@ -178,18 +172,13 @@ const children = [
     component: () => import('../pages/file-manager/fileStorage/list.vue')
   },
   {
-    path: '/file-manager/release-task',
-    name: 'file-storage-release-task',
-    component: () => import('../pages/file-manager/release-task/list.vue')
-  },
-  {
     path: '/file-manager/static-file-storage',
     name: 'static-file-storage',
     component: () => import('../pages/file-manager/staticFileStorage/list.vue')
   },
   {
     path: '/certificate/list',
-    name: '/certificate-list',
+    name: 'certificate-list',
     component: () => import('../pages/certificate/list.vue')
   }
 ]
@@ -296,6 +285,11 @@ const management = [
     path: '/system/backup',
     name: 'system-backup',
     component: () => import('../pages/system/backup.vue')
+  },
+  {
+    path: '/system/about',
+    name: 'system-about',
+    component: () => import('../pages/system/about.vue')
   }
 ]
 

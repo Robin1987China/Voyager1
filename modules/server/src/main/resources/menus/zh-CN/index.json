@@ -10,8 +10,8 @@
     "icon_v3": "rocket",
     "childs": [
       {
-        "id": "repository",
-        "title": "代码仓库"
+        "id": "application",
+        "title": "应用"
       },
       {
         "id": "buildList",
@@ -22,25 +22,12 @@
         "title": "版本管理"
       },
       {
-        "id": "pipelineList",
-        "title": "流水线"
+        "id": "environment",
+        "title": "环境管理"
       },
       {
-        "id": "swimlane",
-        "title": "版本晋升"
-      },
-      {
-        "id": "outgivingList",
-        "title": "应用分发"
-      },
-      {
-        "id": "outgivingWhitelistDirectory",
-        "title": "分发授权",
-        "role": "system"
-      },
-      {
-        "id": "logRead",
-        "title": "分发日志"
+        "id": "deployRecords",
+        "title": "部署记录"
       }
     ]
   },
@@ -64,6 +51,10 @@
       {
         "id": "commandList",
         "title": "命令管理"
+      },
+      {
+        "id": "outgivingWhitelistDirectory",
+        "title": "节点授权"
       }
     ]
   },
@@ -114,10 +105,6 @@
       {
         "id": "staticFileStorage",
         "title": "静态文件"
-      },
-      {
-        "id": "fileReleaseTask",
-        "title": "发布任务"
       },
       {
         "id": "certificate",

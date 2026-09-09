@@ -20,9 +20,9 @@
                   {{ statusMap[status] || $t('i18n_903b25f64e') }}
                 </n-tag>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_e703c7367c')} ${statusMap[status]} ${ statusMsg ? $t('i18n_8d13037eb7') + statusMsg : '' }`
-          </n-tooltip>
+           }}</n-tooltip>
         </span>
         <span>
           {{ $t('i18n_31aaaaa6ec') }}
@@ -67,9 +67,9 @@
                   <span class="tw">
                     <EyeInvisibleOutlined v-if="environment[item].privacy" />{{ environment[item].value }}
                   </span>
-                </template>
+                </template>{{ 
                 environment[item].privacy ? $t('i18n_b12d003367') : environment[item].value
-              </n-tooltip>
+               }}</n-tooltip>
             </n-grid-item>
           </n-grid>
         </n-list-item>

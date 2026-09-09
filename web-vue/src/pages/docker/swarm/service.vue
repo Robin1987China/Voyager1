@@ -91,10 +91,10 @@
                   {{ text }}
                 </n-tag>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_20f32e1979')}${text} ${ record.managerStatus && record.managerStatus.reachability ===
             'REACHABLE' ? $t('i18n_88c5680d0d') + record.managerStatus.reachability : '' }`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
         <template v-else-if="column.key === 'address'">
           <n-tooltip placement="topLeft">
@@ -131,9 +131,9 @@
           <n-tooltip placement="topLeft">
             <template #trigger>
               {{ text }}
-            </template>
+            </template>{{ 
             `${$t('i18n_bf94b97d1a')}${text} ${$t('i18n_312f45014a')}${record.createdAt}`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
 
         <template v-else-if="column.replicas">
@@ -144,9 +144,9 @@
 
                 <ReadOutlined @click="handleTask(record)" />
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_ce07501354')},${$t('i18n_c0e498a259')}`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
 
         <template v-else-if="column.key === 'operation'">

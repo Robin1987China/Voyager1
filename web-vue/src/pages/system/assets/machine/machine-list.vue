@@ -94,9 +94,9 @@
               <span class="tw">
                 <n-button :disabled="true" type="primary"> {{ $t('i18n_7f7c624a84') }}<DownOutlined /></n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_98cd2bdc03')
-          </n-tooltip>
+           }}</n-tooltip>
         </n-space>
       </template>
       <template #tableHelp>
@@ -145,10 +145,10 @@
                   {{ statusMap[record.status] }}
                 </n-tag>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_e703c7367c')}${statusMap[record.status]} ${ record.statusMsg ? $t('i18n_8d13037eb7') +
             record.statusMsg : $t('i18n_77e100e462') } `
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
         <template v-else-if="column.duration">
           <n-tooltip placement="topLeft">
@@ -228,10 +228,10 @@
                         {{ statusMap[item.status] }}</n-tag
                       >
                     </span>
-                  </template>
+                  </template>{{ 
                   `${$t('i18n_e703c7367c')}${statusMap[item.status]} ${ item.statusMsg ? $t('i18n_8d13037eb7') +
                   item.statusMsg : $t('i18n_77e100e462') } `
-                </n-tooltip>
+                 }}</n-tooltip>
               </n-grid-item>
             </n-grid>
           </template>

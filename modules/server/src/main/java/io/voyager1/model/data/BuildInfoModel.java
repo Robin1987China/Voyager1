@@ -78,6 +78,10 @@ public class BuildInfoModel extends BaseGroupModel {
      */
     private String releaseMethodDataId;
     /**
+     * 目标环境名（dev/test/prod），CD_ONLY 环境禁止从源码构建
+     */
+    private String environment;
+    /**
      * 状态
      *
      * @see BuildStatus

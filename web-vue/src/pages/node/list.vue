@@ -75,9 +75,9 @@
                 <span class="tw">
                   <n-button :loading="loading" type="primary" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_4838a3bd20')
-            </n-tooltip>
+             }}</n-tooltip>
             <n-button
               type="primary"
               @click="
@@ -99,9 +99,9 @@
                 <span class="tw">
                   <n-button :disabled="true" type="primary"> {{ $t('i18n_398ce396cd') }} </n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_68af00bedb')
-            </n-tooltip>
+             }}</n-tooltip>
           </n-space>
         </template>
         <template #tableHelp>
@@ -160,9 +160,9 @@
                       </n-button>
                     </span>
                   </span>
-                </template>
+                </template>{{ 
                 `${text} ${$t('i18n_8a4dbe88b8')}`
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
           </template>
           <template v-else-if="column.dataIndex === 'status'">
@@ -223,10 +223,10 @@
                     >
                   </span>
                 </span>
-              </template>
+              </template>{{ 
               `${$t('i18n_3574d38d3e')}${renderSize( record.machineNodeData && record.machineNodeData.jvmFreeMemory )}
               ${$t('i18n_a0a3d583b9')}${renderSize( record.machineNodeData && record.machineNodeData.jvmTotalMemory )}`
-            </n-tooltip>
+             }}</n-tooltip>
           </template>
 
           <template v-else-if="column.dataIndex === 'runTime'">
@@ -295,9 +295,9 @@
                       >{{ $t('i18n_08b55fea3c') }}</n-button
                     >
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_e96705ead1')
-              </n-tooltip>
+               }}</n-tooltip>
               <n-tooltip>
                 <template #trigger>
                   <span class="tw">
@@ -305,9 +305,9 @@
                       ><CodeOutlined />{{ $t('i18n_4722bc0c56') }}</n-button
                     >
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_7f0abcf48d')
-              </n-tooltip>
+               }}</n-tooltip>
 
               <n-dropdown
                 :options="[
@@ -403,9 +403,9 @@
                       status="active"
                       :percent="item.occupyCpu"
                     />
-                  </template>
+                  </template>{{ 
                   `CPU ${$t('i18n_b0fa44acbb')}${item.occupyCpu}%`
-                </n-tooltip>
+                 }}</n-tooltip>
               </n-grid-item>
               <n-grid-item :span="8" style="text-align: center">
                 <n-tooltip @click="handleHistory(item, 'nodeTop')">
@@ -421,9 +421,9 @@
                       status="active"
                       :percent="item.occupyDisk"
                     />
-                  </template>
+                  </template>{{ 
                   `${$t('i18n_570eb1c04f')}${item.occupyDisk}%`
-                </n-tooltip>
+                 }}</n-tooltip>
               </n-grid-item>
               <n-grid-item :span="8" style="text-align: center">
                 <n-tooltip @click="handleHistory(item, 'nodeTop')">
@@ -439,9 +439,9 @@
                       status="active"
                       :percent="item.occupyMemory"
                     />
-                  </template>
+                  </template>{{ 
                   `${$t('i18n_09e7d24952')}${item.occupyMemory}%`
-                </n-tooltip>
+                 }}</n-tooltip>
               </n-grid-item>
             </n-grid>
 
@@ -463,10 +463,10 @@
                         "
                       />
                     </span>
-                  </template>
+                  </template>{{ 
                   `${ $t('i18n_db732ecb48') + (formatDuration(item.machineNodeData && item.machineNodeData.networkDelay,
                   '', 2) || '-') + $t('i18n_69384c9d71') }`
-                </n-tooltip>
+                 }}</n-tooltip>
               </n-grid-item>
               <n-grid-item :span="8">
                 <n-tooltip>

@@ -55,9 +55,9 @@
               <n-tooltip>
                 <template #trigger>
                   {{ renderSize(statsData.networks[item] && statsData.networks[item].rxBytes) || 0 }}
-                </template>
+                </template>{{ 
                 `${item} ${$t('i18n_3e54c81ca2')}`
-              </n-tooltip>
+               }}</n-tooltip>
             </div>
           </n-descriptions-item>
           <n-descriptions-item label="NET I/O tx">
@@ -65,9 +65,9 @@
               <n-tooltip>
                 <template #trigger>
                   {{ renderSize(statsData.networks[item] && statsData.networks[item].txBytes) || 0 }}
-                </template>
+                </template>{{ 
                 `${item} ${$t('i18n_97ecc1bbe9')}`
-              </n-tooltip>
+               }}</n-tooltip>
             </div>
           </n-descriptions-item>
           <n-descriptions-item label="BLOCK I/O">

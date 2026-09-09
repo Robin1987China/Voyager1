@@ -54,4 +54,13 @@ public class EnvironmentEntity {
 
     @Column(name = "enabled")
     private Integer enabled;
+
+    @Column(name = "type", length = 20)
+    private String type;
+
+    @Column(name = "strategy", length = 20)
+    private String strategy;
+
+    @Column(name = "approvalRequired")
+    private Integer approvalRequired;
 }

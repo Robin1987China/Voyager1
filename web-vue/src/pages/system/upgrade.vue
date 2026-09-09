@@ -92,9 +92,9 @@
                   </n-tag>
                   <!-- </div> -->
                 </span>
-              </template>
+              </template>{{ 
               `${$t('i18n_3f78f88499')}${agentTimeStamp || $t('i18n_1622dc9b6b')}`
-            </n-tooltip></template
+             }}</n-tooltip></template
           >
           <template #tableBodyCell="{ column, text, record }">
             <template v-if="column.tooltip">

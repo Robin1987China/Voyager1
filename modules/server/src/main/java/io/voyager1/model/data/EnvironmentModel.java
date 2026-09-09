@@ -47,4 +47,19 @@ public class EnvironmentModel extends BaseDbModel {
      * 是否启用
      */
     private Integer enabled;
+
+    /**
+     * 环境类型（dev/test/prod）
+     */
+    private String type;
+
+    /**
+     * 部署策略（CI_CD=可构建可部署 / CD_ONLY=仅部署）
+     */
+    private String strategy;
+
+    /**
+     * 部署前是否需要审批（prod 为 true）
+     */
+    private Boolean approvalRequired;
 }

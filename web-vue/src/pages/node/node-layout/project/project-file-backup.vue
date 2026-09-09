@@ -183,9 +183,9 @@
                       <span class="tw">
                         <n-button size="small" type="primary" :disabled="true">{{ $t('i18n_f26ef91424') }}</n-button>
                       </span>
-                    </template>
+                    </template>{{ 
                     $t('i18n_6c14188ba0')
-                  </n-tooltip>
+                   }}</n-tooltip>
                 </template>
                 <template v-else>
                   <n-button size="small" type="primary" @click="handleDownload(record)">{{

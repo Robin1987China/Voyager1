@@ -21,9 +21,9 @@
                     ><DeleteOutlined />{{ $t('i18n_288f0c404c') }}</n-button
                   >
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_65f66dfe97')
-            </n-tooltip>
+             }}</n-tooltip>
             <!-- <n-tooltip>
 <template #trigger>
 
@@ -40,9 +40,9 @@
                   :unchecked-label="$t('i18n_18b34cf50d')"
                   @change="onChange"
                 />
-              </template>
+              </template>{{ 
               $t('i18n_0693e17fc1')
-            </n-tooltip>
+             }}</n-tooltip>
           </n-space>
         </n-grid-item>
       </n-grid>

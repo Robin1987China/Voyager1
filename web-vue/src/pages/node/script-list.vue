@@ -49,7 +49,7 @@
                 <n-button :loading="loading" type="primary" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
               </span>
             </template>
-            $t('i18n_4838a3bd20')
+            {{ 'i18n_4838a3bd20' }}
           </n-tooltip>
 
           <n-button type="primary" @click="handleEdit()">{{ $t('i18n_66ab5e9f24') }}</n-button>
@@ -127,13 +127,13 @@
             <template #trigger>
               <ClusterOutlined />
             </template>
-            $t('i18n_51341b5024')
+            {{ 'i18n_51341b5024' }}
           </n-tooltip>
           <n-tooltip v-else>
             <template #trigger>
               <FileTextOutlined />
             </template>
-            $t('i18n_3eab0eb8a9')
+            {{ 'i18n_3eab0eb8a9' }}
           </n-tooltip>
         </template>
 
@@ -228,7 +228,7 @@
                   <n-button type="primary" size="small" @click="resetTrigger">{{ $t('i18n_4b9c3271dc') }}</n-button>
                 </span>
               </template>
-              $t('i18n_01ad26f4a9')
+              {{ 'i18n_01ad26f4a9' }}
             </n-tooltip>
           </template>
           <n-tab-pane name="1" :tab="$t('i18n_1a6aa24e76')">

@@ -127,9 +127,9 @@
                 <span class="tw">
                   <n-button size="small" text @click="createContainer(record)"><SelectOutlined /></n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_e0a0e26031')
-            </n-tooltip>
+             }}</n-tooltip>
             <n-tooltip>
               <template #trigger>
                 <span class="tw">
@@ -137,9 +137,9 @@
                     ><CloudDownloadOutlined
                   /></n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_159a3a8037')
-            </n-tooltip>
+             }}</n-tooltip>
             <n-tooltip>
               <template #trigger>
                 <span class="tw">
@@ -147,17 +147,17 @@
                     ><DownloadOutlined
                   /></n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_8e389298e4')
-            </n-tooltip>
+             }}</n-tooltip>
             <n-tooltip>
               <template #trigger>
                 <span class="tw">
                   <n-button size="small" text @click="doAction(record, 'remove')"><DeleteOutlined /></n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_0306ea1908')
-            </n-tooltip>
+             }}</n-tooltip>
           </n-space>
         </template>
       </template>

@@ -195,7 +195,17 @@ function start() {
     echo "Please check the $Log for failure details"
     errorExit "Voyager1 server Startup failed"
   fi
-  tail -fn 0 --pid="$pid" "$server_log"
+  # 启动宽限：确认进程未秒退后即返回（start 不阻塞；阻塞跟随请用 BlockListener.sh）
+  # 历史实现 tail -fn 0 --pid=pid 会阻塞到进程退出，导致 deploy.sh 挂起；macOS BSD tail 无 --pid 直接报错
+  _grace=0
+  while [ "${_grace}" -lt 5 ]; do
+    if ! kill -0 "$pid" 2>/dev/null; then
+      echo "Please check the $Log for failure details"
+      errorExit "Voyager1 server exited during startup"
+    fi
+    sleep 1
+    _grace=$((_grace + 1))
+  done
 }
 
 function stop() {

@@ -129,6 +129,15 @@ public class BuildExecuteService {
             BuildInfoModel buildInfoModel = buildService.getByKey(buildInfoId);
             String e = this.checkStatus(buildInfoModel);
             Assert.isNull(e, () -> e);
+            // 环境策略：CD_ONLY（test/prod）环境禁止从源码构建，只能部署已构建版本
+            String buildEnvironment = buildInfoModel.getEnvironment();
+            if (buildEnvironment != null && !buildEnvironment.isEmpty()) {
+                io.voyager1.model.data.EnvironmentModel environment =
+                    io.voyager1.common.SpringContextHolder.getBean(io.voyager1.service.environment.EnvironmentService.class).getByName(buildEnvironment);
+                if (environment != null && io.voyager1.service.environment.EnvironmentService.STRATEGY_CD_ONLY.equals(environment.getStrategy())) {
+                    return new ApiResult<>(405, "该环境仅部署，不构建：" + buildEnvironment);
+                }
+            }
             // CI 冻结：自动触发（WebHook/cron）且应用存在已提测版本时挂起
             if ((triggerBuildType == 1 || triggerBuildType == 2)
                 && versionService.hasSubmittedVersion(buildInfoId)) {
@@ -298,6 +307,26 @@ public class BuildExecuteService {
         }
         dbBuildHistoryLogService.updateById(buildHistoryLog);
         buildService.updateStatus(buildId, buildNumberId, buildStatus, msg);
+    }
+
+    /**
+     * 只更新发布记录状态，不回写构建配置（CI_BUILD）。
+     * 用于环境化部署：部署结果不污染构建状态机，部署期间也不锁死源构建。
+     *
+     * @param logId       发布记录ID
+     * @param buildStatus to status
+     * @param msg         状态描述
+     */
+    public void updateLogStatus(String logId, BuildStatus buildStatus, String msg) {
+        BuildHistoryLog buildHistoryLog = new BuildHistoryLog();
+        buildHistoryLog.setId(logId);
+        buildHistoryLog.setStatusMsg(msg);
+        buildHistoryLog.setStatus(buildStatus.getCode());
+        if (!buildStatus.isProgress()) {
+            // 结束
+            buildHistoryLog.setEndTime(System.currentTimeMillis());
+        }
+        dbBuildHistoryLogService.updateById(buildHistoryLog);
     }
 
 

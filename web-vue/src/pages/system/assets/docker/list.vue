@@ -54,9 +54,9 @@
               <span class="tw">
                 <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_4838a3bd20')
-          </n-tooltip>
+           }}</n-tooltip>
           <n-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</n-button>
           <n-button :disabled="!tableSelections.length" type="primary" @click="syncToWorkspaceShow()">
             {{ $t('i18n_82d2c66f47') }}</n-button
@@ -68,9 +68,9 @@
                   <QuestionCircleOutlined />{{ $t('i18n_91985e3574') }}
                 </n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_bbd63a893c')
-          </n-tooltip>
+           }}</n-tooltip>
         </n-space>
       </template>
       <template #tableBodyCell="{ column, text, record }">
@@ -102,15 +102,15 @@
             <n-tooltip v-if="record.swarmControlAvailable">
               <template #trigger>
                 <ClusterOutlined />
-              </template>
+              </template>{{ 
               $t('i18n_a6269ede6c')
-            </n-tooltip>
+             }}</n-tooltip>
             <n-tooltip v-else>
               <template #trigger>
                 <BlockOutlined />
-              </template>
+              </template>{{ 
               $t('i18n_41e9f0c9c6')
-            </n-tooltip>
+             }}</n-tooltip>
             <n-popover>
               <template #trigger>
                 {{ text }}
@@ -240,52 +240,7 @@
       @ok="handleEditOk"
     >
       <n-form ref="editForm" :rules="rules" :model="temp">
-        <n-space direction="vertical" style="width: 100%">
-          <n-alert banner>
-            <template #message>
-              <template v-if="temp.enableSsh">
-                <ul>
-                  <li>SSH {{ $t('i18n_051fa113dd') }}</li>
-                  <li>
-                    docker {{ $t('i18n_bb8d265c7e') }}.09
-                    {{ $t('i18n_1810e84971') }}
-                  </li>
-                  <li>{{ $t('i18n_6aa7403b18') }}</li>
-                  <li>
-                    {{ $t('i18n_92c6aa6db9') }}>{{ $t('i18n_e049546ff3') }}
-                    <b>ssh/monitor-script.sh</b>
-                    {{ $t('i18n_f0eb685a84') }}
-                  </li>
-                </ul>
-              </template>
-              <template v-else>
-                <ul>
-                  <li>
-                    {{ $t('i18n_c46938460b') }}<b style="color: red">{{ $t('i18n_7010264d22') }}</b>
-                  </li>
-                  <li>
-                    {{ $t('i18n_ba1f68b5dd') }}
-                    <b style="color: red">docker {{ $t('i18n_47768ed092') }}</b>
-                  </li>
-                  <li>
-                    {{ $t('i18n_fdba50ca2d') }}<b style="color: red"> {{ $t('i18n_7e000409bb') }} </b>
-                  </li>
-                  <li>
-                    {{ $t('i18n_5bb5b33ae4') }}<b style="color: red">{{ $t('i18n_73ed447971') }}</b
-                    >（{{ $t('i18n_9c942ea972') }}
-                  </li>
-                  <li>
-                    {{ $t('i18n_8b1512bf3a') }}<b style="color: red">{{ $t('i18n_8fd9daf8e9') }}</b>
-                  </li>
-                  <li>
-                    {{ $t('i18n_ba8d1dca4a') }}<b style="color: red">{{ $t('i18n_0e25ab3b51') }}</b>
-                  </li>
-                </ul>
-              </template>
-            </template>
-          </n-alert>
-          <div></div>
-        </n-space>
+        
         <n-form-item :label="$t('i18n_a51cd0898f')" path="name">
           <n-input v-model:value="temp.name" :placeholder="$t('i18n_a51cd0898f')" />
         </n-form-item>

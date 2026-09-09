@@ -66,12 +66,6 @@ public class DataInitEvent implements ILoadEvent, ICacheTask {
         } catch (Exception e) {
             log.warn("预置环境初始化失败: {}", e.getMessage());
         }
-        // 恢复 Pipeline 定时触发
-        try {
-            SpringContextHolder.getBean(io.voyager1.service.pipeline.PipelineConfigService.class).restoreCronTriggers();
-        } catch (Exception e) {
-            log.warn("Pipeline 定时触发恢复失败: {}", e.getMessage());
-        }
         // 状态恢复的数据
         Map<String, IStatusRecover> statusRecoverMap = SpringContextHolder.getApplicationContext().getBeansOfType(IStatusRecover.class);
         statusRecoverMap.forEach((name, iCron) -> {

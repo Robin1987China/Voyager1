@@ -28,6 +28,9 @@
     >
       
       <template #toolPrefix>
+        <n-button type="primary" size="small" @click="handleAdd"
+          ><PlusOutlined />{{ $t('i18n_66ab5e9f24') }}</n-button
+        >
         <n-button type="primary" size="small" @click="handlerExportData"
           ><DownloadOutlined />{{ $t('i18n_55405ea6ff') }}</n-button
         >
@@ -238,9 +241,9 @@
                       $t('i18n_4403fca0c0')
                     }}</n-button>
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_b408105d69')
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
           </n-form-item>
         </template>
@@ -257,9 +260,9 @@
                       $t('i18n_4403fca0c0')
                     }}</n-button>
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_b408105d69')
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
           </n-input>
         </n-form-item>
@@ -384,9 +387,9 @@
                     />
                   </n-input-group>
                 </span>
-              </template>
+              </template>{{ 
               `${giteeImportForm.type} ${$t('i18n_32d0576d85')}${importTypePlaceholder[giteeImportForm.type]}`
-            </n-tooltip>
+             }}</n-tooltip>
           </n-form-item>
         </n-form-item>
         <n-form-item path="address" :label="$t('i18n_7650487a87')">
@@ -440,9 +443,9 @@
               <span class="tw">
                 <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_4838a3bd20')
-          </n-tooltip>
+           }}</n-tooltip>
           <n-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</n-button>
           <n-tooltip>
             <template #trigger>
@@ -657,7 +660,7 @@ export default {
         {
           title: this.$t('i18n_f967131d9d'),
           key: 'name',
-          width: 200,
+          width: 180,
           sorter: true,
           ellipsis: true
         },
@@ -665,19 +668,19 @@ export default {
           title: this.$t('i18n_b37b786351'),
           key: 'group',
           ellipsis: true,
-          width: '100px'
+          width: 100
         },
         {
           title: this.$t('i18n_e4bea943de'),
           key: 'gitUrl',
-          width: 300,
+          width: 260,
           sorter: true,
           ellipsis: true
         },
         {
           title: this.$t('i18n_4ce606413e'),
           key: 'repoType',
-          width: 100,
+          width: 110,
           sorter: true,
           ellipsis: true
         },
@@ -692,47 +695,20 @@ export default {
           title: this.$t('i18n_fffd3ce745'),
           key: 'workspaceId',
           ellipsis: true,
-
-          width: '90px'
+          width: 90
         },
         {
           title: this.$t('i18n_95a43eaa59'),
           key: 'createUser',
           ellipsis: true,
-          width: '120px'
-        },
-        {
-          title: this.$t('i18n_9baca0054e'),
-          key: 'modifyUser',
-          ellipsis: true,
-          width: '120px'
-        },
-        {
-          title: this.$t('i18n_eca37cb072'),
-          key: 'createTimeMillis',
-          sorter: true,
-          render: (row) => parseTime(row['createTimeMillis']),
-          width: '170px'
-        },
-        {
-          title: this.$t('i18n_1303e638b5'),
-          key: 'modifyTimeMillis',
-          sorter: true,
-          render: (row) => parseTime(row['modifyTimeMillis']),
-          width: '170px'
-        },
-        {
-          title: this.$t('i18n_c35c1a1330'),
-          key: 'sortValue',
-          sorter: true,
-          width: '80px'
+          width: 100
         },
         {
           title: this.$t('i18n_2b6bc0f293'),
           key: 'operation',
           fixed: 'right',
           align: 'center',
-          width: this.global ? '240px' : '180px'
+          width: this.global ? 240 : 180
         }
       ],
 

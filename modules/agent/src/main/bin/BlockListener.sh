@@ -47,7 +47,15 @@ function wait_term_pid() {
 function tail_log() {
 	if [ -f "$stdout_log" ]; then
 		PID="$(cat "${pidfile}")"
-		tail -fn 0 --pid="$PID" "$stdout_log"
+		if tail --version >/dev/null 2>&1; then
+			# GNU tail：跟随日志直到进程退出
+			tail -fn 0 --pid="$PID" "$stdout_log"
+		else
+			# BSD tail（macOS）不支持 --pid：轮询等待进程退出，语义等价
+			while kill -0 "$PID" 2>/dev/null; do
+				sleep 2
+			done
+		fi
 	else
 		echo "stdout_log not found $stdout_log"
 	fi

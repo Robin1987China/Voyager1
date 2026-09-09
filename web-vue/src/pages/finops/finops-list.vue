@@ -16,10 +16,20 @@
           />
         </n-form-item>
         <n-form-item :label="$t('i18n_b44c0f33')"
-          ><n-input v-model:value="analyzeForm.startDate" style="width: 130px" placeholder="2026-08-01"
+          ><n-date-picker
+            v-model:formatted-value="analyzeForm.startDate"
+            type="date"
+            value-format="yyyy-MM-dd"
+            clearable
+            style="width: 150px"
         /></n-form-item>
         <n-form-item :label="$t('i18n_1d468be9')"
-          ><n-input v-model:value="analyzeForm.endDate" style="width: 130px" placeholder="2026-08-31"
+          ><n-date-picker
+            v-model:formatted-value="analyzeForm.endDate"
+            type="date"
+            value-format="yyyy-MM-dd"
+            clearable
+            style="width: 150px"
         /></n-form-item>
         <n-form-item
           ><n-button type="primary" @click="loadAnalyze">{{ $t('i18n_72fa7c88') }}</n-button></n-form-item
@@ -184,7 +194,8 @@ import {
 import { listCloudAccounts } from '@/api/cloud'
 
 const accounts = ref<any[]>([])
-const analyzeForm = reactive({ groupBy: 'serviceName', startDate: '', endDate: '' })
+// 日期初值必须为 null（空串会让 n-date-picker 抛 Invalid time value）
+const analyzeForm = reactive({ groupBy: 'serviceName', startDate: null as string | null, endDate: null as string | null })
 const analyzeResult = ref<any[]>([])
 const totalAmount = ref(0)
 
@@ -214,8 +225,6 @@ const doImport = async () => {
     $message.success(t('i18n_490e8b4c', { n: res.data }))
     importForm.csvContent = ''
     loadAnalyze()
-  } else {
-    $message.error(res.msg)
   }
 }
 const doSyncBill = async () => {
@@ -231,8 +240,6 @@ const doSyncBill = async () => {
   if (res.code === 200) {
     $message.success(t('i18n_7022db32', { n: res.data }))
     loadAnalyze()
-  } else {
-    $message.error(res.msg)
   }
 }
 
@@ -243,6 +250,14 @@ const loadTagRules = async () => {
   if (res.code === 200) tagRules.value = res.data || []
 }
 const saveTagRule = async () => {
+  if (!tagRuleForm.tagKey || !tagRuleForm.tagKey.trim()) {
+    $message.warning('请填写标签键')
+    return
+  }
+  if (!tagRuleForm.tagValue || !tagRuleForm.tagValue.trim()) {
+    $message.warning('请填写标签值')
+    return
+  }
   const res: any = await saveCostTagRule(tagRuleForm)
   if (res.code === 200) {
     $message.success(t('i18n_199f2806'))
@@ -253,8 +268,6 @@ const saveTagRule = async () => {
       tagRuleForm.projectName =
         ''
     loadTagRules()
-  } else {
-    $message.error(res.msg)
   }
 }
 const removeTagRule = (record) => {
@@ -268,8 +281,6 @@ const removeTagRule = (record) => {
       if (res.code === 200) {
         $message.success(t('i18n_0007d170'))
         loadTagRules()
-      } else {
-        $message.error(res.msg)
       }
     }
   })
@@ -283,14 +294,20 @@ const loadBudgets = async () => {
   if (res.code === 200) budgets.value = res.data || []
 }
 const saveBudget = async () => {
+  if (!budgetForm.name || !budgetForm.name.trim()) {
+    $message.warning('请填写预算名称')
+    return
+  }
+  if (!budgetForm.monthlyLimit || budgetForm.monthlyLimit <= 0) {
+    $message.warning('月额度必须大于 0')
+    return
+  }
   const res: any = await saveCostBudget(budgetForm)
   if (res.code === 200) {
     $message.success(t('i18n_5b4d38ca'))
     budgetForm.name = budgetForm.scopeValue = ''
     budgetForm.monthlyLimit = 0
     loadBudgets()
-  } else {
-    $message.error(res.msg)
   }
 }
 const removeBudget = (record) => {
@@ -304,14 +321,14 @@ const removeBudget = (record) => {
       if (res.code === 200) {
         $message.success(t('i18n_0007d170'))
         loadBudgets()
-      } else {
-        $message.error(res.msg)
       }
     }
   })
 }
 const checkBudget = async () => {
-  const month = new Date().toISOString().slice(0, 7)
+  // 用本地时区取月份（toISOString 是 UTC，UTC+8 每月 1 日上午会查成上个月）
+  const now = new Date()
+  const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
   const res: any = await checkCostBudget({ month })
   if (res.code === 200) {
     overBudget.value = res.data || []

@@ -47,9 +47,9 @@
                 <span class="tw">
                   <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_4838a3bd20')
-            </n-tooltip>
+             }}</n-tooltip>
 
             <n-tooltip>
               <template #trigger>
@@ -106,10 +106,10 @@
                   <!-- -->
                 </span>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_f668c8c881')}${record.name || ''}/${$t('i18n_df3833270b')}${record.url || ''}/${$t(
             'i18n_8d13037eb7' )}${record.statusMsg || ''}`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
         <template v-else-if="column.key === 'operation'">
           <n-space>

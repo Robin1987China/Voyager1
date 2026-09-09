@@ -38,9 +38,9 @@
                   $t('i18n_e5f71fc31e')
                 }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_4838a3bd20')
-          </n-tooltip>
+           }}</n-tooltip>
         </n-space>
       
     </n-card>

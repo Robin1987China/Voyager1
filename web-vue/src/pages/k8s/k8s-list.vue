@@ -63,7 +63,12 @@
       <!-- 右栏：资源浏览 -->
       <n-grid-item :span="18">
         <n-card size="small">
-          
+          <template #header>
+            <n-space align="center">
+              <span>资源浏览</span>
+              <n-tag v-if="current" color="blue">{{ current.name }}</n-tag>
+            </n-space>
+          </template>
           <template #extra>
             <n-space>
               <n-select
@@ -85,22 +90,14 @@
             </n-space>
           </template>
 
-                    <n-card size="small" :body-style="{ padding: '12px' }" style="margin-bottom: 12px">
-
-            <n-space wrap>
-              <span>资源浏览</span>
-              <n-tag v-if="current" color="blue">{{ current.name }}</n-tag>
-            </n-space>
-          
-          </n-card>
-<n-data-table
+          <n-data-table
             :data="resources"
             :columns="columns"
             :loading="loading"
-            :pagination="false"
+            :pagination="{ pageSize: 20 }"
             size="small"
-            :row-key="(row) => row.name"
-            
+            :row-key="(row) => `${row.type}/${row.namespace || '_'}/${row.name}`"
+            :scroll-x="1400"
           />
           <n-empty
             v-if="current && !resources.length && !loading"
@@ -127,9 +124,9 @@
       <n-data-table
         :data="events"
         :columns="eventColumns"
-        :pagination="false"
+        :pagination="{ pageSize: 20 }"
         size="small"
-        :row-key="(row) => row.time"
+        :row-key="(row) => `${row.time}/${row.object}/${row.reason}`"
       />
     </CustomModal>
 
@@ -240,7 +237,8 @@ const resetForm = () => {
 }
 const saveCluster = async () => {
   if (!form.name) return $message.warning('请输入集群名称')
-  if (!form.kubeconfig) return $message.warning('请粘贴 kubeconfig')
+  // 新增必须粘贴 kubeconfig；编辑时留空表示不修改
+  if (!form.id && !form.kubeconfig) return $message.warning('请粘贴 kubeconfig')
   saving.value = true
   try {
     const res: any = await saveK8sCluster(form)
@@ -248,8 +246,6 @@ const saveCluster = async () => {
       $message.success('集群已保存')
       resetForm()
       loadClusters()
-    } else {
-      $message.error(res.msg)
     }
   } finally {
     saving.value = false
@@ -261,17 +257,21 @@ const editCluster = (c) => {
     name: c.name,
     serverUrl: c.serverUrl,
     namespace: c.namespace,
-    kubeconfig: c.kubeconfig
+    // 凭证明文不回显：留空表示不修改（后端保留原 kubeconfig）
+    kubeconfig: ''
   })
 }
 const deleteCluster = async (c) => {
   const res: any = await deleteK8sCluster({ id: c.id })
   if (res.code === 200) {
     $message.success('已删除')
-    if (current.value && current.value.id === c.id) current.value = null
+    if (current.value && current.value.id === c.id) {
+      // 删除的是当前集群：同步清空右侧资源表，避免对已删集群的僵尸操作
+      current.value = null
+      resources.value = []
+      namespaces.value = []
+    }
     loadClusters()
-  } else {
-    $message.error(res.msg)
   }
 }
 const selectCluster = async (c) => {
@@ -294,13 +294,13 @@ const loadResources = async () => {
       resources.value = res.data || []
     } else {
       resources.value = []
-      $message.error(res.msg)
     }
   } finally {
     loading.value = false
   }
 }
 const showDetail = async (record) => {
+  if (!current.value) return $message.warning('请先选择集群')
   const res: any = await getK8sResourceDetail({
     id: current.value.id,
     namespace: record.namespace,
@@ -311,11 +311,10 @@ const showDetail = async (record) => {
     detailName.value = record.name
     detailYaml.value = res.data || ''
     detailVisible.value = true
-  } else {
-    $message.error(res.msg)
   }
 }
 const removeResource = async (record) => {
+  if (!current.value) return $message.warning('请先选择集群')
   const res: any = await deleteK8sResource({
     id: current.value.id,
     namespace: record.namespace,
@@ -325,8 +324,6 @@ const removeResource = async (record) => {
   if (res.code === 200) {
     $message.success('已删除')
     loadResources()
-  } else {
-    $message.error(res.msg)
   }
 }
 const showScale = (record) => {
@@ -336,6 +333,7 @@ const showScale = (record) => {
   scaleVisible.value = true
 }
 const doScale = async () => {
+  if (!current.value) return $message.warning('请先选择集群')
   const res: any = await scaleK8sDeployment({
     id: current.value.id,
     namespace: scaleNamespace.value,
@@ -346,20 +344,24 @@ const doScale = async () => {
     $message.success('扩缩容成功')
     scaleVisible.value = false
     loadResources()
-  } else {
-    $message.error(res.msg)
   }
 }
-const doRestart = async (record) => {
-  const res: any = await restartK8sDeployment({ id: current.value.id, namespace: record.namespace, name: record.name })
-  if (res.code === 200) {
-    $message.success('已触发滚动重启')
-    loadResources()
-  } else {
-    $message.error(res.msg)
-  }
+// 滚动重启生产负载属破坏性操作：二次确认（与同页删除操作保持一致）
+const doRestart = (record) => {
+  if (!current.value) return $message.warning('请先选择集群')
+  $confirm({
+    title: `确认滚动重启 ${record.type} ${record.name}？`,
+    onOk: async () => {
+      const res: any = await restartK8sDeployment({ id: current.value.id, namespace: record.namespace, name: record.name })
+      if (res.code === 200) {
+        $message.success('已触发滚动重启')
+        loadResources()
+      }
+    }
+  })
 }
 const showLog = async (record) => {
+  if (!current.value) return $message.warning('请先选择集群')
   const res: any = await getK8sPodLog({
     id: current.value.id,
     namespace: record.namespace,
@@ -370,8 +372,6 @@ const showLog = async (record) => {
     logName.value = record.name
     logContent.value = res.data || ''
     logVisible.value = true
-  } else {
-    $message.error(res.msg)
   }
 }
 const showEvents = async () => {
@@ -383,8 +383,6 @@ const showEvents = async () => {
   if (res.code === 200) {
     events.value = res.data || []
     eventVisible.value = true
-  } else {
-    $message.error(res.msg)
   }
 }
 const doDeploy = async () => {
@@ -396,8 +394,6 @@ const doDeploy = async () => {
     deployVisible.value = false
     manifest.value = ''
     loadResources()
-  } else {
-    $message.error(res.msg)
   }
 }
 
@@ -471,7 +467,7 @@ const eventColumns = [
   { title: '原因', key: 'reason', width: 110 },
   { title: '对象', key: 'object', width: 160 },
   { title: '命名空间', key: 'namespace', width: 120 },
-  { title: '消息', key: 'message', ellipsis: true },
+  { title: '消息', key: 'message', ellipsis: { tooltip: true } },
   { title: '次数', key: 'count', width: 60 }
 ]
 

@@ -106,9 +106,9 @@
               <span class="tw">
                 <n-button size="small" text @click="doAction(record, 'remove')"><DeleteOutlined /></n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_2f4aaddde3')
-          </n-tooltip>
+           }}</n-tooltip>
         </n-space>
       </template>
     </template>

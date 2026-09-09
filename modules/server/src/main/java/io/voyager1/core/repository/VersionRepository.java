@@ -28,5 +28,7 @@ public interface VersionRepository extends JpaRepository<VersionEntity, String> 
 
     List<VersionEntity> findByBuildIdOrderByCreateTimeMillisDesc(String buildId);
 
+    List<VersionEntity> findAllByOrderByCreateTimeMillisDesc();
+
     VersionEntity findFirstByBuildIdAndStatus(String buildId, Integer status);
 }

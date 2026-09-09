@@ -133,23 +133,29 @@ public class K8sService {
     @Transactional
     public String save(String id, String name, String kubeconfig, String serverUrl, String namespace, String remark) {
         Assert.hasText(name, "集群名称不能为空");
-        Assert.hasText(kubeconfig, "kubeconfig 内容不能为空");
         long now = System.currentTimeMillis();
         K8sClusterEntity entity;
         boolean created = (id == null || id.isEmpty());
         if (created) {
+            Assert.hasText(kubeconfig, "kubeconfig 内容不能为空");
             entity = new K8sClusterEntity();
             entity.setId(UUID.randomUUID().toString());
             entity.setCreateTimeMillis(now);
         } else {
             entity = repository.findById(id).orElse(null);
             Assert.notNull(entity, "集群不存在: " + id);
-            // 更新后使旧客户端失效
-            this.closeClient(id);
         }
         entity.setModifyTimeMillis(now);
         entity.setName(name);
-        entity.setKubeconfig(kubeconfig);
+        if (kubeconfig != null && !kubeconfig.isEmpty()) {
+            // 编辑时 kubeconfig 留空表示不修改（凭证明文不回显）；有变更才使旧客户端失效
+            if (!created && !kubeconfig.equals(entity.getKubeconfig())) {
+                this.closeClient(id);
+            }
+            entity.setKubeconfig(kubeconfig);
+        } else {
+            Assert.state(!created, "kubeconfig 内容不能为空");
+        }
         entity.setServerUrl(serverUrl);
         entity.setNamespace((namespace == null || namespace.isEmpty() ? "default" : namespace));
         entity.setRemark(remark);

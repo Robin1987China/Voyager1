@@ -18,6 +18,7 @@ package io.voyager1.mcp;
 
 import com.alibaba.fastjson2.JSONObject;
 import io.voyager1.ApplicationStartTest;
+import io.voyager1.service.environment.EnvironmentService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ public class McpToolRegistryTest extends ApplicationStartTest {
 
     @Autowired
     private McpToolRegistry toolRegistry;
+    @Autowired
+    private EnvironmentService environmentService;
 
     @Test
     public void testInitialize() {
@@ -43,29 +46,23 @@ public class McpToolRegistryTest extends ApplicationStartTest {
     @Test
     public void testListTools() {
         JSONObject result = toolRegistry.listTools();
-        Assertions.assertEquals(13, result.getJSONArray("tools").size());
+        Assertions.assertEquals(11, result.getJSONArray("tools").size());
     }
 
     @Test
     public void testSchemaEnumAndBoolean() {
         JSONObject result = toolRegistry.listTools();
         JSONObject deployPublish = null;
-        JSONObject approval = null;
         JSONObject selfHeal = null;
         for (Object o : result.getJSONArray("tools")) {
             JSONObject t = (JSONObject) o;
             if ("deploy.publish".equals(t.getString("name"))) deployPublish = t;
-            if ("pipeline.approval".equals(t.getString("name"))) approval = t;
             if ("selfHeal.diagnose".equals(t.getString("name"))) selfHeal = t;
         }
         Assertions.assertNotNull(deployPublish, "deploy.publish 应存在");
         JSONObject env = deployPublish.getJSONObject("inputSchema").getJSONObject("properties").getJSONObject("environment");
         Assertions.assertEquals("部署环境", env.getString("description"));
         Assertions.assertEquals("[\"dev\",\"test\",\"prod\"]", env.getJSONArray("enum").toString());
-
-        Assertions.assertNotNull(approval, "pipeline.approval 应存在");
-        JSONObject approve = approval.getJSONObject("inputSchema").getJSONObject("properties").getJSONObject("approve");
-        Assertions.assertEquals("boolean", approve.getString("type"));
 
         Assertions.assertNotNull(selfHeal, "selfHeal.diagnose 应存在");
         JSONObject alertType = selfHeal.getJSONObject("inputSchema").getJSONObject("properties").getJSONObject("alertType");
@@ -93,6 +90,19 @@ public class McpToolRegistryTest extends ApplicationStartTest {
         Assertions.assertNotNull(resp.getJSONObject("result"));
         String text = resp.getJSONObject("result").getJSONArray("content").getJSONObject(0).getString("text");
         Assertions.assertTrue(text.contains("dev"), "应包含 dev 环境");
+    }
+
+    @Test
+    public void testEnvironmentListStrategy() {
+        environmentService.initDefaultEnvironments();
+        JSONObject params = new JSONObject();
+        params.put("name", "environment.list");
+        params.put("arguments", new JSONObject());
+        JSONObject resp = toolRegistry.callTool(10, params, "test-session");
+        String text = resp.getJSONObject("result").getJSONArray("content").getJSONObject(0).getString("text");
+        Assertions.assertTrue(text.contains("strategy"), "environment.list 应包含 strategy: " + text);
+        Assertions.assertTrue(text.contains("CD_ONLY"), "应包含 CD_ONLY 策略: " + text);
+        Assertions.assertTrue(text.contains("targets"), "应包含 targets 字段: " + text);
     }
 
     @Test

@@ -130,11 +130,11 @@
                   {{ record.spec && record.spec.role }}
                 </n-tag>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_20f32e1979')}${record.spec && record.spec.role} ${ record.managerStatus &&
             record.managerStatus.reachability === 'REACHABLE' ? $t('i18n_88c5680d0d') +
             record.managerStatus.reachability : '' }`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
         <template v-else-if="column.key === 'address'">
           <n-tooltip placement="topLeft">
@@ -173,9 +173,9 @@
                   </span>
                 </span>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_bf94b97d1a')}${text} ${$t('i18n_312f45014a')}${record.createdAt}`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
 
         <template v-else-if="column.key === 'operation'">
@@ -187,9 +187,9 @@
                   <span class="tw">
                     <n-button size="small" type="primary" danger :disabled="true">{{ $t('i18n_b3b1f709d4') }}</n-button>
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_28c1c35cd9')
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
             <template v-else>
               <n-button size="small" type="primary" @click="handleEdit(record)">{{ $t('i18n_8347a927c0') }}</n-button>

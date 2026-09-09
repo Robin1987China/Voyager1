@@ -31,4 +31,19 @@ public interface DeploymentRecordRepository extends JpaRepository<DeploymentReco
     List<DeploymentRecordEntity> findByEnvironmentOrderByCreateTimeMillisDesc(String environment);
 
     DeploymentRecordEntity findFirstByEnvironmentAndStatusOrderByCreateTimeMillisDesc(String environment, Integer status);
+
+    /**
+     * 按构建配置查询部署记录（创建时间倒序）。
+     */
+    List<DeploymentRecordEntity> findByBuildIdOrderByCreateTimeMillisDesc(String buildId);
+
+    /**
+     * 按构建配置 + 环境查询最新一条部署记录。
+     */
+    DeploymentRecordEntity findFirstByBuildIdAndEnvironmentOrderByCreateTimeMillisDesc(String buildId, String environment);
+
+    /**
+     * 按构建配置 + 环境 + 状态查询最新一条部署记录（泳道"当前版本"只取成功记录）。
+     */
+    DeploymentRecordEntity findFirstByBuildIdAndEnvironmentAndStatusOrderByCreateTimeMillisDesc(String buildId, String environment, Integer status);
 }

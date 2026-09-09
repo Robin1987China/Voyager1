@@ -117,6 +117,12 @@ public class BuildInfoEntity implements WorkspaceEntity {
     @Column(name = "resultKeepDay")
     private Integer resultKeepDay;
 
+    /**
+     * 构建所属环境（环境化 CI/CD）：CD_ONLY 环境禁止从源码构建，只能部署已构建版本
+     */
+    @Column(name = "environment", length = 20)
+    private String environment;
+
     @Column(name = "createUser", length = 50)
     private String createUser;
 }

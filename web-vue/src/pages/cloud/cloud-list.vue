@@ -189,7 +189,7 @@ const instForm = reactive({ instanceId: '', name: '', publicIp: '', privateIp: '
 const accounts = ref<any[]>([])
 const instances = ref<any[]>([])
 const currentAccountId = ref('')
-const syncing = ref(false)
+const syncingId = ref('')
 
 const loadAccounts = async () => {
   const res: any = await listCloudAccounts()
@@ -200,13 +200,19 @@ const loadInstances = async () => {
   if (res.code === 200) instances.value = res.data || []
 }
 const saveAccount = async () => {
+  if (!accForm.name || !accForm.name.trim()) {
+    $message.warning(t('i18n_d7ec2d3f'))
+    return
+  }
+  if (!accForm.accessKey || !accForm.accessKey.trim() || !accForm.secretKey || !accForm.secretKey.trim()) {
+    $message.warning('请填写 AccessKey 和 SecretKey')
+    return
+  }
   const res: any = await saveCloudAccount(accForm)
   if (res.code === 200) {
     $message.success(t('i18n_95aea23c'))
-    accForm.name = accForm.accessKey = accForm.secretKey = ''
+    accForm.name = accForm.accessKey = accForm.secretKey = accForm.extraKey = accForm.region = ''
     loadAccounts()
-  } else {
-    $message.error(res.msg)
   }
 }
 const testConnectivity = async (record) => {
@@ -215,25 +221,22 @@ const testConnectivity = async (record) => {
     if (res.data) {
       $message.success(t('i18n_65d2951d'))
     } else {
-      $message.error(res.msg || t('i18n_a886436b'))
+      // code=200 时 res.msg 是成功文案，不能作为失败原因展示
+      $message.error(t('i18n_a886436b'))
     }
-  } else {
-    $message.error(res.msg)
   }
 }
 const syncInstances = async (record) => {
-  syncing.value = true
+  syncingId.value = record.id
   try {
     const res: any = await syncCloudInstances({ accountId: record.id })
     if (res.code === 200) {
       $message.success(t('i18n_705af821', { n: res.data }))
       currentAccountId.value = record.id
       loadInstances()
-    } else {
-      $message.error(res.msg)
     }
   } finally {
-    syncing.value = false
+    syncingId.value = ''
   }
 }
 const selectAccount = (record) => {
@@ -248,23 +251,41 @@ const saveInstance = async () => {
     $message.warning(t('i18n_ec2f57bb'))
     return
   }
+  if (!instForm.instanceId || !instForm.instanceId.trim()) {
+    $message.warning('请填写实例ID')
+    return
+  }
   const res: any = await saveCloudInstance({ ...instForm, accountId: currentAccountId.value })
   if (res.code === 200) {
     $message.success(t('i18n_f40e871e'))
     instForm.instanceId = instForm.name = instForm.publicIp = instForm.privateIp = ''
     loadInstances()
-  } else {
-    $message.error(res.msg)
   }
 }
-const operate = async (record, action) => {
-  const res: any = await operateCloudInstance({ accountId: record.accountId, instanceId: record.instanceId, action })
-  if (res.code === 200) {
-    $message.success(res.msg)
-    loadInstances()
-  } else {
-    $message.error(res.msg)
+// 生产实例的停止/重启是破坏性操作：二次确认（带实例名）+ 行级 loading 防连点
+const operating = ref('')
+const operate = (record, action) => {
+  const actionText = action === 'stop' ? '停止' : action === 'reboot' ? '重启' : action
+  const doExec = async () => {
+    operating.value = record.instanceId + action
+    try {
+      const res: any = await operateCloudInstance({ accountId: record.accountId, instanceId: record.instanceId, action })
+      if (res.code === 200) {
+        $message.success(res.msg)
+        loadInstances()
+      }
+    } finally {
+      operating.value = ''
+    }
   }
+  if (action === 'stop' || action === 'reboot') {
+    $confirm({
+      title: `确认${actionText}实例 ${record.name || record.instanceId}（${record.instanceId}）？`,
+      onOk: doExec
+    })
+    return
+  }
+  doExec()
 }
 const memG = (mb) => (mb ? `${Math.round(mb / 1024)}G` : '-')
 
@@ -296,18 +317,17 @@ const doImport = async () => {
     $message.success(res.msg)
     importVisible.value = false
     loadInstances()
-  } else {
-    $message.error(res.msg)
   }
 }
 
-const resizeForm = reactive({ id: '', accountId: '', name: '', instanceType: '', newInstanceType: '' })
+const resizeForm = reactive({ id: '', accountId: '', instanceId: '', name: '', instanceType: '', newInstanceType: '' })
 const resizeVisible = ref(false)
 
 const openResize = (record) => {
   Object.assign(resizeForm, {
     id: record.id,
     accountId: record.accountId,
+    instanceId: record.instanceId,
     name: record.name || record.instanceId,
     instanceType: record.instanceType || '-',
     newInstanceType: ''
@@ -328,8 +348,6 @@ const doResize = async () => {
     $message.success(res.msg)
     resizeVisible.value = false
     loadInstances()
-  } else {
-    $message.error(res.msg)
   }
 }
 
@@ -359,8 +377,6 @@ const createSnapshot = async () => {
     $message.success(res.msg)
     snapForm.diskId = snapForm.snapshotName = ''
     loadSnapshots()
-  } else {
-    $message.error(res.msg)
   }
 }
 const removeSnapshot = (record) => {
@@ -374,8 +390,6 @@ const removeSnapshot = (record) => {
       if (res.code === 200) {
         $message.success(res.msg)
         loadSnapshots()
-      } else {
-        $message.error(res.msg)
       }
     }
   })
@@ -422,8 +436,6 @@ const doImage = async () => {
   if (res.code === 200) {
     $message.success(res.msg)
     imageVisible.value = false
-  } else {
-    $message.error(res.msg)
   }
 }
 
@@ -441,7 +453,7 @@ const accountColumns = [
           h(NButton, { size: 'small', onClick: () => testConnectivity(row) }, { default: () => t('i18n_85817aa7') }),
           h(
             NButton,
-            { size: 'small', type: 'primary', loading: syncing.value, onClick: () => syncInstances(row) },
+            { size: 'small', type: 'primary', loading: syncingId.value === row.id, onClick: () => syncInstances(row) },
             { default: () => t('i18n_957895e9') }
           ),
           h(NButton, { size: 'small', onClick: () => selectAccount(row) }, { default: () => t('i18n_480c216f') })
@@ -476,17 +488,32 @@ const instanceColumns = [
         default: () => [
           h(
             NButton,
-            { size: 'small', disabled: row.status === 'Running', onClick: () => operate(row, 'start') },
+            {
+              size: 'small',
+              disabled: row.status === 'Running',
+              loading: operating.value === row.instanceId + 'start',
+              onClick: () => operate(row, 'start')
+            },
             { default: () => t('i18n_8e54ddfe') }
           ),
           h(
             NButton,
-            { size: 'small', disabled: row.status === 'Stopped', onClick: () => operate(row, 'stop') },
+            {
+              size: 'small',
+              disabled: row.status === 'Stopped',
+              loading: operating.value === row.instanceId + 'stop',
+              onClick: () => operate(row, 'stop')
+            },
             { default: () => t('i18n_095e938e') }
           ),
           h(
             NButton,
-            { size: 'small', disabled: row.status !== 'Running', onClick: () => operate(row, 'reboot') },
+            {
+              size: 'small',
+              disabled: row.status !== 'Running',
+              loading: operating.value === row.instanceId + 'reboot',
+              onClick: () => operate(row, 'reboot')
+            },
             { default: () => t('i18n_01b4e06f') }
           ),
           h(NButton, { size: 'small', onClick: () => openResize(row) }, { default: () => t('i18n_6f6f9488') }),

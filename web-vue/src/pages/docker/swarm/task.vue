@@ -148,9 +148,9 @@
                   </span>
                 </span>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_bf94b97d1a')}${text} ${$t('i18n_312f45014a')}${record.createdAt}`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
 
         <template v-else-if="column.key === 'operation'">

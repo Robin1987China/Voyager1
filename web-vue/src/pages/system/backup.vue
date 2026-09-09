@@ -30,9 +30,9 @@
               <span class="tw">
                 <n-button :loading="loading" type="primary" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_4838a3bd20')
-          </n-tooltip>
+           }}</n-tooltip>
           <n-button type="primary" @click="handleAdd">{{ $t('i18n_a4006e5c1e') }}</n-button>
           <n-button type="primary" @click="handleSqlUpload">{{ $t('i18n_90c0458a4c') }}</n-button>
           <n-button type="primary" @click="handleTrigger()">{{ $t('i18n_4696724ed3') }}</n-button>
@@ -94,15 +94,15 @@
                   </n-p>
                 </div>
               </span>
-            </template>
+            </template>{{ 
             `${backupStatusMap[text]} ${$t('i18n_ae12edc5bf')}`
-          </n-tooltip>
+           }}</n-tooltip>
           <n-tooltip v-else>
             <template #trigger>
               <WarningOutlined />
-            </template>
+            </template>{{ 
             `${$t('i18n_96283fc523')}:${record.filePath}`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
 
         <template v-else-if="column.key === 'fileSize'">
@@ -224,9 +224,9 @@
                 <span class="tw">
                   <n-button type="primary" size="small" @click="resetTrigger">{{ $t('i18n_4b9c3271dc') }}</n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_01ad26f4a9')
-            </n-tooltip>
+             }}</n-tooltip>
           </template>
           <n-tab-pane name="1" :tab="$t('i18n_664b37da22')">
             <n-space direction="vertical" style="width: 100%">

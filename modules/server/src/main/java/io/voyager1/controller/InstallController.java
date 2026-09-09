@@ -84,6 +84,10 @@ public class InstallController extends BaseServerController {
         @ValidatorItem(value = ValidatorRule.NOT_BLANK, msg = "密码不能为空") String userPwd) {
         //
         Assert.state(!userService.canUse(), "系统已经初始化过啦，请勿重复初始化");
+        // 防御：校验层与方法参数绑定层对非表单请求（如 JSON body）解析可能不一致，
+        // 此处直接校验真实绑定值，避免空 userName 落库生成 UUID 幽灵账号
+        Assert.hasText(userName, "登录名不能为空");
+        Assert.hasText(userPwd, "密码不能为空");
 
         boolean systemOccupyUserName = StrUtil.equalsAnyIgnoreCase(userName, UserModel.DEMO_USER, Const.SYSTEM_ID, UserModel.SYSTEM_ADMIN);
         Assert.state(!systemOccupyUserName, "当前登录名已经被系统占用啦");

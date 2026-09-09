@@ -10,9 +10,9 @@
                 <span class="tw">
                   <n-button text size="small" @click="refresh"> <ReloadOutlined /></n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_f33db5e0b2')
-            </n-tooltip>
+             }}</n-tooltip>
           </n-space>
         </template>
 
@@ -121,9 +121,9 @@
                         statusMap[item.status] || $t('i18n_1622dc9b6b')
                       }}</n-tag>
                     </span>
-                  </template>
+                  </template>{{ 
                   item.statusMsg || statusMap[item.status] || $t('i18n_1622dc9b6b')
-                </n-tooltip>
+                 }}</n-tooltip>
               </div>
               <div v-if="item.repositoryLastCommitId">
                 <div>
@@ -163,9 +163,9 @@
                           ><DownloadOutlined />{{ $t('i18n_456d29ef8b') }}</n-button
                         >
                       </span>
-                    </template>
+                    </template>{{ 
                     $t('i18n_b38d7db9b0')
-                  </n-tooltip>
+                   }}</n-tooltip>
 
                   <n-tooltip>
                     <template #trigger>
@@ -175,9 +175,9 @@
                           {{ $t('i18n_7dfcab648d') }}
                         </n-button>
                       </span>
-                    </template>
+                    </template>{{ 
                     $t('i18n_02e35447d4')
-                  </n-tooltip>
+                   }}</n-tooltip>
                   <template v-if="item.releaseMethod !== 5">
                     <n-button
                       size="small"
@@ -196,9 +196,9 @@
                             >{{ $t('i18n_d00b485b26') }}
                           </n-button>
                         </span>
-                      </template>
+                      </template>{{ 
                       $t('i18n_2d94b9cf0e')
-                    </n-tooltip>
+                     }}</n-tooltip>
                   </template>
                 </n-space>
               </div>

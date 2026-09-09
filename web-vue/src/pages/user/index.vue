@@ -39,9 +39,9 @@
               <span class="tw">
                 <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_4838a3bd20')
-          </n-tooltip>
+           }}</n-tooltip>
           <n-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</n-button>
           <n-button type="primary" @click="systemNotificationOpen = true">{{ $t('i18n_7c223eb6e9') }}</n-button>
         </n-space>
@@ -187,9 +187,9 @@
                       "
                     />
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_b328609814')
-              </n-tooltip>
+               }}</n-tooltip>
             </n-grid-item>
             <n-grid-item :span="4" style="text-align: right">
               <n-tooltip>

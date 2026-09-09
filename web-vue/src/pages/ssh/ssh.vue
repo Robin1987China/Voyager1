@@ -52,9 +52,9 @@
               <span class="tw">
                 <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_4838a3bd20')
-          </n-tooltip>
+           }}</n-tooltip>
 
           <n-button
             type="primary"
@@ -146,10 +146,10 @@
                   >
                 </span>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_ca32cdfd59')}${formatPercent( record.machineSsh && record.machineSsh.osOccupyMemory
             )},${$t('i18n_a0a3d583b9')}${renderSize(record.machineSsh && record.machineSsh.osMoneyTotal)}`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
 
         <template v-else-if="column.dataIndex instanceof Array && column.dataIndex.includes('osOccupyCpu')">
@@ -163,10 +163,10 @@
                   >
                 </span>
               </span>
-            </template>
+            </template>{{ 
             `CPU${$t('i18n_afb9fe400b')}${formatPercent2Number( record.machineSsh && record.machineSsh.osOccupyCpu
             )}%,CPU${$t('i18n_40349f5514')}${record.machineSsh && record.machineSsh.osCpuCores}`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
 
         <template v-else-if="column.dataIndex instanceof Array && column.dataIndex.includes('osMaxOccupyDisk')">
@@ -206,9 +206,9 @@
                     {{ record.linkNode.name }}
                   </n-button>
                 </span>
-              </template>
+              </template>{{ 
               `${$t('i18n_5d83794cfa')}${record.linkNode.name}`
-            </n-tooltip>
+             }}</n-tooltip>
           </template>
           <template v-else>-</template>
         </template>
@@ -243,9 +243,9 @@
                   <span class="tw">
                     <n-button size="small" type="primary" :disabled="true">{{ $t('i18n_2a0c4740f1') }}</n-button>
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_46c8ba7b7f')
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
 
             <n-dropdown

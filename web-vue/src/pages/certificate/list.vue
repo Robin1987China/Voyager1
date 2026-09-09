@@ -49,9 +49,9 @@
                 <span class="tw">
                   <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_4838a3bd20')
-            </n-tooltip>
+             }}</n-tooltip>
             <n-button type="primary" @click="handleAdd">{{ $t('i18n_c1690fcca5') }}</n-button>
           </n-space>
         </n-space>
@@ -92,9 +92,6 @@
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
           <n-space>
-            <n-button size="small" type="primary" @click="handleDeployFile(record)">{{
-              $t('i18n_a9f94dcd57')
-            }}</n-button>
             <n-button size="small" type="primary" @click="handleDownload(record)">{{ $t('i18n_55405ea6ff') }}</n-button>
             <n-button size="small" type="primary" danger @click="handleDelete(record)">{{
               $t('i18n_2f4aaddde3')
@@ -177,20 +174,6 @@
         </n-form-item>
       </n-form>
     </CustomModal>
-    <!-- 发布文件 -->
-    <CustomModal
-      v-if="releaseFileVisible"
-      v-model:open="releaseFileVisible"
-      destroy-on-close
-      :confirm-loading="confirmLoading"
-      :title="$t('i18n_9ae40638d2')"
-      width="70%"
-      :mask-closable="false"
-      @ok="releaseFileOk()"
-    >
-      <n-alert :title="$t('i18n_a62fa322b4')" type="info" show-icon style="margin-bottom: 10px" />
-      <releaseFile v-if="releaseFileVisible" ref="releaseFile" @commit="handleCommitTask"></releaseFile>
-    </CustomModal>
   </div>
 </template>
 <script>
@@ -202,15 +185,11 @@ import {
   deleteCert,
   downloadCert,
   certificateEdit,
-  certificateDeploy,
   certListAll
 } from '@/api/tools/certificate'
 import { parseTime, CHANGE_PAGE, COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY } from '@/utils/const'
-import releaseFile from '@/pages/file-manager/fileStorage/releaseFile.vue'
 export default {
-  components: {
-    releaseFile
-  },
+  components: {},
   props: {
     showAll: {
       type: Boolean,
@@ -343,7 +322,6 @@ export default {
         // path: [{ required: true, message: "Please select path", trigger: "blur" }],
         type: [{ required: true, message: this.$t('i18n_ac408e4b03'), trigger: 'blur' }]
       },
-      releaseFileVisible: false,
       editVisible: false,
       confirmLoading: false,
       tableSelections: []
@@ -496,32 +474,6 @@ export default {
             this.confirmLoading = false
           })
       }).catch(() => {})
-    },
-    handleDeployFile(record) {
-      this.releaseFileVisible = true
-      this.temp = { id: record.id }
-    },
-
-    handleCommitTask(data) {
-      this.confirmLoading = true
-      certificateDeploy({ ...data, id: this.temp.id })
-        .then((res) => {
-          if (res.code === 200) {
-            // 成功
-            $notification.success({
-              message: res.msg
-            })
-
-            this.releaseFileVisible = false
-          }
-        })
-        .finally(() => {
-          this.confirmLoading = false
-        })
-    },
-
-    releaseFileOk() {
-      this.$refs.releaseFile?.tryCommit()
     },
     // 确认
     handerConfirm() {

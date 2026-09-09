@@ -62,9 +62,9 @@
             <n-tooltip>
               <template #trigger>
                 <QuestionCircleOutlined />
-              </template>
+              </template>{{ 
               $t('i18n_031020489f')
-            </n-tooltip>
+             }}</n-tooltip>
           </template>
           <n-timeline v-if="buildLog && buildLog.length">
             <n-timeline-item v-for="item in buildLog" :key="item.id" :color="statusColor[item.status]">
@@ -91,9 +91,9 @@
                             {{ statusMap[item.status] || $t('i18n_1622dc9b6b') }}
                           </n-tag>
                         </span>
-                      </template>
+                      </template>{{ 
                       item.statusMsg || statusMap[item.status] || $t('i18n_1622dc9b6b')
-                    </n-tooltip>
+                     }}</n-tooltip>
                   </n-grid-item>
                 </n-grid>
               </n-space>
@@ -129,9 +129,9 @@
             <n-tooltip>
               <template #trigger>
                 <QuestionCircleOutlined />
-              </template>
+              </template>{{ 
               $t('i18n_05510a85b0')
-            </n-tooltip>
+             }}</n-tooltip>
           </template>
           <template #extra>
             <a href="#" @click="handleUserlog(1)">{{ $t('i18n_0ec9eaf9c3') }}</a>

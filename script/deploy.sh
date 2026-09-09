@@ -7,6 +7,7 @@
 #   bash script/deploy.sh --skip-tests        # 跳过后端测试
 #   bash script/deploy.sh --skip-frontend     # 跳过前端构建（用现有 dist）
 #   bash script/deploy.sh --pwd <密码>         # 指定登录密码（验证登录用，默认 nGetCEvj）
+#   bash script/deploy.sh --base <主机>        # 验证用主机地址（默认 127.0.0.1；macOS lo0 无 127.0.0.2 别名）
 #   bash script/deploy.sh --no-captcha        # 禁用登录图形验证码（UI 巡检等自动化测试用）
 #
 # 环境要求:
@@ -30,17 +31,20 @@ SKIP_TESTS=false
 SKIP_FRONTEND=false
 NO_CAPTCHA=false
 LOGIN_PWD="${VOYAGER1_LOGIN_PWD:-nGetCEvj}"
+BASE_HOST="${VOYAGER1_BASE_HOST:-127.0.0.1}"
 VOYAGER1_VERSION="0.0.2"
 
-# ---------- 参数解析 ----------
-for arg in "$@"; do
-  case "$arg" in
+# ---------- 参数解析（while 循环，for+shift 在 --pwd 非首参时会取错值） ----------
+while [ $# -gt 0 ]; do
+  case "$1" in
     --skip-tests) SKIP_TESTS=true ;;
     --skip-frontend) SKIP_FRONTEND=true ;;
     --no-captcha) NO_CAPTCHA=true ;;
     --pwd) LOGIN_PWD="${2:-}"; shift ;;
+    --base) BASE_HOST="${2:-}"; shift ;;
     *) ;;
   esac
+  shift
 done
 
 log() { echo -e "\n\033[1;36m[deploy]\033[0m $*"; }
@@ -103,18 +107,23 @@ sleep 15
 
 # ---------- 6. 验证 ----------
 log "6/6 验证..."
-SERVER_HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.2:2122/ || echo 000)
-AGENT_HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.2:2123/ || echo 000)
-[ "$SERVER_HTTP" = "200" ] || fail "服务端验证失败（HTTP $SERVER_HTTP）"
-[ "$AGENT_HTTP" = "200" ] || fail "插件端验证失败（HTTP $AGENT_HTTP）"
-log "服务端 2122: HTTP $SERVER_HTTP ✅  插件端 2123: HTTP $AGENT_HTTP ✅"
+# curl 失败时 -w 已输出 000，无需 || echo 000（会拼成 000000）；|| true 防 set -e 中断
+# --max-time：macOS 无 127.0.0.2 别名时 curl 默认挂 ~75 秒
+# 变量一律 ${VAR} 花括号：macOS 自带 bash 3.2 对“中文字符串内 $VAR”多字节解析有 bug（误报 unbound variable）
+SERVER_HTTP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "http://${BASE_HOST}:2122/" || true)
+AGENT_HTTP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "http://${BASE_HOST}:2123/" || true)
+SERVER_HTTP="${SERVER_HTTP:-000}"
+AGENT_HTTP="${AGENT_HTTP:-000}"
+[ "${SERVER_HTTP}" = "200" ] || fail "服务端验证失败（HTTP ${SERVER_HTTP}），可通过 --base 指定主机"
+[ "${AGENT_HTTP}" = "200" ] || fail "插件端验证失败（HTTP ${AGENT_HTTP}），可通过 --base 指定主机"
+log "服务端 2122: HTTP ${SERVER_HTTP} ✅  插件端 2123: HTTP ${AGENT_HTTP} ✅"
 
 # 登录验证
-SHAPWD=$(node -e "const c=require('crypto');console.log(c.createHash('sha1').update(process.argv[1],'utf8').digest('hex'))" "$LOGIN_PWD" 2>/dev/null || true)
-if [ -n "$SHAPWD" ]; then
-  LOGIN_RESULT=$(curl -s -X POST "http://127.0.0.2:2122/userLogin?loginName=admin&userPwd=$SHAPWD" | head -c 50)
-  echo "$LOGIN_RESULT" | grep -q '"code":200' && log "登录验证 ✅（admin）" || log "登录验证跳过（密码或账号变化，可 --pwd 指定）"
+SHAPWD=$(node -e "const c=require('crypto');console.log(c.createHash('sha1').update(process.argv[1],'utf8').digest('hex'))" "${LOGIN_PWD}" 2>/dev/null || true)
+if [ -n "${SHAPWD}" ]; then
+  LOGIN_RESULT=$(curl -s --max-time 10 -X POST "http://${BASE_HOST}:2122/userLogin?loginName=admin&userPwd=${SHAPWD}" | head -c 50)
+  echo "${LOGIN_RESULT}" | grep -q '"code":200' && log "登录验证 ✅（admin）" || log "登录验证跳过（密码或账号变化，可 --pwd 指定）"
 fi
 
 log "部署完成 ✅"
-log "管理页面: http://127.0.0.2:2122/  插件端: http://127.0.0.2:2123/"
+log "管理页面: http://${BASE_HOST}:2122/  插件端: http://${BASE_HOST}:2123/"

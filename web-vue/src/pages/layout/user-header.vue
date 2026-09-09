@@ -45,9 +45,9 @@
                   </span>
                 </span>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_f668c8c881')}${selectCluster && selectCluster.name}`
-          </n-tooltip>
+           }}</n-tooltip>
         </div>
       </n-button>
       <n-dropdown :options="userMenuOptions" trigger="click" @select="handleDropSelect">

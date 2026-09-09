@@ -58,6 +58,16 @@ public class VersionController extends BaseServerController {
     }
 
     /**
+     * 从构建记录生成版本（版本号/产物自动派生）
+     */
+    @PostMapping(value = "create-from-build", produces = "application/json")
+    @Feature(method = MethodFeature.EDIT)
+    public ApiResult<VersionModel> createFromBuild(String buildId, Integer buildNumberId, String remark) {
+        VersionModel model = versionService.createVersionFromBuild(buildId, buildNumberId, remark);
+        return ApiResult.success("生成成功", model);
+    }
+
+    /**
      * 提测（冻结 CI）
      */
     @PostMapping(value = "submit", produces = "application/json")

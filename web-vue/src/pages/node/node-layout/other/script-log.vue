@@ -40,7 +40,7 @@
                 <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
               </span>
             </template>
-            {{ 'i18n_4838a3bd20' }}
+            {{ $t('i18n_4838a3bd20') }}
           </n-tooltip>
           <n-tooltip>
             <template #trigger>

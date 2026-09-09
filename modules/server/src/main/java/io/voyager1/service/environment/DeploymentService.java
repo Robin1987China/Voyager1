@@ -45,6 +45,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -421,8 +423,13 @@ public class DeploymentService {
     }
 
     /**
-     * 把版本部署到单个 K8S 目标：读取构建产物中的 Kubernetes manifest 并 apply 到集群。
+     * 把版本部署到单个 K8S 目标。
      * <p>
+     * 支持两条交付路径（可叠加）：
+     * <ol>
+     *   <li>容器交付：构建配置含 Dockerfile 时，先构建并推送镜像（供集群拉取）；</li>
+     *   <li>manifest 交付：apply 构建产物中的 Kubernetes manifest（支持多文档/多文件）。</li>
+     * </ol>
      * projectId 可选：用于覆盖目标命名空间（缺省使用集群配置的默认命名空间）。
      */
     private String deployToK8s(VersionModel version, EnvironmentTargetModel target, UserModel userModel) throws Exception {
@@ -433,9 +440,28 @@ public class DeploymentService {
         K8sService k8sService = SpringContextHolder.getBean(K8sService.class);
         String namespace = (target.getProjectId() == null || target.getProjectId().isEmpty())
             ? null : target.getProjectId();
-        String manifest = this.readManifest(buildInfo.getId(), version.getBuildNumberId(), historyLog);
+        BuildExtraModule extra = BuildExtraModule.build(historyLog);
+        boolean dockerBuild = extra.getDockerfile() != null && !extra.getDockerfile().isEmpty();
+
         try {
-            k8sService.applyManifest(target.getTargetId(), namespace, manifest);
+            // 1. 容器交付：构建并推送镜像
+            if (dockerBuild) {
+                BuildExtraModule dockerExtra = BuildExtraModule.build(historyLog);
+                dockerExtra.setReleaseMethod(BuildReleaseMethod.DockerImage.getCode());
+                ReleaseManage manage = this.buildReleaseManage(version, target, dockerExtra, historyLog, deployLog, userModel);
+                String msg = manage.start(null, buildInfo);
+                Assert.isTrue((msg == null || msg.isEmpty()), "镜像构建/推送失败: " + msg);
+            }
+            // 2. manifest 交付：apply 构建产物中的 Kubernetes manifest（可能多个）
+            List<String> manifests = this.readManifests(buildInfo.getId(), version.getBuildNumberId(), historyLog);
+            if (!manifests.isEmpty()) {
+                for (String manifest : manifests) {
+                    k8sService.applyManifest(target.getTargetId(), namespace, manifest);
+                }
+            } else if (!dockerBuild) {
+                throw new IllegalStateException("K8S 部署失败：构建产物中既无 Kubernetes manifest(.yaml/.yml)，构建配置也未提供 Dockerfile，无法交付到集群: "
+                    + target.getTargetId());
+            }
             deployLog.setStatus(BuildStatus.PubSuccess.getCode());
             deployLog.setStatusMsg("K8S 部署成功: " + target.getTargetId());
             deployLog.setEndTime(System.currentTimeMillis());
@@ -451,42 +477,43 @@ public class DeploymentService {
     }
 
     /**
-     * 读取构建产物中的 Kubernetes manifest（递归查找结果目录下的 .yaml/.yml 文件）。
+     * 读取构建产物中的 Kubernetes manifest 列表（递归收集结果目录下的 .yaml/.yml 文件，缺省返回空列表）。
      */
-    private String readManifest(String buildId, Integer buildNumberId, BuildHistoryLog historyLog) throws Exception {
+    private List<String> readManifests(String buildId, Integer buildNumberId, BuildHistoryLog historyLog) throws Exception {
         BuildExtraModule extra = BuildExtraModule.build(historyLog);
         String resultFile = extra.getResultDirFile();
         java.io.File packageFile = BuildUtil.getHistoryPackageFile(buildId, buildNumberId, resultFile);
         if (packageFile == null || !packageFile.exists()) {
-            throw new IllegalStateException("构建产物不存在，无法读取 K8S manifest: " + buildId + " #" + buildNumberId);
+            return Collections.emptyList();
         }
-        java.io.File manifest = this.findManifest(packageFile);
-        if (manifest == null) {
-            throw new IllegalStateException("构建产物中未找到 Kubernetes manifest(.yaml/.yml): " + buildId + " #" + buildNumberId);
+        List<java.io.File> manifests = new ArrayList<>();
+        this.collectManifests(packageFile, manifests);
+        List<String> contents = new ArrayList<>();
+        for (java.io.File manifest : manifests) {
+            contents.add(new String(java.nio.file.Files.readAllBytes(manifest.toPath()), java.nio.charset.StandardCharsets.UTF_8));
         }
-        return new String(java.nio.file.Files.readAllBytes(manifest.toPath()), java.nio.charset.StandardCharsets.UTF_8);
+        return contents;
     }
 
-    private java.io.File findManifest(java.io.File file) {
+    private void collectManifests(java.io.File file, List<java.io.File> out) {
         if (file == null || !file.exists()) {
-            return null;
+            return;
         }
         if (file.isFile()) {
             String name = file.getName().toLowerCase();
-            return (name.endsWith(".yaml") || name.endsWith(".yml")) ? file : null;
+            if (name.endsWith(".yaml") || name.endsWith(".yml")) {
+                out.add(file);
+            }
+            return;
         }
         if (file.isDirectory()) {
             java.io.File[] children = file.listFiles();
             if (children != null) {
                 for (java.io.File child : children) {
-                    java.io.File found = this.findManifest(child);
-                    if (found != null) {
-                        return found;
-                    }
+                    this.collectManifests(child, out);
                 }
             }
         }
-        return null;
     }
 
     /**

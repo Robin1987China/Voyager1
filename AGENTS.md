@@ -10,12 +10,19 @@ Voyager1 是自研的轻量级运维平台（在线构建、自动部署、日�
 
 项目代码统一使用 Voyager1 自有命名空间，**代码层禁止出现任何历史遗留品牌关键字残留**。
 
-## 迭代记录（agent 必读）
+## 当前迭代状态（agent 必读）
 
-每次迭代/变更都要在 `openspec/changes/` 留下记录，其他 agent 通过它了解进展：
-- **进行中**：`openspec/changes/<change-name>/`（proposal.md + tasks.md，任务勾选用 `- [ ]`/`- [x]` 实时更新）
-- **已完成**：移动到 `openspec/changes/archive/<日期>-<名称>/`
-- 最新一轮（2026-09-08 全量测试验收与集中修复）：`openspec/changes/archive/2026-09-08-full-acceptance-bugfix/`，含 18 个 bug 修复清单与遗留项（新页面 i18n、K8S/SSH 部署目标等）
+> 约定：本节的「当前迭代状态」随每次迭代**直接更新**（本节是唯一随仓库分发的进度记录）；本地 `openspec/changes/`（被 gitignore）可存更详细的 proposal/tasks 档案。
+
+**最新一轮（2026-09-08，commit `775bef8` @ feature/v0.0.2）：应用交付体系重构 + 全量验收修复**
+- 已完成：删旧 Pipeline 体系 → 立应用管理（外键校验）+ 环境化 CD（环境策略/目标绑定/工作区权限）+ 版本状态机 + 部署审批闭环（approve-deploy）；部署异步化且独立发布记录不污染构建状态机；18 个 bug 修复 + 新页面交互追平；deploy.sh/启动脚本 macOS 兼容；e2e-pipeline.sh 重写
+- 已验证：`mvn test` 155/155、`script/e2e-pipeline.sh` 19/19、UI 巡检 58 路由 0 FAIL
+- **遗留待办（下一迭代优先）**：
+  1. 新页面 i18n：version-list/environment/application/k8s/about 等约 10 页硬编码中文未接四语言
+  2. 部署目标类型当前仅 NODE，K8S/SSH 前后端均已明确拒绝，待实现
+  3. 前端 chunk >500KB 警告待优化（manualChunks/路由懒加载）
+  4. 部署记录页筛选条件记忆
+- 注意：V2 迁移（V2__environment_cicd.sql）本轮有修改，已有 dev 库需删除 H2 文件重建（见「常见坑备忘」）
 
 ## 技术栈
 

@@ -52,9 +52,9 @@
               <span class="tw">
                 <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_4838a3bd20')
-          </n-tooltip>
+           }}</n-tooltip>
           <n-button
             type="primary"
             danger
@@ -107,9 +107,9 @@
               <span class="tw">
                 <n-tag :color="statusColor[record.status]">{{ statusMap[text] || $t('i18n_1622dc9b6b') }}</n-tag>
               </span>
-            </template>
+            </template>{{ 
             record.statusMsg || statusMap[text] || $t('i18n_1622dc9b6b')
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'releaseMethod'">
           <n-tooltip>
@@ -146,10 +146,10 @@
                   <span v-else>-</span>
                 </span>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_16646e46b1')}${renderSize(record.resultFileSize)}， ${$t( 'i18n_77e501b44b' )}
             ${renderSize(record.buildLogFileSize)}`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
 
         <template v-else-if="column.dataIndex === 'endTime'">
@@ -163,10 +163,10 @@
                   <span v-else>-</span>
                 </span>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_61e84eb5bb')}${parseTime(record.startTime)}，${ record.endTime ? $t('i18n_590dbb68cf') +
             parseTime(record.endTime) : '' }`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
 
         <template v-else-if="column.dataIndex === 'operation'">
@@ -178,9 +178,9 @@
                     ><DownloadOutlined />{{ $t('i18n_456d29ef8b') }}</n-button
                   >
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_b38d7db9b0')
-            </n-tooltip>
+             }}</n-tooltip>
 
             <n-tooltip>
               <template #trigger>
@@ -190,9 +190,9 @@
                     {{ $t('i18n_7dfcab648d') }}
                   </n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_02e35447d4')
-            </n-tooltip>
+             }}</n-tooltip>
 
             <n-dropdown
               :options="[

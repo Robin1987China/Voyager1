@@ -59,9 +59,9 @@
               <span class="tw">
                 <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_4838a3bd20')
-          </n-tooltip>
+           }}</n-tooltip>
         </n-space>
       </template>
       <template #tableBodyCell="{ column, text, record }">
@@ -135,9 +135,9 @@
                   <span>{{ text }}</span>
                 </span>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_be4b9241ec')},${$t('i18n_69056f4792')},${$t('i18n_27b36afd36')}`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
 
         <template v-else-if="column.dataIndex === 'operation'">

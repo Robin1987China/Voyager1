@@ -10,8 +10,8 @@
     "icon_v3": "rocket",
     "childs": [
       {
-        "id": "repository",
-        "title": "Repositories"
+        "id": "application",
+        "title": "Applications"
       },
       {
         "id": "buildList",
@@ -22,25 +22,12 @@
         "title": "Versions"
       },
       {
-        "id": "pipelineList",
-        "title": "Pipelines"
+        "id": "environment",
+        "title": "Environments"
       },
       {
-        "id": "swimlane",
-        "title": "Release Promotion"
-      },
-      {
-        "id": "outgivingList",
-        "title": "Distribution"
-      },
-      {
-        "id": "outgivingWhitelistDirectory",
-        "title": "Distribution Authorization",
-        "role": "system"
-      },
-      {
-        "id": "logRead",
-        "title": "Distribution Logs"
+        "id": "deployRecords",
+        "title": "Deployments"
       }
     ]
   },
@@ -64,6 +51,10 @@
       {
         "id": "commandList",
         "title": "Commands"
+      },
+      {
+        "id": "outgivingWhitelistDirectory",
+        "title": "Node Authorization"
       }
     ]
   },
@@ -114,10 +105,6 @@
       {
         "id": "staticFileStorage",
         "title": "Static Files"
-      },
-      {
-        "id": "fileReleaseTask",
-        "title": "Release Tasks"
       },
       {
         "id": "certificate",

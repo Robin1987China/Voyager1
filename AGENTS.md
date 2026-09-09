@@ -10,6 +10,13 @@ Voyager1 是自研的轻量级运维平台（在线构建、自动部署、日�
 
 项目代码统一使用 Voyager1 自有命名空间，**代码层禁止出现任何历史遗留品牌关键字残留**。
 
+## 迭代记录（agent 必读）
+
+每次迭代/变更都要在 `openspec/changes/` 留下记录，其他 agent 通过它了解进展：
+- **进行中**：`openspec/changes/<change-name>/`（proposal.md + tasks.md，任务勾选用 `- [ ]`/`- [x]` 实时更新）
+- **已完成**：移动到 `openspec/changes/archive/<日期>-<名称>/`
+- 最新一轮（2026-09-08 全量测试验收与集中修复）：`openspec/changes/archive/2026-09-08-full-acceptance-bugfix/`，含 18 个 bug 修复清单与遗留项（新页面 i18n、K8S/SSH 部署目标等）
+
 ## 技术栈
 
 | 层 | 技术 |
@@ -28,16 +35,18 @@ Voyager1 是自研的轻量级运维平台（在线构建、自动部署、日�
 - `storage-module`：数据库方言实现（h2/mysql/mariadb/postgresql）
 - `sub-plugin`：功能插件（git-clone/svn-clone/docker-cli/ssh-jsch/email/webhook/encrypt）
 
-## 业务能力（自研 Pipeline + 多云/K8s）
+## 业务能力（应用交付 + 多云/K8s）
 
 | 能力 | 说明 | 关键代码 |
 |---|---|---|
-| 版本状态机 | 构建产物版本、发布状态流转（含提测冻结/打回） | `service/version/VersionService.java` |
-| 可视化 Pipeline 编辑器 | 流水线图形编辑、节点编排 | `service/pipeline/PipelineConfigService.java`、`web-vue/src/pages/pipeline/pipeline-list.vue` |
-| 环境晋升 | dev→test→prod 泳道视图、自动 CD、审批邮件、失败自动打回 | `web-vue/src/pages/pipeline/swimlane.vue`、`service/environment/EnvironmentService.java`、`service/DeploymentService.java` |
-| 触发方式 | 手动 / cron 定时 / WebHook 触发 Pipeline；构建列表与 Pipeline 双向关联 | `service/pipeline/PipelineConfigService.java`（CronUtils key `pipeline:<id>`）、`POST /pipeline/trigger-webhook` |
+| 版本状态机 | 构建产物版本、发布状态流转（Developing→Submitted→Released，提测冻结 CI/打回解冻） | `service/version/VersionService.java`、`web-vue/src/pages/pipeline/version-list.vue` |
+| 应用管理 | 应用绑定代码仓库+构建配置（保存有外键校验），详情聚合环境泳道/构建历史/部署记录 | `service/application/ApplicationService.java`、`controller/application/ApplicationController.java`、`web-vue/src/pages/application/`（表 APPLICATION） |
+| 环境化 CD | dev/test/prod 环境定义（策略 CI_CD/CD_ONLY、审批闸门）+ 目标绑定（工作区权限校验）；部署挂版本状态机（打回不可部署、prod 仅已发布、test 仅已提测/已发布）；发布异步执行，每次部署独立发布记录不污染构建状态机 | `service/environment/{EnvironmentService,DeploymentService}.java`、`controller/environment/EnvironmentController.java`、`web-vue/src/pages/environment/`（表 ENVIRONMENT_INFO/ENVIRONMENT_TARGET/DEPLOYMENT_RECORD） |
+| 部署审批 | 需审批环境落「待审批」记录，`POST /environment/approve-deploy` 批准后异步执行/拒绝闭环；部署记录页可审批 | `DeploymentService.approve`、`web-vue/src/pages/environment/deploy-records.vue` |
+| 触发方式 | 手动 / cron 定时 / WebHook 触发构建；提测后自动 CD 到 test（`VOYAGER1_ENV_AUTO_CD` 可关）、发布后自动部署 prod | `service/version/VersionService.java`、`build/BuildExecuteService.java`（CI 冻结拦截） |
 | 云资产 | 云账号（aliyun/tencent/aws）+ 云实例管理，实例一键导入为 SSH 机器 | `service/cloud/{CloudService,CloudInstanceService}.java`、`controller/cloud/CloudController.java`、`web-vue/src/pages/cloud/cloud-list.vue`（表 CLOUD_ACCOUNT/CLOUD_INSTANCE） |
 | K8s 集群 | kubeconfig 接入集群、结构化资源列表/详情/删除/扩缩容/重启/日志/事件、manifest 部署（fabric8 SDK） | `service/k8s/K8sService.java`、`controller/k8s/K8sController.java`、`web-vue/src/pages/k8s/k8s-list.vue`（表 K8S_CLUSTER） |
+| FinOps | 账单导入/同步、成本分析、标签归集、预算检查、闲置资源 | `service/finops/`、`web-vue/src/pages/finops/finops-list.vue`（表 COST_BILL/COST_BUDGET/COST_TAG_RULE） |
 
 ## 开发环境
 
@@ -62,12 +71,15 @@ rm -f modules/agent/target/agent-0.0.2.jar   # agent 强制重建
 cd web-vue && npm run build
 
 # 一键部署流水线（构建+打包+测试+启动+验证）
-bash script/deploy.sh [--skip-tests] [--skip-frontend] [--pwd <密码>] [--no-captcha]
+bash script/deploy.sh [--skip-tests] [--skip-frontend] [--pwd <密码>] [--base <主机>] [--no-captcha]
 
 # UI 全页面巡检（需服务端运行；--baseline 生成基线 / --compare 对比 / 缺省 scan 模式）
 # 巡检含登录页冒烟检查；自动化登录要求服务端禁用图形验证码，故需先 --no-captcha 部署
-# 可选 --base <url> 覆盖地址（默认 http://127.0.0.2:2122）、--user <用户名>（默认 admin）
+# 可选 --base <url> 覆盖地址（默认 http://127.0.0.1:2122）、--user <用户名>（默认 admin）
 node script/ui-regression.mjs --pwd <密码> [--baseline | --compare] [--base <url>] [--user <用户名>]
+
+# 版本状态机 + 环境化 CD 端到端验证（需服务端运行）
+bash script/e2e-pipeline.sh [明文密码] [base_url]
 
 # 本地启动（JDK17 需 add-opens）
 export JAVA_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
@@ -94,3 +106,6 @@ cd modules/agent/target/agent-0.0.2-release && ./bin/Agent.sh start
 - **agent jar 不更新**：`mvn package` 时若 target 已有 jar 可能跳过重建，删掉再打
 - **UI 巡检假阳性**：页面切换时请求 abort 产生的 `AxiosError: Network Error` 是 WARN 非 FAIL；全屏终端页（full-terminal/ssh-tabs）无参数渲染空白属正常
 - **测试**：新增测试必须用 JUnit5（jupiter）、必须有断言；外部依赖测试加 `@Tag("external")`，人工维护类加 `@Tag("manual")`
+- **macOS 网络**：lo0 默认只有 127.0.0.1，访问 127.0.0.2 会挂起；脚本一律用 127.0.0.1（可 `--base` 覆盖），curl 必加 `--max-time`
+- **macOS bash 3.2**：中文字符串内插变量必须写 `${VAR}`（否则 set -u 下误报 `unbound variable`）；`tail --pid` 为 GNU 专属，脚本需做 BSD 回退
+- **修改 Flyway 迁移后**：已落地的 dev/测试库会因 checksum 变化启动校验失败，删除对应 H2 文件重建（测试库在 `$TMPDIR/voyager1-test-data`）

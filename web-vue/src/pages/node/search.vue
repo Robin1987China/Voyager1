@@ -70,9 +70,9 @@
                   $t('i18n_e5f71fc31e')
                 }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_4838a3bd20')
-          </n-tooltip>
+           }}</n-tooltip>
 
           <!-- <n-statistic format=" s 秒" title="刷新倒计时" :value="countdownTime" @finish="silenceLoadData" /> -->
         </n-space>
@@ -235,11 +235,11 @@
                     :unchecked-label="$t('i18n_d58a55bcee')"
                   />
                 </span>
-              </template>
+              </template>{{ 
               `${$t('i18n_d7bebd0e5e')} ${ (projectStatusMap[record.nodeId] &&
               projectStatusMap[record.nodeId][record.projectId] &&
               projectStatusMap[record.nodeId][record.projectId].statusMsg) || '' }`
-            </n-tooltip>
+             }}</n-tooltip>
             <span v-else>-</span>
           </template>
         </template>
@@ -270,14 +270,14 @@
                   >
                 </span>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_2b04210d33')}${( (projectStatusMap[record.nodeId] &&
             projectStatusMap[record.nodeId][record.projectId] && projectStatusMap[record.nodeId][record.projectId].pids)
             || [ (projectStatusMap[record.nodeId] && projectStatusMap[record.nodeId][record.projectId] &&
             projectStatusMap[record.nodeId][record.projectId].pid) || '-' ] ).join(',')} / ${$t('i18n_4c096c51a3')}${
             (projectStatusMap[record.nodeId] && projectStatusMap[record.nodeId][record.projectId] &&
             projectStatusMap[record.nodeId][record.projectId].port) || '-' }`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
           <n-space>
@@ -439,9 +439,9 @@
                 <span class="tw">
                   <n-button type="primary" size="small" @click="resetTrigger">{{ $t('i18n_4b9c3271dc') }}</n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_01ad26f4a9')
-            </n-tooltip>
+             }}</n-tooltip>
           </template>
           <n-tab-pane name="1" :tab="$t('i18n_1a6aa24e76')">
             <n-space direction="vertical" style="width: 100%">

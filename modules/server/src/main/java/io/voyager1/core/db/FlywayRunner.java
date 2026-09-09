@@ -60,6 +60,6 @@ public class FlywayRunner implements ILoadEvent {
             .locations("classpath:db/migration")
             .load();
         flyway.migrate();
-        log.info("Flyway 迁移完成（schema 由 V1__init.sql 单基线管理）");
+        log.info("Flyway 迁移完成（V1 基线 + 增量迁移，当前已应用至最新版本）");
     }
 }

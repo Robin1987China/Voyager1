@@ -189,8 +189,8 @@ public class BuildInfoController extends BaseServerController {
                                             @ValidatorItem(value = ValidatorRule.NOT_BLANK, msg = "构建产物目录不能为空,长度1-200", range = "1:200") String resultDirFile,
                                             @ValidatorItem(value = ValidatorRule.NOT_BLANK, msg = "构建命令不能为空") String script,
                                             @ValidatorItem(value = ValidatorRule.POSITIVE_INTEGER, msg = "发布方法不正确") int releaseMethod,
-                                            String branchName, String branchTagName, String webhook, String autoBuildCron,
-                                            String extraData, String group,
+                                             String branchName, String branchTagName, String webhook, String autoBuildCron,
+                                             String extraData, String group, String environment,
                                             @ValidatorItem(value = ValidatorRule.POSITIVE_INTEGER, msg = "构建方式不正确") int buildMode,
                                             String aliasCode,
                                             @ValidatorItem(value = ValidatorRule.NUMBERS, msg = "请填写正确的保留天数") Integer resultKeepDay,
@@ -246,6 +246,14 @@ public class BuildInfoController extends BaseServerController {
         buildInfoModel.setResultKeepDay(resultKeepDay);
         buildInfoModel.setBuildMode(buildMode);
         buildInfoModel.setBuildEnvParameter(buildEnvParameter);
+        // 构建所属环境（环境化 CI/CD）：CD_ONLY 环境将禁止从源码构建；为空表示不限制
+        if (environment != null && !environment.isEmpty()) {
+            Assert.notNull(io.voyager1.common.SpringContextHolder.getBean(io.voyager1.service.environment.EnvironmentService.class).getByName(environment),
+                "环境不存在: " + environment);
+            buildInfoModel.setEnvironment(environment);
+        } else {
+            buildInfoModel.setEnvironment(null);
+        }
         // 发布方式
         BuildReleaseMethod releaseMethod1 = BaseEnum.getEnum(BuildReleaseMethod.class, releaseMethod);
         Assert.notNull(releaseMethod1, "发布方法不正确");

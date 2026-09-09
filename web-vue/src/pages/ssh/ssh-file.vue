@@ -185,9 +185,9 @@
                     }}</span>
                   </span>
                 </span>
-              </template>
+              </template>{{ 
               `${record.link ? $t('i18n_bfe68d5844') : text ? $t('i18n_767fa455bb') : $t('i18n_2a0c4740f1')}`
-            </n-tooltip>
+             }}</n-tooltip>
           </template>
           <template v-else-if="column.key === 'size'">
             <n-tooltip placement="topLeft">
@@ -226,9 +226,9 @@
                       >{{ $t('i18n_95b351c862') }}</n-button
                     >
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_af0df2e295')
-              </n-tooltip>
+               }}</n-tooltip>
               <n-tooltip>
                 <template #trigger>
                   <span class="tw">
@@ -236,9 +236,9 @@
                       $t('i18n_ba6e91fa9e')
                     }}</n-button>
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_5cc7e8e30a')
-              </n-tooltip>
+               }}</n-tooltip>
               <n-button size="small" type="primary" :disabled="record.dir" @click="handleDownload(record)">{{
                 $t('i18n_f26ef91424')
               }}</n-button>
@@ -371,9 +371,9 @@
           <n-tooltip>
             <template #trigger>
               <n-input v-model:value="temp.fileFolderName" :placeholder="$t('i18n_55939c108f')" />
-            </template>
+            </template>{{ 
             temp.addFileOrFolderType === 1 ? $t('i18n_fe1b192913') : ''
-          </n-tooltip>
+           }}</n-tooltip>
           <n-grid type="flex" justify="center">
             <n-button
               type="primary"

@@ -23,7 +23,6 @@ import io.voyager1.func.assets.server.MachineNodeServer;
 import io.voyager1.func.assets.server.MachineSshServer;
 import io.voyager1.func.assets.server.ScriptLibraryServer;
 import io.voyager1.func.cert.service.CertificateInfoService;
-import io.voyager1.func.files.service.FileReleaseTaskService;
 import io.voyager1.func.files.service.FileStorageService;
 import io.voyager1.func.files.service.StaticFileStorageService;
 import io.voyager1.func.system.service.ClusterInfoService;
@@ -42,7 +41,6 @@ import io.voyager1.service.node.ssh.CommandExecLogService;
 import io.voyager1.service.node.ssh.SshCommandService;
 import io.voyager1.service.node.ssh.SshService;
 import io.voyager1.service.outgiving.DbOutGivingLogService;
-import io.voyager1.service.outgiving.LogReadServer;
 import io.voyager1.service.outgiving.OutGivingServer;
 import io.voyager1.service.script.ScriptExecuteLogServer;
 import io.voyager1.service.script.ScriptServer;
@@ -75,7 +73,6 @@ public enum ClassFeature {
     SSH_COMMAND(() -> "SSH命令管理", SshCommandService.class),
     SSH_COMMAND_LOG(() -> "SSH命令日志", CommandExecLogService.class),
     OUTGIVING(() -> "分发管理", OutGivingServer.class),
-    LOG_READ(() -> "日志阅读", LogReadServer.class),
     OUTGIVING_LOG(() -> "分发日志", DbOutGivingLogService.class),
     OUTGIVING_CONFIG_WHITELIST(() -> "授权配置"),
     MONITOR(() -> "项目监控", MonitorService.class),
@@ -94,7 +91,6 @@ public enum ClassFeature {
     USER_LOGIN_LOG(() -> "登录日志", UserLoginLogServer.class),
     FILE_STORAGE(() -> "文件存储中心", FileStorageService.class),
     STATIC_FILE_STORAGE(() -> "静态文件存储", StaticFileStorageService.class),
-    FILE_STORAGE_RELEASE(() -> "文件发布", FileReleaseTaskService.class),
     CERTIFICATE_INFO(() -> "证书管理", CertificateInfoService.class),
     USER_PERMISSION_GROUP(() -> "权限分组", UserPermissionGroupServer.class),
     SYSTEM_EMAIL(() -> "邮箱配置"),

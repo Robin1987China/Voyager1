@@ -17,8 +17,11 @@
 package io.voyager1.service.environment;
 
 import io.voyager1.core.entity.EnvironmentEntity;
+import io.voyager1.core.entity.EnvironmentTargetEntity;
 import io.voyager1.core.repository.EnvironmentRepository;
+import io.voyager1.core.repository.EnvironmentTargetRepository;
 import io.voyager1.model.data.EnvironmentModel;
+import io.voyager1.model.data.EnvironmentTargetModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +33,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * 环境服务（dev/test/prod 定义与预置）。
+ * 环境服务（dev/test/prod 定义、策略与目标绑定）。
  * <p>
- * 已从承继存储框架（BaseDbService）搬家到 JPA 仓库（EnvironmentRepository），对外契约不变。
+ * 环境化 CI/CD：环境具备 type/strategy/approvalRequired 策略，并绑定部署目标（节点/集群/SSH）。
  *
  * @since 2026/8/8
  */
@@ -42,32 +45,60 @@ public class EnvironmentService {
 
     public static final List<String> DEFAULT_ENVIRONMENTS = Arrays.asList("dev", "test", "prod");
 
-    private final EnvironmentRepository repository;
+    /**
+     * 部署策略：开发环境（可构建可部署）
+     */
+    public static final String STRATEGY_CI_CD = "CI_CD";
 
-    public EnvironmentService(EnvironmentRepository repository) {
+    /**
+     * 部署策略：测试/生产环境（仅部署，不构建）
+     */
+    public static final String STRATEGY_CD_ONLY = "CD_ONLY";
+
+    public static final String TARGET_TYPE_NODE = "NODE";
+    public static final String TARGET_TYPE_K8S = "K8S";
+    public static final String TARGET_TYPE_SSH = "SSH";
+
+    /**
+     * 当前支持绑定的目标类型（其余类型部署链路尚未实现，绑定时即拒绝，避免绑定成功部署才报错）
+     */
+    private static final List<String> SUPPORTED_TARGET_TYPES = java.util.Collections.singletonList(TARGET_TYPE_NODE);
+
+    private final EnvironmentRepository repository;
+    private final EnvironmentTargetRepository targetRepository;
+    private final io.voyager1.service.node.NodeService nodeService;
+
+    public EnvironmentService(EnvironmentRepository repository, EnvironmentTargetRepository targetRepository,
+                              io.voyager1.service.node.NodeService nodeService) {
         this.repository = repository;
+        this.targetRepository = targetRepository;
+        this.nodeService = nodeService;
     }
 
     /**
-     * 初始化预置环境（首次启动）。
+     * 初始化预置环境（首次启动），带默认策略。
      */
     @Transactional
     public void initDefaultEnvironments() {
         if (!this.listEnabled().isEmpty()) {
             return;
         }
-        for (int i = 0; i < DEFAULT_ENVIRONMENTS.size(); i++) {
-            this.saveEnvironment(null, DEFAULT_ENVIRONMENTS.get(i), i, true);
-        }
+        this.saveEnvironment(null, "dev", 0, true, "dev", STRATEGY_CI_CD, false);
+        this.saveEnvironment(null, "test", 1, true, "test", STRATEGY_CD_ONLY, false);
+        this.saveEnvironment(null, "prod", 2, true, "prod", STRATEGY_CD_ONLY, true);
         log.info("预置环境: {}", DEFAULT_ENVIRONMENTS);
     }
 
     /**
-     * 创建/更新环境。
+     * 创建/更新环境（含策略字段）。
      */
     @Transactional
-    public String saveEnvironment(String id, String name, Integer sortValue, Boolean enabled) {
+    public String saveEnvironment(String id, String name, Integer sortValue, Boolean enabled,
+                                  String type, String strategy, Boolean approvalRequired) {
         Assert.hasText(name, "环境名称不能为空");
+        // 环境名全局唯一（部署/自动 CD 均按名定位环境，重名会导致目标环境不确定）
+        EnvironmentEntity sameName = repository.findFirstByName(name);
+        Assert.state(sameName == null || sameName.getId().equals(id), "环境名称已存在: " + name);
         long now = System.currentTimeMillis();
         EnvironmentEntity entity;
         if (id == null || id.isEmpty()) {
@@ -83,6 +114,9 @@ public class EnvironmentService {
         entity.setName(name);
         entity.setSortValue(sortValue);
         entity.setEnabled(enabled == null || enabled ? 1 : 0);
+        entity.setType(type);
+        entity.setStrategy(strategy);
+        entity.setApprovalRequired(Boolean.TRUE.equals(approvalRequired) ? 1 : 0);
         repository.save(entity);
         return entity.getId();
     }
@@ -96,6 +130,14 @@ public class EnvironmentService {
     }
 
     /**
+     * 按名称查询环境（部署时通常用 dev/test/prod 名称）。
+     */
+    public EnvironmentModel getByName(String name) {
+        EnvironmentEntity entity = repository.findFirstByName(name);
+        return entity == null ? null : toModel(entity);
+    }
+
+    /**
      * 查询启用环境列表（按排序、创建时间）。
      */
     public List<EnvironmentModel> listEnabled() {
@@ -105,11 +147,83 @@ public class EnvironmentService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * 给环境绑定部署目标（节点/集群/SSH）。
+     */
+    @Transactional
+    public String bindTarget(String environmentId, String targetType, String targetId, String projectId, String workspaceId) {
+        Assert.hasText(environmentId, "环境不能为空");
+        Assert.hasText(targetType, "目标类型不能为空");
+        Assert.hasText(targetId, "目标不能为空");
+        Assert.state(SUPPORTED_TARGET_TYPES.contains(targetType), "暂不支持的目标类型: " + targetType);
+        Assert.notNull(repository.findById(environmentId).orElse(null), "环境不存在: " + environmentId);
+        // 工作区数据权限：节点必须存在且属于当前工作区（防跨工作区越权绑定）
+        if (TARGET_TYPE_NODE.equals(targetType)) {
+            Assert.hasText(workspaceId, "工作区不能为空");
+            Assert.notNull(nodeService.getByKey(targetId, workspaceId), "节点不存在或没有该工作区的数据权限: " + targetId);
+            Assert.hasText(projectId, "NODE 目标缺少 projectId");
+        }
+        Assert.state(!targetRepository.existsByEnvironmentIdAndTargetTypeAndTargetId(environmentId, targetType, targetId),
+            "该目标已绑定到当前环境");
+        long now = System.currentTimeMillis();
+        EnvironmentTargetEntity entity = new EnvironmentTargetEntity();
+        entity.setId(UUID.randomUUID().toString());
+        entity.setCreateTimeMillis(now);
+        entity.setModifyTimeMillis(now);
+        entity.setEnvironmentId(environmentId);
+        entity.setTargetType(targetType);
+        entity.setTargetId(targetId);
+        entity.setProjectId(projectId);
+        entity.setWorkspaceId(workspaceId);
+        entity.setEnabled(1);
+        entity.setSortValue(0);
+        targetRepository.save(entity);
+        return entity.getId();
+    }
+
+    /**
+     * 解绑环境目标。
+     */
+    @Transactional
+    public void unbindTarget(String id) {
+        Assert.hasText(id, "绑定 id 不能为空");
+        targetRepository.deleteById(id);
+    }
+
+    /**
+     * 查询环境的启用目标列表。
+     */
+    public List<EnvironmentTargetModel> listTargets(String environmentId) {
+        return targetRepository.findByEnvironmentIdAndEnabledOrderBySortValueAscCreateTimeMillisAsc(environmentId, 1)
+            .stream()
+            .map(this::toTargetModel)
+            .collect(Collectors.toList());
+    }
+
     private EnvironmentModel toModel(EnvironmentEntity entity) {
         EnvironmentModel model = EnvironmentModel.builder()
             .name(entity.getName())
             .sortValue(entity.getSortValue())
             .enabled(entity.getEnabled())
+            .type(entity.getType())
+            .strategy(entity.getStrategy())
+            .approvalRequired(entity.getApprovalRequired() != null && entity.getApprovalRequired() == 1)
+            .build();
+        model.setId(entity.getId());
+        model.setCreateTimeMillis(entity.getCreateTimeMillis());
+        model.setModifyTimeMillis(entity.getModifyTimeMillis());
+        return model;
+    }
+
+    private EnvironmentTargetModel toTargetModel(EnvironmentTargetEntity entity) {
+        EnvironmentTargetModel model = EnvironmentTargetModel.builder()
+            .environmentId(entity.getEnvironmentId())
+            .targetType(entity.getTargetType())
+            .targetId(entity.getTargetId())
+            .projectId(entity.getProjectId())
+            .workspaceId(entity.getWorkspaceId())
+            .enabled(entity.getEnabled())
+            .sortValue(entity.getSortValue())
             .build();
         model.setId(entity.getId());
         model.setCreateTimeMillis(entity.getCreateTimeMillis());

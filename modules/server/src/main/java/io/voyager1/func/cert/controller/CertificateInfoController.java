@@ -30,16 +30,11 @@ import io.voyager1.common.BaseServerController;
 import io.voyager1.common.i18n.I18nMessageUtil;
 import io.voyager1.common.validator.ValidatorItem;
 import io.voyager1.common.validator.ValidatorRule;
-import io.voyager1.controller.outgiving.OutGivingWhitelistService;
 import io.voyager1.func.assets.model.MachineDockerModel;
 import io.voyager1.func.assets.server.MachineDockerServer;
 import io.voyager1.func.cert.model.CertificateInfoModel;
 import io.voyager1.func.cert.service.CertificateInfoService;
-import io.voyager1.func.files.service.FileReleaseTaskService;
-import io.voyager1.func.files.service.FileStorageService;
 import io.voyager1.model.PageResultDto;
-import io.voyager1.model.data.AgentWhitelist;
-import io.voyager1.model.data.ServerWhitelist;
 import io.voyager1.permission.ClassFeature;
 import io.voyager1.permission.Feature;
 import io.voyager1.permission.MethodFeature;
@@ -78,22 +73,13 @@ public class CertificateInfoController extends BaseServerController {
     private final ServerConfig serverConfig;
     private final MachineDockerServer machineDockerServer;
     private final CertificateInfoService certificateInfoService;
-    private final FileReleaseTaskService fileReleaseTaskService;
-    private final OutGivingWhitelistService outGivingWhitelistService;
-    private final FileStorageService fileStorageService;
 
     public CertificateInfoController(ServerConfig serverConfig,
                                      MachineDockerServer machineDockerServer,
-                                     CertificateInfoService certificateInfoService,
-                                     FileReleaseTaskService fileReleaseTaskService,
-                                     OutGivingWhitelistService outGivingWhitelistService,
-                                     FileStorageService fileStorageService) {
+                                     CertificateInfoService certificateInfoService) {
         this.serverConfig = serverConfig;
         this.machineDockerServer = machineDockerServer;
         this.certificateInfoService = certificateInfoService;
-        this.fileReleaseTaskService = fileReleaseTaskService;
-        this.outGivingWhitelistService = outGivingWhitelistService;
-        this.fileStorageService = fileStorageService;
     }
 
     /**
@@ -336,44 +322,4 @@ public class CertificateInfoController extends BaseServerController {
         }
     }
 
-    @PostMapping(value = "deploy", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Feature(method = MethodFeature.EDIT)
-    public ApiResult<String> addTask(@ValidatorItem String id,
-                                        @ValidatorItem String name,
-                                        @ValidatorItem(value = ValidatorRule.NUMBERS) int taskType,
-                                        @ValidatorItem String taskDataIds,
-                                        @ValidatorItem String releasePathParent,
-                                        @ValidatorItem String releasePathSecondary,
-                                        String beforeScript,
-                                        String afterScript,
-                                        HttpServletRequest request) {
-        // 判断参数
-        ServerWhitelist configDeNewInstance = outGivingWhitelistService.getServerWhitelistData(request);
-        List<String> whitelistServerOutGiving = configDeNewInstance.getOutGiving();
-        Assert.state(AgentWhitelist.checkPath(whitelistServerOutGiving, releasePathParent), "请选择正确的项目路径,或者还没有配置授权");
-        Assert.hasText(releasePathSecondary, "请填写发布文件的二级目录");
-        // 判断证书是否存在
-        CertificateInfoModel model = certificateInfoService.getByKeyAndGlobal(id, request);
-        File file = certificateInfoService.getFilePath(model);
-        Assert.state(!FileUtil.isEmpty(file), "证书文件丢失");
-        File userTempPath = serverConfig.getUserTempPath();
-        File tempSave = FileUtil.file(userTempPath, java.util.UUID.randomUUID().toString().replace("-", ""));
-        try {
-            // 压缩成 zip
-            FileUtil.mkdir(tempSave);
-            String absolutePath = FileUtil.file(tempSave, model.getSerialNumberStr() + ".zip").getAbsolutePath();
-            File zip = ZipUtil.zip(file.getAbsolutePath(), absolutePath, false);
-            // 添加到文件中心
-            String description = model.getSerialNumberStr() + Optional.ofNullable(model.getDescription()).map(s -> "," + s).orElse("");
-            String fileId = fileStorageService.addFile(zip, 3, certificateInfoService.getCheckUserWorkspace(request), description, null, 1);
-            String releasePath = FileUtil.normalize(releasePathParent + "/" + releasePathSecondary);
-            // 创建发布任务
-            Map<String, String> env = new HashMap<>();
-            env.put("CERT_SERIAL_NUMBER_STR", model.getSerialNumberStr());
-            fileReleaseTaskService.addTask(fileId, 1, name, taskType, taskDataIds, releasePath, beforeScript, afterScript, env, request);
-            return ApiResult.success("创建成功");
-        } finally {
-            FileUtil.del(tempSave);
-        }
-    }
 }

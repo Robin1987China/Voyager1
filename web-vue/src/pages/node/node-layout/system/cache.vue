@@ -55,9 +55,9 @@
                   <n-tooltip>
                     <template #trigger>
                       {{ item }}
-                    </template>
+                    </template>{{ 
                     `${$t('i18n_6835ed12b9')}:${item}`
-                  </n-tooltip>
+                   }}</n-tooltip>
                 </n-tag>
               </template>
               <template v-else>-</template>
@@ -71,9 +71,9 @@
                   <n-tooltip>
                     <template #trigger>
                       {{ key }}
-                    </template>
+                    </template>{{ 
                     $t('i18n_3a57a51660', { item: item })
-                  </n-tooltip>
+                   }}</n-tooltip>
                 </n-tag>
               </template>
               <template v-else>-</template>

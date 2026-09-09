@@ -20,9 +20,16 @@ import io.voyager1.core.entity.BuildHistoryLogEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.List;
+
 /**
  * 构建历史记录 JPA 仓库。
  */
 public interface BuildHistoryLogRepository
     extends JpaRepository<BuildHistoryLogEntity, String>, JpaSpecificationExecutor<BuildHistoryLogEntity> {
+
+    /**
+     * 按构建配置查询构建历史（构建编号倒序）。
+     */
+    List<BuildHistoryLogEntity> findByBuildDataIdOrderByBuildNumberIdDesc(String buildDataId);
 }

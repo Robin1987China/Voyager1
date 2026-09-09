@@ -92,25 +92,25 @@
                         ><CloudDownloadOutlined
                       /></n-button>
                     </span>
-                  </template>
+                  </template>{{ 
                   $t('i18n_9065a208e8')
-                </n-tooltip>
+                 }}</n-tooltip>
                 <n-tooltip>
                   <template #trigger>
                     <span class="tw">
                       <n-button size="small" type="primary" @click="loadFileList"><ReloadOutlined /></n-button>
                     </span>
-                  </template>
+                  </template>{{ 
                   $t('i18n_5e32f72bbf')
-                </n-tooltip>
+                 }}</n-tooltip>
                 <n-tooltip>
                   <template #trigger>
                     <span class="tw">
                       <n-button size="small" type="primary" danger @click="clearFile"><DeleteOutlined /></n-button>
                     </span>
-                  </template>
+                  </template>{{ 
                   $t('i18n_de6bc95d3b')
-                </n-tooltip>
+                 }}</n-tooltip>
 
                 <n-tag v-if="uploadPath" color="#2db7f5">{{ $t('i18n_2c8109fa0b') }}{{ uploadPath || '' }}</n-tag>
                 <div>{{ $t('i18n_9e98fa5c0d') }}</div>
@@ -221,17 +221,17 @@
                         <span class="tw">
                           <n-button size="small" type="primary" :disabled="true">{{ $t('i18n_95b351c862') }}</n-button>
                         </span>
-                      </template>
+                      </template>{{ 
                       $t('i18n_c6f1c6e062')
-                    </n-tooltip>
+                     }}</n-tooltip>
                     <n-tooltip>
                       <template #trigger>
                         <span class="tw">
                           <n-button size="small" type="primary" :disabled="true">{{ $t('i18n_f26ef91424') }}</n-button>
                         </span>
-                      </template>
+                      </template>{{ 
                       $t('i18n_6c14188ba0')
-                    </n-tooltip>
+                     }}</n-tooltip>
                   </template>
                   <template v-else>
                     <n-tooltip>
@@ -246,9 +246,9 @@
                             >{{ $t('i18n_95b351c862') }}</n-button
                           >
                         </span>
-                      </template>
+                      </template>{{ 
                       $t('i18n_17b5e684e5')
-                    </n-tooltip>
+                     }}</n-tooltip>
                     <n-button size="small" type="primary" @click="handleDownload(record)">{{
                       $t('i18n_f26ef91424')
                     }}</n-button>

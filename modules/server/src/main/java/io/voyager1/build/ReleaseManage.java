@@ -104,6 +104,12 @@ public class ReleaseManage {
     private final BuildExtraModule buildExtraModule;
     private final String logId;
     private EnvironmentMapBuilder buildEnv;
+    /**
+     * 发布状态是否同步回写构建配置（CI_BUILD）。
+     * 环境化部署（deploy 到环境目标）时置 false，避免部署结果覆盖构建状态机、部署期间锁死源构建。
+     */
+    @Builder.Default
+    private final boolean syncBuildStatus = true;
 
     private final LogRecorder logRecorder;
     private File resultFile;
@@ -141,7 +147,12 @@ public class ReleaseManage {
 
 
     private void updateStatus(BuildStatus status, String msg) {
-        buildExecuteService.updateStatus(this.buildExtraModule.getId(), this.logId, this.buildNumberId, status, msg);
+        if (this.syncBuildStatus) {
+            buildExecuteService.updateStatus(this.buildExtraModule.getId(), this.logId, this.buildNumberId, status, msg);
+        } else {
+            // 环境化部署：只回写本次部署独立的发布记录，不触碰构建配置状态
+            buildExecuteService.updateLogStatus(this.logId, status, msg);
+        }
     }
 
     /**

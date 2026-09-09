@@ -53,9 +53,9 @@
                       >{{ $t('i18n_e5f71fc31e') }}
                     </n-button>
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_4838a3bd20')
-              </n-tooltip>
+               }}</n-tooltip>
 
               <n-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</n-button>
               <n-button :disabled="!tableSelections.length" type="primary" @click="syncToWorkspaceShow()">
@@ -187,9 +187,9 @@
                       (statusMap[record.status] && statusMap[record.status].desc) || $t('i18n_1622dc9b6b')
                     }}</n-tag>
                   </span>
-                </template>
+                </template>{{ 
                 `${record.statusMsg || $t('i18n_77e100e462')}`
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
             <template v-else-if="column.dataIndex === 'renderSize'">
               <n-tooltip placement="topLeft">
@@ -211,10 +211,10 @@
                       <span>{{ formatPercent(record.osOccupyMemory) }}/{{ renderSize(record.osMoneyTotal) }}</span>
                     </span>
                   </span>
-                </template>
+                </template>{{ 
                 `${$t('i18n_ca32cdfd59')}${formatPercent(record.osOccupyMemory)},${$t( 'i18n_a0a3d583b9'
                 )}${renderSize(record.osMoneyTotal)}`
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
 
             <template v-else-if="column.dataIndex === 'osMaxOccupyDisk'">
@@ -246,10 +246,10 @@
                       >
                     </span>
                   </span>
-                </template>
+                </template>{{ 
                 `CPU${$t('i18n_afb9fe400b')}${formatPercent2Number(record.osOccupyCpu)}%,CPU${$t( 'i18n_40349f5514'
                 )}${record.osCpuCores}`
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
 
             <template v-else-if="column.dataIndex === 'operation'">
@@ -369,9 +369,9 @@
                           $t('i18n_4403fca0c0')
                         }}</n-button>
                       </span>
-                    </template>
+                    </template>{{ 
                     $t('i18n_b408105d69')
-                  </n-tooltip>
+                   }}</n-tooltip>
                 </template>
               </n-input>
             </n-form-item>

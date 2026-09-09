@@ -120,6 +120,14 @@
                 </n-grid-item>
               </n-grid>
             </n-form-item>
+            <n-form-item :label="$t('i18n_7f3a9c2e51')" path="environment">
+              <n-select
+                v-model:value="temp.environment"
+                :options="environmentOptions"
+                clearable
+                :placeholder="$t('i18n_8b4d1e6f92')"
+              />
+            </n-form-item>
             <n-form-item :label="$t('i18n_b3ef35a359')" path="repositoryId">
               <n-input
                 :value="`${
@@ -538,7 +546,7 @@
                           <QuestionCircleOutlined v-if="!temp.id" />
                         </span>
                       </template>
-                      $t('i18n_abb6b7260b')
+                      {{ 'i18n_abb6b7260b' }}
                     </n-tooltip>
                   </template>
                   <n-input-group compact>
@@ -741,14 +749,14 @@
                       </n-form-item>
                     </span>
                   </template>
-                  $t('i18n_61bfa4e925')
+                  {{ 'i18n_61bfa4e925' }}
                 </n-tooltip>
                 <n-form-item path="dockerTag" :label="$t('i18n_9a77f3523e')">
                   <n-tooltip>
                     <template #trigger>
                       <n-input v-model:value="tempExtraData.dockerTag" :placeholder="$t('i18n_250a999bb2')" />
                     </template>
-                    $t('i18n_fa57a7afad')
+                    {{ 'i18n_fa57a7afad' }}
                   </n-tooltip>
                 </n-form-item>
                 <n-form-item path="dockerBuildArgs" :label="$t('i18n_244d5a0ed8')">
@@ -758,7 +766,7 @@
                         <template #trigger>
                           <n-input v-model:value="tempExtraData.dockerBuildArgs" :placeholder="$t('i18n_6e70d2fb91')" />
                         </template>
-                        $t('i18n_a34545bd16')
+                        {{ 'i18n_a34545bd16' }}
                       </n-tooltip>
                     </n-grid-item>
                     <n-grid-item :span="4" style="text-align: right">{{ $t('i18n_3f016aa454') }}</n-grid-item>
@@ -976,7 +984,7 @@
                           :unchecked-label="$t('i18n_c9744f45e7')"
                         />
                       </template>
-                      $t('i18n_12afa77947')
+                      {{ 'i18n_12afa77947' }}
                     </n-tooltip>
                   </n-grid-item>
                   <n-grid-item :span="6" style="text-align: right">
@@ -1500,6 +1508,7 @@ import {
 } from '@/api/build-info'
 import { getSshListAll } from '@/api/ssh'
 import { getRepositoryInfo } from '@/api/repository'
+import { listEnvironments } from '@/api/environment'
 import { getNodeListAll, getProjectListAll } from '@/api/node'
 // import { getScriptListAll } from "@/api/server-script";
 import { getDishPatchListAll } from '@/api/dispatch'
@@ -1617,6 +1626,8 @@ export default {
       swarmServiceListOptions: [],
       // scriptList: [],
       groupList: [],
+      // 环境下拉（构建所属环境，CD_ONLY 环境禁止从源码构建）
+      environmentOptions: [],
       temp: {},
       rules: {
         name: [{ required: true, message: this.$t('i18n_fea996d31e'), trigger: 'blur' }],
@@ -1803,9 +1814,21 @@ export default {
       }
     }
     this.loadGroupList()
+    this.loadEnvironmentList()
   },
   methods: {
     randomStr,
+    // 加载环境下拉（构建所属环境，CD_ONLY 策略环境禁止从源码构建）
+    loadEnvironmentList() {
+      listEnvironments({}).then((res) => {
+        if (res.code === 200) {
+          this.environmentOptions = (res.data || []).map((e) => ({
+            label: `${e.name}（${e.strategy === 'CD_ONLY' ? this.$t('i18n_9c2e7a4b63') : 'CI/CD'}）`,
+            value: e.name
+          }))
+        }
+      })
+    },
     refresh() {
       this.loading = true
       getBuildGet({

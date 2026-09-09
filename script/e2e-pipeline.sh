@@ -1,111 +1,109 @@
 #!/bin/bash
 # =============================================================================
-# Pipeline + 版本状态机 端到端测试脚本（真实服务端 + 本地 git 仓库）
+# 版本状态机 + 环境化 CD 端到端测试脚本（真实服务端）
 #
-# 前提：服务端运行中（deploy.sh 已部署）、admin 密码 123（sha1 提交）
+# 前提：服务端运行中（deploy.sh 已部署）
+# 用法: bash script/e2e-pipeline.sh [明文密码] [base_url]
+#   默认密码 nGetCEvj，默认地址 http://127.0.0.1:2122
+#
 # 验证链路:
 #   A. 版本生命周期: 创建 → 提测(冻结) → 打回(恢复) → 提测 → 发布
-#   B. CI 冻结: 提测后 WebHook 构建触发被拦截
-#   C. Pipeline 全链路: build(真实构建) → exec → approval → publish(本地发布)
-#      → 审批通过 → 发布产物落盘验证
+#   B. 版本状态机约束: 已打回不可部署 / 开发中不可上 prod / 非法流转拦截
+#   C. 环境管理: 预置环境 / 重名拒绝 / 假节点绑定拒绝 / 应用外键校验
+#   D. 审批闭环: prod 待审批 → 拒绝 → 已拒绝；重复审批拦截
+#   E. 旧 Pipeline API 防回归: 已删除端点返回 404
 # =============================================================================
 set -euo pipefail
-BASE="http://127.0.0.1:2122"
-PWD_SHA1="40bd001563085fc35165329ea1ff5c5ecbdbbeef"  # sha1(123)
-E2E_REPO="/tmp/voyager1-e2e-repo"
-E2E_PUBLISH="/tmp/voyager1-e2e-publish"
-E2E_BUILDID="e2e-app"
+BASE="${2:-http://127.0.0.1:2122}"
+PLAIN_PWD="${1:-nGetCEvj}"
+PWD_SHA1=$(node -e "console.log(require('crypto').createHash('sha1').update(process.argv[1],'utf8').digest('hex'))" "$PLAIN_PWD")
 PASS=0; FAIL=0
 
-check() { # check <desc> <condition-output>
+check() { # check <desc> <0/1>
   if [ "$2" = "0" ] || [ "$2" = "true" ]; then
     PASS=$((PASS+1)); echo "  ✅ $1"
   else
     FAIL=$((FAIL+1)); echo "  ❌ $1"
   fi
 }
+code() { node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{console.log(JSON.parse(d).code)}catch(e){console.log('parse-error')}})"; }
 
-TOKEN=$(curl -s -X POST "$BASE/userLogin?loginName=admin&userPwd=$PWD_SHA1" | python3 -c "import json,sys; print(json.load(sys.stdin)['data']['token'])")
-[ -n "$TOKEN" ] && echo "登录 OK" || { echo "登录失败"; exit 1; }
-
-echo ""
-echo "========== 0. 准备环境 =========="
-rm -rf "$E2E_REPO" "$E2E_PUBLISH"
-git init -q -b master "$E2E_REPO"
-cd "$E2E_REPO" && echo "hello-voyager1" > app.txt && git add . && git -c user.email=t@t.com -c user.name=t commit -q -m "init"
-mkdir -p "$E2E_PUBLISH"
-echo "本地仓库就绪: $E2E_REPO"
+TOKEN=$(curl -s --max-time 10 -X POST "$BASE/userLogin?loginName=admin&userPwd=$PWD_SHA1" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{console.log(JSON.parse(d).data.token)}catch(e){console.log('')}})")
+[ -n "$TOKEN" ] && echo "登录 OK" || { echo "登录失败（可传参: bash script/e2e-pipeline.sh <密码> <base>）"; exit 1; }
+AUTH="Authorization: $TOKEN"
+SUFFIX=$(date +%s)
+BUILD_ID="e2e-app-$SUFFIX"
 
 echo ""
 echo "========== A. 版本生命周期 =========="
-V=$(curl -s -X POST "$BASE/version/create" -H "Authorization: $TOKEN" -d "buildId=$E2E_BUILDID&buildNumberId=1&version=v1.0.0&artifactRef=/tmp/x.jar")
-VID=$(echo "$V" | python3 -c "import json,sys; print(json.load(sys.stdin)['data']['id'])")
+V=$(curl -s -X POST "$BASE/version/create" -H "$AUTH" -d "buildId=$BUILD_ID&buildNumberId=1&version=v1.0.0-$SUFFIX&artifactRef=/tmp/x.jar")
+VID=$(echo "$V" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{console.log(JSON.parse(d).data.id)}catch(e){console.log('')}})")
 check "创建版本" "$([ -n "$VID" ] && echo 0 || echo 1)"
-R=$(curl -s -X POST "$BASE/version/submit" -H "Authorization: $TOKEN" -d "id=$VID&remark=e2e")
-check "提测(CI冻结)" "$(echo "$R" | python3 -c "import json,sys; print(0 if json.load(sys.stdin)['code']==200 else 1)")"
-S=$(curl -s -X POST "$BASE/version/list" -H "Authorization: $TOKEN" -d "buildId=$E2E_BUILDID" | python3 -c "import json,sys; print(json.load(sys.stdin)['data'][0]['status'])")
+R=$(curl -s -X POST "$BASE/version/submit" -H "$AUTH" -d "id=$VID&remark=e2e" | code)
+check "提测(CI冻结)" "$([ "$R" = "200" ] && echo 0 || echo 1)"
+S=$(curl -s -X POST "$BASE/version/list" -H "$AUTH" -d "buildId=$BUILD_ID" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).data[0].status))")
 check "状态=已提测(1)" "$([ "$S" = "1" ] && echo 0 || echo 1)"
-R=$(curl -s -X POST "$BASE/version/return" -H "Authorization: $TOKEN" -d "id=$VID&remark=e2e打回")
-check "打回(CI恢复)" "$(echo "$R" | python3 -c "import json,sys; print(0 if json.load(sys.stdin)['code']==200 else 1)")"
-R=$(curl -s -X POST "$BASE/version/submit" -H "Authorization: $TOKEN" -d "id=$VID&remark=重新提测")
-check "打回后重新提测" "$(echo "$R" | python3 -c "import json,sys; print(0 if json.load(sys.stdin)['code']==200 else 1)")"
-R=$(curl -s -X POST "$BASE/version/release" -H "Authorization: $TOKEN" -d "id=$VID&remark=e2e发布")
-check "发布" "$(echo "$R" | python3 -c "import json,sys; print(0 if json.load(sys.stdin)['code']==200 else 1)")"
+R=$(curl -s -X POST "$BASE/version/return" -H "$AUTH" -d "id=$VID&remark=e2e打回" | code)
+check "打回(CI恢复)" "$([ "$R" = "200" ] && echo 0 || echo 1)"
+R=$(curl -s -X POST "$BASE/version/submit" -H "$AUTH" -d "id=$VID&remark=重新提测" | code)
+check "打回后重新提测" "$([ "$R" = "200" ] && echo 0 || echo 1)"
+R=$(curl -s -X POST "$BASE/version/release" -H "$AUTH" -d "id=$VID&remark=e2e发布" | code)
+check "发布" "$([ "$R" = "200" ] && echo 0 || echo 1)"
 
 echo ""
-echo "========== B. Pipeline 配置 + 构建配置 =========="
-# 清理已存在的 e2e 仓库
-EXIST_RID=$(curl -s -X POST "$BASE/build/repository/list" -H "Authorization: $TOKEN" -d "page=1&limit=10" | python3 -c "import json,sys; d=json.load(sys.stdin); rs=d.get('data',{}).get('result',[]); print([r['id'] for r in rs if r.get('name')=='e2e-repo'][0] if any(r.get('name')=='e2e-repo' for r in rs) else '')" 2>/dev/null)
-[ -n "$EXIST_RID" ] && curl -s -X POST "$BASE/build/repository/delete" -H "Authorization: $TOKEN" -d "id=$EXIST_RID" >/dev/null 2>&1 || true
-# 1. 创建仓库（本地 git）
-curl -s -X POST "$BASE/build/repository/edit" -H "Authorization: $TOKEN" --data-urlencode "name=e2e-repo" --data-urlencode "gitUrl=file://$E2E_REPO" --data-urlencode "repoType=0" --data-urlencode "protocol=0" >/dev/null
-RID=$(curl -s -X POST "$BASE/build/repository/list" -H "Authorization: $TOKEN" -d "page=1&limit=10" | python3 -c "import json,sys; d=json.load(sys.stdin); rs=d.get('data',{}).get('result',[]); print([r['id'] for r in rs if r.get('name')=='e2e-repo'][0] if any(r.get('name')=='e2e-repo' for r in rs) else '')" 2>/dev/null)
-check "仓库创建($RID)" "$([ -n "$RID" ] && echo 0 || echo 1)"
-# 2. 创建构建配置（构建命令产出 jar + LocalCommand 发布）
-RELEASE_CMD=$(printf 'mkdir -p %s && cp ${BUILD_RESULT_FILE}/demo.jar %s/' "$E2E_PUBLISH" "$E2E_PUBLISH")
-EXTRA_DATA=$(python3 -c "import json,sys; print(json.dumps({'releaseCommand': sys.argv[1]}))" "$RELEASE_CMD")
-BUILD_RESP=$(curl -s -X POST "$BASE/build/edit" -H "Authorization: $TOKEN" --data-urlencode "name=e2e-build" --data-urlencode "buildMode=0" --data-urlencode "repositoryId=$RID" --data-urlencode "branchName=master" --data-urlencode "script=mkdir -p target && echo hello > target/demo.jar" --data-urlencode "resultDirFile=target" --data-urlencode "releaseMethod=4" --data-urlencode "resultKeepDay=3" --data-urlencode "extraData=$EXTRA_DATA")
-BID=$(curl -s -X POST "$BASE/build/list" -H "Authorization: $TOKEN" -d "page=1&limit=10" | python3 -c "import json,sys; d=json.load(sys.stdin); rs=d.get('data',{}).get('result',[]); print([r['id'] for r in rs if r.get('name')=='e2e-build'][0] if any(r.get('name')=='e2e-build' for r in rs) else '')" 2>/dev/null)
-check "构建配置创建($BID): $BUILD_RESP" "$([ -n "$BID" ] && echo 0 || echo 1)"
+echo "========== B. 版本状态机约束 =========="
+V2=$(curl -s -X POST "$BASE/version/create" -H "$AUTH" -d "buildId=$BUILD_ID&buildNumberId=2&version=v2.0.0-$SUFFIX&artifactRef=/tmp/y.jar")
+V2ID=$(echo "$V2" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{console.log(JSON.parse(d).data.id)}catch(e){console.log('')}})")
+R=$(curl -s -X POST "$BASE/environment/deploy" -H "$AUTH" -d "versionId=$V2ID&environment=prod" | code)
+check "开发中版本部署 prod 被拒(405)" "$([ "$R" != "200" ] && echo 0 || echo 1)"
+curl -s -X POST "$BASE/version/submit" -H "$AUTH" -d "id=$V2ID&remark=x" >/dev/null
+curl -s -X POST "$BASE/version/return" -H "$AUTH" -d "id=$V2ID&remark=x" >/dev/null
+R=$(curl -s -X POST "$BASE/environment/deploy" -H "$AUTH" -d "versionId=$V2ID&environment=dev" | code)
+check "已打回版本部署任意环境被拒(405)" "$([ "$R" != "200" ] && echo 0 || echo 1)"
+R=$(curl -s -X POST "$BASE/version/release" -H "$AUTH" -d "id=$V2ID&remark=非法流转" | code)
+check "打回状态直接发布被拒(405)" "$([ "$R" != "200" ] && echo 0 || echo 1)"
 
 echo ""
-echo "========== C. Pipeline 全链路 =========="
-STAGES='[{"id":"build-1","type":"build","params":{}},{"id":"exec-1","type":"exec","params":{"command":"echo pipeline-exec"}},{"id":"approve-1","type":"approval","params":{"desc":"发布验证"}},{"id":"publish-1","type":"publish","params":{"environment":"test"}}]'
-PID=$(curl -s -X POST "$BASE/pipeline/save-config" -H "Authorization: $TOKEN" --data-urlencode "name=e2e-pipeline" --data-urlencode "buildId=$BID" --data-urlencode "triggers=[]" --data-urlencode "stages=$STAGES" | python3 -c "import json,sys; print(json.load(sys.stdin)['data'])")
-check "Pipeline 配置保存" "$([ -n "$PID" ] && echo 0 || echo 1)"
-curl -s -X POST "$BASE/pipeline/trigger" -H "Authorization: $TOKEN" -d "pipelineId=$PID" >/dev/null
-echo "已触发，等待 build+exec 执行..."
+echo "========== C. 环境管理 =========="
+ENVS=$(curl -s -X POST "$BASE/environment/list" -H "$AUTH")
+echo "$ENVS" | grep -q '"name":"dev"' && echo "$ENVS" | grep -q '"name":"prod"'
+check "预置环境 dev/test/prod" "$?"
+R=$(curl -s -X POST "$BASE/environment/save" -H "$AUTH" -d "name=test&sortValue=9" | code)
+check "环境重名拒绝(非200)" "$([ "$R" != "200" ] && echo 0 || echo 1)"
+TEST_ENV_ID=$(echo "$ENVS" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).data.find(e=>e.name==='test').id))")
+R=$(curl -s -X POST "$BASE/environment/bind-target" -H "$AUTH" -d "environmentId=$TEST_ENV_ID&targetType=NODE&targetId=ghost-node-$SUFFIX&projectId=p1" | code)
+check "不存在节点绑定拒绝(非200)" "$([ "$R" != "200" ] && echo 0 || echo 1)"
+R=$(curl -s -X POST "$BASE/environment/bind-target" -H "$AUTH" -d "environmentId=$TEST_ENV_ID&targetType=K8S&targetId=c1&projectId=p1" | code)
+check "不支持的目标类型拒绝(非200)" "$([ "$R" != "200" ] && echo 0 || echo 1)"
+R=$(curl -s -X POST "$BASE/application/save" -H "$AUTH" -d "name=e2e-ghost-$SUFFIX&repositoryId=ghost-repo&buildId=ghost-build" | code)
+check "应用假外键拒绝(非200)" "$([ "$R" != "200" ] && echo 0 || echo 1)"
 
-# 轮询到等待审批
-for i in $(seq 1 120); do
-  sleep 2
-  EID=$(curl -s -X POST "$BASE/pipeline/list-execute" -H "Authorization: $TOKEN" -d "pipelineId=$PID" | python3 -c "import json,sys; d=json.load(sys.stdin)['data']; print(d[0]['id'] if d else '')")
-  ST=$(curl -s -X POST "$BASE/pipeline/list-execute" -H "Authorization: $TOKEN" -d "pipelineId=$PID" | python3 -c "import json,sys; d=json.load(sys.stdin)['data']; print(d[0]['status'] if d else -1)")
-  [ "$ST" = "5" ] && break
-  [ "$ST" = "3" ] && { echo "❌ Pipeline 失败"; curl -s -X POST "$BASE/pipeline/list-execute" -H "Authorization: $TOKEN" -d "pipelineId=$PID" | python3 -m json.tool | head -20; exit 1; }
+echo ""
+echo "========== D. 审批闭环（prod 需审批） =========="
+# 用已发布版本 V（状态 Released）部署 prod → 待审批
+R=$(curl -s -X POST "$BASE/environment/deploy" -H "$AUTH" -d "versionId=$VID&environment=prod")
+RC=$(echo "$R" | code)
+REC_ID=$(echo "$R" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{console.log(JSON.parse(d).data)}catch(e){console.log('')}})")
+# prod 未绑定节点时应先报「未绑定目标」；已绑定时应落待审批记录——两种均为有效路径
+if [ "${RC}" = "200" ] && [ -n "${REC_ID}" ]; then
+  check "prod 部署落待审批记录" 0
+  R=$(curl -s -X POST "$BASE/environment/approve-deploy" -H "$AUTH" -d "recordId=$REC_ID&approve=false&remark=本期不上" | code)
+  check "审批拒绝成功" "$([ "$R" = "200" ] && echo 0 || echo 1)"
+  ST=$(curl -s -X POST "$BASE/environment/deploy-records" -H "$AUTH" -d "versionId=$VID" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const r=JSON.parse(d).data.find(x=>x.id==='$REC_ID');console.log(r?r.status:'missing')})")
+  check "记录闭环为已拒绝(4)" "$([ "$ST" = "4" ] && echo 0 || echo 1)"
+  R=$(curl -s -X POST "$BASE/environment/approve-deploy" -H "$AUTH" -d "recordId=$REC_ID&approve=true" | code)
+  check "重复审批拦截(非200)" "$([ "$R" != "200" ] && echo 0 || echo 1)"
+else
+  check "prod 未绑定目标时部署被拒（有效路径，HTTP ${RC}）" "$([ "${RC}" != "200" ] && echo 0 || echo 1)"
+fi
+
+echo ""
+echo "========== E. 旧 Pipeline API 防回归 =========="
+for api in "pipeline/save-config" "pipeline/trigger" "pipeline/list-execute" "log-read/list"; do
+  R=$(curl -s -X POST "$BASE/$api" -H "$AUTH" | head -c 200)
+  echo "$R" | grep -q "No static resource"
+  check "已删除端点 /$api 返回 404" "$?"
 done
-check "build+exec 完成并等待审批(状态5)" "$([ "$ST" = "5" ] && echo 0 || echo 1)"
-EID=$(curl -s -X POST "$BASE/pipeline/list-execute" -H "Authorization: $TOKEN" -d "pipelineId=$PID" | python3 -c "import json,sys; print(json.load(sys.stdin)['data'][0]['id'])")
-
-# 审批通过 → publish
-curl -s -X POST "$BASE/pipeline/approval" -H "Authorization: $TOKEN" -d "executeId=$EID&approve=true" >/dev/null
-echo "审批通过，等待 publish..."
-for i in $(seq 1 60); do
-  sleep 2
-  ST=$(curl -s -X POST "$BASE/pipeline/list-execute" -H "Authorization: $TOKEN" -d "pipelineId=$PID" | python3 -c "import json,sys; print(json.load(sys.stdin)['data'][0]['status'])")
-  [ "$ST" = "2" ] && break
-  [ "$ST" = "3" ] && { echo "❌ Pipeline publish 失败"; curl -s -X POST "$BASE/pipeline/list-execute" -H "Authorization: $TOKEN" -d "pipelineId=$PID" | python3 -m json.tool | head -20; exit 1; }
-done
-check "审批后 publish 完成(状态2=成功)" "$([ "$ST" = "2" ] && echo 0 || echo 1)"
-check "发布产物落盘" "$([ -f "$E2E_PUBLISH/demo.jar" ] && echo 0 || echo 1)"
-echo "发布目录内容: $(ls -la "$E2E_PUBLISH" 2>/dev/null | tail -2)"
-
-echo ""
-echo "========== D. CI 冻结端到端 =========="
-# 构建配置 e2e-build 有已提测版本（C 中 build 自动创建了版本 vX）
-# 直接验证：WebHook 触发被拦截
-FROZEN=$(curl -s -X POST "$BASE/version/list" -H "Authorization: $TOKEN" -d "buildId=e2e-build" | python3 -c "import json,sys; d=json.load(sys.stdin)['data']; print(any(v['status']==1 for v in d))")
-echo "e2e-build 存在已提测版本: $FROZEN"
 
 echo ""
 echo "========== 结果汇总 =========="

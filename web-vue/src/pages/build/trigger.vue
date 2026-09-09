@@ -9,9 +9,9 @@
                 <span class="tw">
                   <n-button type="primary" size="small" @click="resetTrigger">{{ $t('i18n_4b9c3271dc') }}</n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_01ad26f4a9')
-            </n-tooltip>
+             }}</n-tooltip>
           </template>
           <n-tab-pane name="1" :tab="$t('i18n_3d3b918f49')">
             <n-space direction="vertical" style="width: 100%">

@@ -285,7 +285,7 @@ const changeCollapsed = () => {
   width: 100%;
   cursor: pointer;
   height: 48px;
-  margin: 20px 0 12px;
+  margin: 16px 0 8px;
   font-size: 17px;
 
   font-weight: bold;
@@ -293,9 +293,14 @@ const changeCollapsed = () => {
   padding: 0 16px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 12px;
   white-space: nowrap;
+}
+/* 折叠时仅显示图标，居中对齐 */
+#app-layout .n-layout-sider--collapsed .logo {
+  justify-content: center;
+  padding: 0;
 }
 #app-layout .logo img {
   width: 36px;

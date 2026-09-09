@@ -19,9 +19,9 @@
                     <n-tooltip>
                       <template #trigger>
                         {{ element.name || element.originalName }}
-                      </template>
+                      </template>{{ 
                       `${$t('i18n_bd4e9d0ee2')}${element.originalName}`
-                    </n-tooltip>
+                     }}</n-tooltip>
                   </template>
                 </n-grid-item>
                 <n-grid-item :span="2"></n-grid-item>
@@ -33,9 +33,9 @@
                     <n-tooltip placement="left" class="move">
                       <template #trigger>
                         <MenuOutlined />
-                      </template>
+                      </template>{{ 
                       `${$t('i18n_181e1ad17d')}`
-                    </n-tooltip>
+                     }}</n-tooltip>
                   </n-space>
                 </n-grid-item>
               </n-grid>

@@ -47,9 +47,9 @@
                   $t('i18n_e5f71fc31e')
                 }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_4838a3bd20')
-          </n-tooltip>
+           }}</n-tooltip>
           <n-button type="primary" @click="createCommand">{{ $t('i18n_66ab5e9f24') }}</n-button>
           <n-dropdown
             :options="[
@@ -357,9 +357,9 @@
                 <span class="tw">
                   <n-button type="primary" size="small" @click="resetTrigger">{{ $t('i18n_4b9c3271dc') }}</n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_01ad26f4a9')
-            </n-tooltip>
+             }}</n-tooltip>
           </template>
           <n-tab-pane name="1" :tab="$t('i18n_1a6aa24e76')">
             <n-space direction="vertical" style="width: 100%">

@@ -93,9 +93,9 @@
                           <CodeOutlined v-if="environment[item].system" />
                           {{ environment[item].value }}
                         </span>
-                      </template>
+                      </template>{{ 
                       environment[item].privacy ? $t('i18n_b12d003367') : environment[item].value
-                    </n-tooltip>
+                     }}</n-tooltip>
                   </n-grid-item>
                 </n-grid>
               </n-list-item>
@@ -139,9 +139,9 @@
                   {{ $t('i18n_694fc5efa9') }}</n-button
                 >
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_18c7e2556e')
-          </n-tooltip>
+           }}</n-tooltip>
           <n-divider type="vertical" />
           <n-button
             type="primary"

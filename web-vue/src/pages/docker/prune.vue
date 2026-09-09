@@ -34,9 +34,9 @@
         <n-tooltip>
           <template #trigger>
             <n-input v-model:value="pruneForm.until" :placeholder="`${$t('i18n_f8f20c1d1e')}`" />
-          </template>
+          </template>{{ 
           $t('i18n_a37c573d7b')
-        </n-tooltip>
+         }}</n-tooltip>
       </n-form-item>
 
       <n-form-item
@@ -46,9 +46,9 @@
         <n-tooltip>
           <template #trigger>
             <n-input v-model:value="pruneForm.labels" :placeholder="$t('i18n_9a436e2a53')" />
-          </template>
+          </template>{{ 
           $t('i18n_1c10461124')
-        </n-tooltip>
+         }}</n-tooltip>
       </n-form-item>
       <n-form-item
         >{{ $t('i18n_4d49b2a15f') }}{{ pruneTypes[pruneForm.pruneType] && pruneTypes[pruneForm.pruneType].command }}

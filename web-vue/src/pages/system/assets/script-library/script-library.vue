@@ -48,9 +48,9 @@
               <span class="tw">
                 <n-button :loading="loading" type="primary" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             $t('i18n_4838a3bd20')
-          </n-tooltip>
+           }}</n-tooltip>
           <n-button type="primary" @click="createScript">{{ $t('i18n_d9ac9228e8') }}</n-button>
         </n-space>
       </template>

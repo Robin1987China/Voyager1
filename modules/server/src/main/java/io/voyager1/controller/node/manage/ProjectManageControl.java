@@ -61,7 +61,6 @@ import io.voyager1.service.dblog.DbBuildHistoryLogService;
 import io.voyager1.service.dblog.RepositoryService;
 import io.voyager1.service.monitor.MonitorService;
 import io.voyager1.service.node.ProjectInfoCacheService;
-import io.voyager1.service.outgiving.LogReadServer;
 import io.voyager1.service.outgiving.OutGivingServer;
 import io.voyager1.service.system.WhitelistDirectoryService;
 import io.voyager1.system.ServerConfig;
@@ -93,7 +92,6 @@ import java.util.stream.Collectors;
 public class ProjectManageControl extends BaseServerController {
 
     private final OutGivingServer outGivingServer;
-    private final LogReadServer logReadServer;
     private final MonitorService monitorService;
     private final BuildInfoService buildService;
     private final RepositoryService repositoryService;
@@ -103,7 +101,6 @@ public class ProjectManageControl extends BaseServerController {
     private final WhitelistDirectoryService whitelistDirectoryService;
 
     public ProjectManageControl(OutGivingServer outGivingServer,
-                                LogReadServer logReadServer,
                                 MonitorService monitorService,
                                 BuildInfoService buildService,
                                 RepositoryService repositoryService,
@@ -112,7 +109,6 @@ public class ProjectManageControl extends BaseServerController {
                                 ServerConfig serverConfig,
                                 WhitelistDirectoryService whitelistDirectoryService) {
         this.outGivingServer = outGivingServer;
-        this.logReadServer = logReadServer;
         this.monitorService = monitorService;
         this.buildService = buildService;
         this.repositoryService = repositoryService;
@@ -239,8 +235,6 @@ public class ProjectManageControl extends BaseServerController {
         this.checkProjectPermission(id, request, nodeModel);
         // 检查节点分发
         outGivingServer.checkNodeProject(nodeModel.getId(), id, request, "当前项目存在节点分发，不能直接删除");
-        // 检查日志阅读
-        logReadServer.checkNodeProject(nodeModel.getId(), id, request, "当前项目存在日志阅读，不能直接删除");
         // 项目监控
         List<MonitorModel> monitorModels = monitorService.listByWorkspace(request);
         if (monitorModels != null) {
@@ -372,8 +366,6 @@ public class ProjectManageControl extends BaseServerController {
         Assert.state(java.util.Objects.equals(toWorkspaceId, toNodeModel.getWorkspaceId()), "要迁移到的目标工作空间和节点不一致");
         // 检查节点分发
         outGivingServer.checkNodeProject(projectData.getNodeId(), projectData.getProjectId(), request, "当前项目存在节点分发，不能直接迁移");
-        // 检查日志阅读
-        logReadServer.checkNodeProject(projectData.getNodeId(), projectData.getProjectId(), request, "当前项目存在日志阅读，不能直接迁移");
         // 项目监控
         List<MonitorModel> monitorModels = monitorService.listByWorkspace(request);
         if (monitorModels != null) {

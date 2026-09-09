@@ -246,15 +246,15 @@
                   <n-tooltip>
                     <template #trigger>
                       <n-input-number v-model:value="processSearch.processCount" :min="1" @change="loadNodeProcess" />
-                    </template>
+                    </template>{{ 
                     $t('i18n_5dc7b04caa')
-                  </n-tooltip>
+                   }}</n-tooltip>
                   <n-tooltip>
                     <template #trigger>
                       <RestOutlined @click="restProcessNames" />
-                    </template>
+                    </template>{{ 
                     $t('i18n_8400529cfb')
-                  </n-tooltip>
+                   }}</n-tooltip>
                 </n-space>
               </n-grid-item>
             </n-grid>

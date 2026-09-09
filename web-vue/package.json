@@ -9,6 +9,7 @@
     "build": "vite build",
     "lint": "eslint --ext .ts,.js,.jsx,.vue .",
     "lint:fix": "eslint --fix --ext .ts,.js,.jsx,.vue .",
+    "audit": "node scripts/frontend-audit.mjs",
     "preview": "vite preview",
     "i18n": "node ./bin/i18n.cjs"
   },

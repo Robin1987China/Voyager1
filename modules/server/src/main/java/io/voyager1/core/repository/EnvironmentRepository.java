@@ -30,4 +30,9 @@ public interface EnvironmentRepository extends JpaRepository<EnvironmentEntity, 
      * 按启用状态查询，先按排序、再按创建时间升序。
      */
     List<EnvironmentEntity> findByEnabledOrderBySortValueAscCreateTimeMillisAsc(Integer enabled);
+
+    /**
+     * 按名称查询环境（取第一条，容忍历史重名数据）。
+     */
+    EnvironmentEntity findFirstByName(String name);
 }

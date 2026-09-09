@@ -24,15 +24,11 @@ const routeMenuMap: Record<string, string> = {
   sshList: '/ssh',
   commandList: '/ssh/command',
   commandLogList: '/ssh/command-log',
-  outgivingList: '/dispatch/list',
-  outgivingLog: '/dispatch/log',
-  logRead: '/dispatch/log-read',
   outgivingWhitelistDirectory: '/dispatch/white-list',
   monitorList: '/monitor/list',
   monitorLog: '/monitor/log',
   userOptLog: '/monitor/operate-log',
   repository: '/repository/list',
-  buildListOld: '/build/list',
   scriptAllList: '/node/script-all',
   serverScriptList: '/script/script-list',
   serverScriptLogList: '/script/script-log',
@@ -42,8 +38,9 @@ const routeMenuMap: Record<string, string> = {
   buildList: '/build/list-info',
   buildHistory: '/build/history',
   versionList: '/pipeline/version-list',
-  pipelineList: '/pipeline/pipeline-list',
-  swimlane: '/pipeline/swimlane',
+  environment: '/environment/list',
+  deployRecords: '/deploy/records',
+  application: '/application/list',
   cloudList: '/cloud/list',
   k8sList: '/k8s/list',
   finopsList: '/finops/list',
@@ -73,12 +70,11 @@ const routeMenuMap: Record<string, string> = {
   myWorkspaceList: '/my-workspace',
   fileStorage: '/file-manager/file-storage',
   staticFileStorage: '/file-manager/static-file-storage',
-  fileReleaseTask: '/file-manager/release-task',
   certificate: '/certificate/list',
   authConfig: '/system/oauth-config',
   overview: '/overview',
   'system-overview': '/system/overview',
-  about: '/about'
+  about: '/system/about'
 }
 
 export default routeMenuMap

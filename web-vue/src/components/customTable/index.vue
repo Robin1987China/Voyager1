@@ -39,7 +39,7 @@
                     <template #trigger>
                       <ReloadOutlined class="table-action__icon" @click="refreshClick" />
                     </template>
-                    $t('i18n_694fc5efa9')
+                    {{ $t('i18n_694fc5efa9') }}
                   </n-tooltip>
                 </n-form-item>
 
@@ -51,7 +51,7 @@
                           <template #trigger>
                             <ColumnHeightOutlined class="table-action__icon" />
                           </template>
-                          $t('i18n_bdd9d38d7e')
+                          {{ $t('i18n_bdd9d38d7e') }}
                         </n-tooltip>
                       </span>
                     </template>
@@ -73,7 +73,7 @@
                           <template #trigger>
                             <SettingOutlined />
                           </template>
-                          $t('i18n_949a8b7bd2')
+                          {{ $t('i18n_949a8b7bd2') }}
                         </n-tooltip>
                       </span>
                     </template>
@@ -121,7 +121,7 @@
                         <LayoutOutlined v-else class="table-action__icon" @click="tableLayoutClick" />
                       </span>
                     </template>
-                    $t('i18n_03816381ec')
+                    {{ $t('i18n_03816381ec') }}
                   </n-tooltip>
                 </n-form-item>
 

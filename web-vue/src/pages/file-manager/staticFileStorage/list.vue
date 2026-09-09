@@ -29,9 +29,9 @@
                 <span class="tw">
                   <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
                 </span>
-              </template>
+              </template>{{ 
               $t('i18n_4838a3bd20')
-            </n-tooltip>
+             }}</n-tooltip>
             <!-- <n-button type="primary" @click="handleUpload">上传文件</n-button> -->
             <n-button type="primary" @click="reScanner">{{ $t('i18n_56525d62ac') }}</n-button>
 
@@ -135,9 +135,9 @@
                     <span>{{ sourceMap[text] || $t('i18n_1622dc9b6b') }}</span>
                   </span>
                 </span>
-              </template>
+              </template>{{ 
               `${sourceMap[text] || $t('i18n_1622dc9b6b')}`
-            </n-tooltip>
+             }}</n-tooltip>
           </template>
 
           <template v-else-if="column.key === 'status'">
@@ -160,13 +160,6 @@
                 @click="handleDownloadUrl(record)"
               >
                 {{ $t('i18n_f26ef91424') }}</n-button
-              >
-              <n-button
-                size="small"
-                :disabled="!(record.status === 1 && record.type === 1)"
-                type="primary"
-                @click="handleReleaseFile(record)"
-                >{{ $t('i18n_83611abd5f') }}</n-button
               >
               <n-button type="primary" danger size="small" @click="handleDelete(record)">{{
                 $t('i18n_2f4aaddde3')
@@ -215,9 +208,9 @@
                   <span class="tw">
                     <n-button type="primary" size="small" @click="resetTrigger">{{ $t('i18n_4b9c3271dc') }}</n-button>
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_84415a6bb1')
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
             <n-tab-pane name="1" :tab="$t('i18n_0b58866c3e')">
               <n-space direction="vertical" style="width: 100%">
@@ -267,25 +260,6 @@
           </n-tabs>
         </n-form>
       </CustomModal>
-      <!-- 发布文件 -->
-      <CustomModal
-        v-if="releaseFileVisible"
-        v-model:open="releaseFileVisible"
-        destroy-on-close
-        :title="$t('i18n_7e930b95ef')"
-        width="70%"
-        :mask-closable="false"
-        :confirm-loading="confirmLoading"
-        @ok="releaseFileOk()"
-      >
-        <releaseFile
-          v-if="releaseFileVisible"
-          ref="releaseFile"
-          :file-type="2"
-          :file-id="temp.fileId"
-          @commit="handleCommitTask"
-        ></releaseFile>
-      </CustomModal>
     </div>
 
     <!-- 配置工作空间授权目录 -->
@@ -330,12 +304,9 @@ import {
 // import { uploadFile, uploadFileMerge, hasFile } from "@/api/file-manager/file-storage";
 import { staticFileStorageList, delFile, triggerUrl, fileEdit, staticScanner } from '@/api/file-manager/static-storage'
 
-import releaseFile from '@/pages/file-manager/fileStorage/releaseFile'
-import { addReleaseTask } from '@/api/file-manager/release-task-log'
 import whiteList from '@/pages/dispatch/white-list'
 export default {
   components: {
-    releaseFile,
     whiteList
   },
   props: {
@@ -434,7 +405,6 @@ export default {
       editVisible: false,
       configDir: false,
       triggerVisible: false,
-      releaseFileVisible: false,
       tableSelections: [],
       confirmLoading: false
     }
@@ -597,34 +567,6 @@ export default {
           ? `${location.protocol}//${location.host}${res.data.triggerAliasDownloadUrl}?sort=createTimeMillis:desc`
           : ''
       }
-    },
-    // 发布文件
-    handleReleaseFile(record) {
-      this.releaseFileVisible = true
-      this.temp = { fileId: record.id }
-    },
-
-    handleCommitTask(data) {
-      this.confirmLoading = true
-      addReleaseTask({ ...data, fileId: this.temp.fileId, fileType: 2 })
-        .then((res) => {
-          if (res.code === 200) {
-            // 成功
-            $notification.success({
-              message: res.msg
-            })
-
-            this.releaseFileVisible = false
-            this.loadData()
-          }
-        })
-        .finally(() => {
-          this.confirmLoading = false
-        })
-    },
-
-    releaseFileOk() {
-      this.$refs.releaseFile?.tryCommit()
     },
     // 选择确认
     handerConfirm() {

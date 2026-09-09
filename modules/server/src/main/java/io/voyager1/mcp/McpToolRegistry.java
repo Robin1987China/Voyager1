@@ -34,9 +34,10 @@ import io.voyager1.service.cloud.CloudInstanceService;
 import io.voyager1.service.dblog.BuildInfoService;
 import io.voyager1.service.environment.DeploymentService;
 import io.voyager1.service.environment.EnvironmentService;
+import io.voyager1.model.data.EnvironmentModel;
+import io.voyager1.model.data.EnvironmentTargetModel;
 import io.voyager1.service.k8s.K8sService;
 import io.voyager1.service.monitor.MonitorService;
-import io.voyager1.service.pipeline.PipelineExecutorService;
 import io.voyager1.service.version.VersionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -91,8 +92,6 @@ public class McpToolRegistry {
         tools.add(tool("build.list", "构建配置列表", new String[]{}));
         tools.add(tool("build.trigger", "触发构建", new String[]{"buildId"}));
         tools.add(tool("deploy.publish", "发布部署到环境（危险，需审批）", new String[]{"versionId", "environment"}));
-        tools.add(tool("pipeline.trigger", "触发流水线", new String[]{"pipelineId"}));
-        tools.add(tool("pipeline.approval", "流水线审批（人工闸门）", new String[]{"executeId", "approve"}));
         tools.add(tool("log.get", "查询日志", new String[]{"type", "targetId"}));
         tools.add(tool("ssh.execute", "SSH 执行命令（危险，命令白名单强制）", new String[]{"nodeId", "command"}));
         tools.add(tool("monitor.list", "监控列表", new String[]{}));
@@ -148,18 +147,6 @@ public class McpToolRegistry {
                 p.put("type", "string");
                 p.put("description", "部署环境");
                 p.put("enum", JSONArray.of("dev", "test", "prod"));
-                break;
-            case "pipelineId":
-                p.put("type", "string");
-                p.put("description", "流水线配置 ID");
-                break;
-            case "executeId":
-                p.put("type", "string");
-                p.put("description", "流水线执行记录 ID");
-                break;
-            case "approve":
-                p.put("type", "boolean");
-                p.put("description", "是否批准（true=通过，false=拒绝）");
                 break;
             case "type":
                 p.put("type", "string");
@@ -253,17 +240,13 @@ public class McpToolRegistry {
             case "version.list":
                 return SpringContextHolder.getBean(VersionService.class).listByBuildId(args.getString("buildId"));
             case "environment.list":
-                return SpringContextHolder.getBean(EnvironmentService.class).listEnabled();
+                return this.environmentList();
             case "build.list":
                 return SpringContextHolder.getBean(BuildInfoService.class).list();
             case "build.trigger":
                 return this.buildTrigger(args);
             case "deploy.publish":
                 return this.deployPublish(args);
-            case "pipeline.trigger":
-                return this.pipelineTrigger(args);
-            case "pipeline.approval":
-                return this.pipelineApproval(args);
             case "log.get":
                 return this.logGet(args);
             case "ssh.execute":
@@ -337,20 +320,31 @@ public class McpToolRegistry {
         String versionId = args.getString("versionId");
         String environment = (args.getString("environment") == null || args.getString("environment").isEmpty() ? "test" : args.getString("environment"));
         return SpringContextHolder.getBean(DeploymentService.class)
-            .createRecord(versionId, environment, "manual", this.operator(), 0, "");
+            .deployPublish(versionId, environment, this.operator(), null, false);
     }
 
-    private Object pipelineTrigger(JSONObject args) {
-        String pipelineId = args.getString("pipelineId");
-        SpringContextHolder.getBean(PipelineExecutorService.class).trigger(pipelineId, "manual", this.operator());
-        return "已触发流水线";
-    }
-
-    private Object pipelineApproval(JSONObject args) {
-        String executeId = args.getString("executeId");
-        boolean approve = args.getBooleanValue("approve", false);
-        SpringContextHolder.getBean(PipelineExecutorService.class).approval(executeId, approve, this.operator());
-        return approve ? "已批准" : "已拒绝";
+    private Object environmentList() {
+        EnvironmentService environmentService = SpringContextHolder.getBean(EnvironmentService.class);
+        java.util.List<JSONObject> result = new java.util.ArrayList<>();
+        for (EnvironmentModel env : environmentService.listEnabled()) {
+            JSONObject item = new JSONObject();
+            item.put("id", env.getId());
+            item.put("name", env.getName());
+            item.put("type", env.getType());
+            item.put("strategy", env.getStrategy());
+            item.put("approvalRequired", Boolean.TRUE.equals(env.getApprovalRequired()));
+            JSONArray targets = new JSONArray();
+            for (EnvironmentTargetModel t : environmentService.listTargets(env.getId())) {
+                JSONObject tj = new JSONObject();
+                tj.put("targetType", t.getTargetType());
+                tj.put("targetId", t.getTargetId());
+                tj.put("projectId", t.getProjectId());
+                targets.add(tj);
+            }
+            item.put("targets", targets);
+            result.add(item);
+        }
+        return result;
     }
 
     private UserModel currentUser() {

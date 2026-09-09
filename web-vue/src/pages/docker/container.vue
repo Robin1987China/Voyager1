@@ -238,25 +238,25 @@
                         ><CodeOutlined
                       /></n-button>
                     </span>
-                  </template>
+                  </template>{{ 
                   $t('i18n_4fb2400af7')
-                </n-tooltip>
+                 }}</n-tooltip>
                 <n-tooltip>
                   <template #trigger>
                     <span class="tw">
                       <n-button size="small" text @click="doAction(record, 'stop')"><StopOutlined /></n-button>
                     </span>
-                  </template>
+                  </template>{{ 
                   $t('i18n_095e938e2a')
-                </n-tooltip>
+                 }}</n-tooltip>
                 <n-tooltip>
                   <template #trigger>
                     <span class="tw">
                       <n-button size="small" text @click="doAction(record, 'restart')"><ReloadOutlined /></n-button>
                     </span>
-                  </template>
+                  </template>{{ 
                   $t('i18n_01b4e06f39')
-                </n-tooltip>
+                 }}</n-tooltip>
               </template>
               <template v-else>
                 <n-tooltip>
@@ -266,25 +266,25 @@
                         <PlayCircleOutlined />
                       </n-button>
                     </span>
-                  </template>
+                  </template>{{ 
                   $t('i18n_8e54ddfe24')
-                </n-tooltip>
+                 }}</n-tooltip>
                 <n-tooltip>
                   <template #trigger>
                     <span class="tw">
                       <n-button size="small" text :disabled="true"><StopOutlined /></n-button>
                     </span>
-                  </template>
+                  </template>{{ 
                   $t('i18n_095e938e2a')
-                </n-tooltip>
+                 }}</n-tooltip>
                 <n-tooltip>
                   <template #trigger>
                     <span class="tw">
                       <n-button size="small" text :disabled="true"><ReloadOutlined /></n-button>
                     </span>
-                  </template>
+                  </template>{{ 
                   $t('i18n_01b4e06f39')
-                </n-tooltip>
+                 }}</n-tooltip>
               </template>
 
               <n-dropdown
@@ -589,17 +589,17 @@
                           <span class="tw">
                             <n-button size="small" text @click="handleTerminal(record)"><CodeOutlined /></n-button>
                           </span>
-                        </template>
+                        </template>{{ 
                         $t('i18n_4fb2400af7')
-                      </n-tooltip>
+                       }}</n-tooltip>
                       <n-tooltip>
                         <template #trigger>
                           <span class="tw">
                             <n-button size="small" text @click="doAction(record, 'stop')"><StopOutlined /></n-button>
                           </span>
-                        </template>
+                        </template>{{ 
                         $t('i18n_095e938e2a')
-                      </n-tooltip>
+                       }}</n-tooltip>
                       <n-tooltip>
                         <template #trigger>
                           <span class="tw">
@@ -607,9 +607,9 @@
                               <ReloadOutlined />
                             </n-button>
                           </span>
-                        </template>
+                        </template>{{ 
                         $t('i18n_01b4e06f39')
-                      </n-tooltip>
+                       }}</n-tooltip>
                     </template>
                     <template v-else>
                       <n-tooltip>
@@ -619,25 +619,25 @@
                               <PlayCircleOutlined />
                             </n-button>
                           </span>
-                        </template>
+                        </template>{{ 
                         $t('i18n_8e54ddfe24')
-                      </n-tooltip>
+                       }}</n-tooltip>
                       <n-tooltip>
                         <template #trigger>
                           <span class="tw">
                             <n-button size="small" text :disabled="true"><StopOutlined /></n-button>
                           </span>
-                        </template>
+                        </template>{{ 
                         $t('i18n_095e938e2a')
-                      </n-tooltip>
+                       }}</n-tooltip>
                       <n-tooltip>
                         <template #trigger>
                           <span class="tw">
                             <n-button size="small" text :disabled="true"><ReloadOutlined /></n-button>
                           </span>
-                        </template>
+                        </template>{{ 
                         $t('i18n_01b4e06f39')
-                      </n-tooltip>
+                       }}</n-tooltip>
                     </template>
 
                     <n-dropdown

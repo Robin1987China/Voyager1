@@ -39,9 +39,9 @@
                       $t('i18n_e5f71fc31e')
                     }}</n-button>
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_4838a3bd20')
-              </n-tooltip>
+               }}</n-tooltip>
             </n-space>
           
         </n-card>
@@ -110,9 +110,9 @@
                       <span>{{ text }}</span>
                     </span>
                   </span>
-                </template>
+                </template>{{ 
                 `${$t('i18n_be4b9241ec')},${$t('i18n_69056f4792')},${$t('i18n_27b36afd36')}`
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
             <template v-else-if="column.tooltip">
               <n-tooltip placement="topLeft">
@@ -178,9 +178,9 @@
                       $t('i18n_e5f71fc31e')
                     }}</n-button>
                   </span>
-                </template>
+                </template>{{ 
                 $t('i18n_4838a3bd20')
-              </n-tooltip>
+               }}</n-tooltip>
             </n-space>
           </template>
           <template #bodyCell="{ column, text, row }">
@@ -191,9 +191,9 @@
                     <n-tag v-if="text" color="green">{{ $t('i18n_330363dfc5') }}</n-tag>
                     <n-tag v-else color="pink">{{ $t('i18n_acd5cb847a') }}</n-tag>
                   </span>
-                </template>
+                </template>{{ 
                 text ? $t('i18n_330363dfc5') : $t('i18n_acd5cb847a')
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
             <template v-else-if="column.tooltip">
               <n-tooltip placement="topLeft">
@@ -212,9 +212,9 @@
               <n-tooltip placement="topLeft">
                 <template #trigger>
                   {{ operateCode[text] || $t('i18n_1622dc9b6b') }}
-                </template>
+                </template>{{ 
                 operateCode[text] || $t('i18n_1622dc9b6b')
-              </n-tooltip>
+               }}</n-tooltip>
             </template>
           </template>
         </n-data-table>

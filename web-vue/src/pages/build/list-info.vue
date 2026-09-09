@@ -101,7 +101,7 @@
                 <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
               </span>
             </template>
-            $t('i18n_4838a3bd20')
+            {{ $t('i18n_4838a3bd20') }}
           </n-tooltip>
           <n-button type="primary" @click="handleAdd">{{ $t('i18n_66ab5e9f24') }}</n-button>
           <template v-if="tableSelections && tableSelections.length">
@@ -121,7 +121,7 @@
                 <n-button :disabled="true" type="primary"> {{ $t('i18n_7f7c624a84') }} <DownOutlined /> </n-button>
               </span>
             </template>
-            $t('i18n_98357846a2')
+            {{ $t('i18n_98357846a2') }}
           </n-tooltip>
 
           <!-- <n-button v-if="!layout" type="primary" @click="changeLayout">
@@ -159,10 +159,10 @@
                         {{ statusMap[item.status] || $t('i18n_903b25f64e') }}</n-tag
                       >
                     </span>
-                  </template>
+                  </template>{{ 
                   `${$t('i18n_e703c7367c')}${statusMap[item.status]} ${ item.statusMsg ? $t('i18n_8d13037eb7') +
                   item.statusMsg : '' }`
-                </n-tooltip>
+                 }}</n-tooltip>
               </n-grid-item>
             </n-grid>
           </template>
@@ -284,7 +284,7 @@
                     </n-button>
                   </span>
                 </template>
-                $t('i18n_19675b9d36')
+                {{ $t('i18n_19675b9d36') }}
               </n-tooltip>
             </n-button-group>
           </n-grid>
@@ -297,9 +297,9 @@
               <span class="tw">
                 <n-button text style="padding: 0" size="small"> <FullscreenOutlined />{{ text }}</n-button>
               </span>
-            </template>
+            </template>{{ 
             `${$t('i18n_d7ec2d3fea')}${text} ${$t('i18n_84632d372f')}`
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'branchName'">
           <n-tooltip placement="top-start">
@@ -330,9 +330,9 @@
                 <CloudOutlined v-if="text === 1" />
                 <CodeOutlined v-else />
               </span>
-            </template>
+            </template>{{ 
             text === 1 ? $t('i18n_685e5de706') : $t('i18n_69c3b873c1')
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'releaseMethod'">
           <n-tooltip>
@@ -361,9 +361,9 @@
                   >{{ statusMap[text] || $t('i18n_1622dc9b6b') }}</n-tag
                 >
               </span>
-            </template>
+            </template>{{ 
             record.statusMsg || statusMap[text] || $t('i18n_1622dc9b6b')
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
         <template v-else-if="column.dataIndex === 'buildId'">
           <n-tooltip placement="topLeft">
@@ -374,9 +374,9 @@
                   <n-tag v-else color="#108ee9" @click="handleBuildLog(record)">#{{ text }}</n-tag>
                 </span>
               </span>
-            </template>
+            </template>{{ 
             text + ` ( ${$t('i18n_aac62bc255')} ) `
-          </n-tooltip>
+           }}</n-tooltip>
         </template>
         <template v-else-if="column.tooltip">
           <n-tooltip placement="topLeft">
@@ -392,7 +392,6 @@
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
           <n-space>
-            <n-button size="small" @click="openPipeline(record)">Pipeline</n-button>
             <n-button
               v-if="record.status === 1 || record.status === 4 || record.status === 9"
               size="small"
@@ -755,7 +754,7 @@ export default {
           title: this.$t('i18n_d7ec2d3fea'),
           key: 'name',
           sorter: true,
-          width: 200,
+          width: 180,
           ellipsis: true
         },
         {
@@ -768,14 +767,13 @@ export default {
           title: this.$t('i18n_f4bbbaf882'),
           key: 'branchName',
           ellipsis: true,
-          width: 100
+          width: 120
         },
-
         {
           title: this.$t('i18n_7220e4d5f9'),
           key: 'buildMode',
           align: 'center',
-          width: '80px',
+          width: 110,
           sorter: true,
           ellipsis: true
         },
@@ -783,27 +781,26 @@ export default {
           title: this.$t('i18n_3fea7ca76c'),
           key: 'status',
           align: 'center',
-          width: '100px',
+          width: 120,
           ellipsis: true
         },
         {
           title: this.$t('i18n_b5d0091ae3'),
           key: 'buildId',
-          width: '90px',
+          width: 90,
           ellipsis: true,
           align: 'center'
         },
-
         {
           title: this.$t('i18n_f98994f7ec'),
           key: 'releaseMethod',
-          width: '100px',
+          width: 120,
           ellipsis: true
         },
         {
           title: this.$t('i18n_7dfcab648d'),
           key: 'resultDirFile',
-          width: 100,
+          width: 160,
           ellipsis: true
         },
         {
@@ -815,37 +812,35 @@ export default {
         {
           title: this.$t('i18n_9baca0054e'),
           key: 'modifyUser',
-          width: '130px',
+          width: 100,
           ellipsis: true,
           sorter: true
         },
-
         {
           title: this.$t('i18n_eca37cb072'),
           key: 'createTimeMillis',
           sorter: true,
           ellipsis: true,
           render: (row) => parseTime(row['createTimeMillis']),
-          width: '160px'
+          width: 160
         },
         {
           title: this.$t('i18n_1303e638b5'),
           key: 'modifyTimeMillis',
           sorter: true,
           render: (row) => parseTime(row['modifyTimeMillis']),
-          width: '160px'
+          width: 160
         },
         {
           title: this.$t('i18n_c35c1a1330'),
           key: 'sortValue',
           sorter: true,
-          width: '80px'
+          width: 90
         },
         {
           title: this.$t('i18n_2b6bc0f293'),
           key: 'operation',
-          width: '200px',
-
+          width: 220,
           align: 'center',
           fixed: 'right'
         }

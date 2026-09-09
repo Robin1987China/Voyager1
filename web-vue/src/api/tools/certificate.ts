@@ -67,12 +67,3 @@ export function certificateEdit(params) {
     data: params
   })
 }
-
-// 部署证书
-export function certificateDeploy(params) {
-  return axios({
-    url: '/certificate/deploy',
-    method: 'post',
-    data: params
-  })
-}

@@ -45,8 +45,9 @@ function parseDefinedMethods(script) {
 function checkUndefinedMethods() {
   for (const fp of walkFiles(SRC, '.vue')) {
     const txt = readFileSync(fp, 'utf-8')
-    const scripts = [...txt.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1])
-    const tmpls = [...txt.matchAll(/<template[^>]*>([\s\S]*?)<\/template>/g)].map((m) => m[1])
+    // 加 i 标志兼容大小写标签（CodeQL: Bad HTML filtering regexp 告警修复）
+    const scripts = [...txt.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1])
+    const tmpls = [...txt.matchAll(/<template[^>]*>([\s\S]*?)<\/template>/gi)].map((m) => m[1])
     if (!scripts.length) continue
     const defined = parseDefinedMethods(scripts[scripts.length - 1])
     const template = tmpls.join('\n')

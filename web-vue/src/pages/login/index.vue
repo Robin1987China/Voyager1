@@ -3,9 +3,9 @@
     <template #content>
       <n-card class="login-card" hoverable>
         <div class="brand">
-          <img class="brand-logo" :src="logoImg" alt="旅行者1号" />
-          <div class="brand-name">Voyager1 持续交付平台</div>
-          <div class="brand-slogan">Voyager1 · 持续交付</div>
+          <img class="brand-logo" :src="logoImg" :alt="$t('i18n_5d2ea51567')" />
+          <div class="brand-name">{{ $t('i18n_03d9de2834') }}</div>
+          <div class="brand-slogan">{{ $t('i18n_e9906ded24') }}</div>
         </div>
         <div class="login-title" style="text-align: center">{{ loginTitle }}</div>
         <div class="login-subtitle"></div>

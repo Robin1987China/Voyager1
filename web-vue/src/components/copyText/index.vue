@@ -12,13 +12,17 @@
   </n-button>
 </template>
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
+
 const props = defineProps<{ text: string }>()
 
 function doCopy() {
   const value = props.text ?? ''
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(value).then(() => {
-      $$message.success('复制成功')
+      $$message.success($t('i18n_20a495364a'))
     })
     return
   }
@@ -31,9 +35,9 @@ function doCopy() {
   textarea.select()
   try {
     document.execCommand('copy')
-    $$message.success('复制成功')
+    $$message.success($t('i18n_20a495364a'))
   } catch (e) {
-    $$message.error('复制失败')
+    $$message.error($t('i18n_5154ae17da'))
   }
   document.body.removeChild(textarea)
 }

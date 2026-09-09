@@ -16,12 +16,15 @@
 
 package io.voyager1.service.environment;
 
+import io.voyager1.common.SpringContextHolder;
 import io.voyager1.core.entity.EnvironmentEntity;
 import io.voyager1.core.entity.EnvironmentTargetEntity;
 import io.voyager1.core.repository.EnvironmentRepository;
 import io.voyager1.core.repository.EnvironmentTargetRepository;
 import io.voyager1.model.data.EnvironmentModel;
 import io.voyager1.model.data.EnvironmentTargetModel;
+import io.voyager1.service.k8s.K8sService;
+import io.voyager1.service.node.ssh.SshService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,9 +63,9 @@ public class EnvironmentService {
     public static final String TARGET_TYPE_SSH = "SSH";
 
     /**
-     * 当前支持绑定的目标类型（其余类型部署链路尚未实现，绑定时即拒绝，避免绑定成功部署才报错）
+     * 支持绑定的目标类型：节点 / K8S 集群 / SSH 主机。
      */
-    private static final List<String> SUPPORTED_TARGET_TYPES = java.util.Collections.singletonList(TARGET_TYPE_NODE);
+    private static final List<String> SUPPORTED_TARGET_TYPES = Arrays.asList(TARGET_TYPE_NODE, TARGET_TYPE_K8S, TARGET_TYPE_SSH);
 
     private final EnvironmentRepository repository;
     private final EnvironmentTargetRepository targetRepository;
@@ -157,11 +160,18 @@ public class EnvironmentService {
         Assert.hasText(targetId, "目标不能为空");
         Assert.state(SUPPORTED_TARGET_TYPES.contains(targetType), "暂不支持的目标类型: " + targetType);
         Assert.notNull(repository.findById(environmentId).orElse(null), "环境不存在: " + environmentId);
-        // 工作区数据权限：节点必须存在且属于当前工作区（防跨工作区越权绑定）
+        // 目标存在性校验：节点/集群/SSH 主机必须存在（防绑定无效目标）
         if (TARGET_TYPE_NODE.equals(targetType)) {
             Assert.hasText(workspaceId, "工作区不能为空");
             Assert.notNull(nodeService.getByKey(targetId, workspaceId), "节点不存在或没有该工作区的数据权限: " + targetId);
             Assert.hasText(projectId, "NODE 目标缺少 projectId");
+        } else if (TARGET_TYPE_K8S.equals(targetType)) {
+            K8sService k8sService = SpringContextHolder.getBean(K8sService.class);
+            Assert.notNull(k8sService.getByKey(targetId), "K8S 集群不存在: " + targetId);
+        } else if (TARGET_TYPE_SSH.equals(targetType)) {
+            Assert.hasText(workspaceId, "工作区不能为空");
+            SshService sshService = SpringContextHolder.getBean(SshService.class);
+            Assert.notNull(sshService.getByKey(targetId, workspaceId), "SSH 主机不存在或没有该工作区的数据权限: " + targetId);
         }
         Assert.state(!targetRepository.existsByEnvironmentIdAndTargetTypeAndTargetId(environmentId, targetType, targetId),
             "该目标已绑定到当前环境");

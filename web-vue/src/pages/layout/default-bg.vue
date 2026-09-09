@@ -33,7 +33,7 @@
             <div class="planet-ring"></div>
             <!-- 旅行者1号探测器（掠过舷窗） -->
             <div class="probe-trail"></div>
-            <img class="probe" :src="probeImg" alt="旅行者1号" />
+            <img class="probe" :src="probeImg" :alt="$t('i18n_5d2ea51567')" />
             <!-- 舷窗玻璃反射 -->
             <div class="viewport-glass"></div>
           </div>
@@ -79,6 +79,9 @@ import { DownOutlined } from '@ant-design/icons-vue'
 
 import { supportLang } from '@/i18n'
 import probeImg from '@/assets/images/voyager-probe.svg'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const useGuideStore = guideStore()
 

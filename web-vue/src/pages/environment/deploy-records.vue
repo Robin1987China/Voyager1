@@ -4,7 +4,7 @@
       is-show-tools
       :active-page="activePage"
       table-name="deploy-records"
-      :empty-description="'暂无部署记录'"
+      :empty-description="$t('i18n_9203626614')"
       :columns="columns"
       :data="list"
       :loading="loading"
@@ -18,12 +18,12 @@
           <n-select
             v-model:value="queryEnvironment"
             :options="envOptions"
-            placeholder="全部环境"
+            :placeholder="$t('i18n_2ff449a4ea')"
             clearable
             style="width: 180px"
-            @update:value="loadData"
+            @update:value="onEnvChange"
           />
-          <n-button type="primary" :loading="loading" @click="loadData">查询</n-button>
+          <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_bee912d79e') }}</n-button>
         </n-space>
       </template>
       <template #tableBodyCell="{ column, text, record }">
@@ -38,8 +38,8 @@
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
           <n-space v-if="record.status === 3">
-            <n-button type="primary" size="small" @click="approve(record, true)">批准</n-button>
-            <n-button danger size="small" @click="openReject(record)">拒绝</n-button>
+            <n-button type="primary" size="small" @click="approve(record, true)">{{ $t('i18n_7a712b9a45') }}</n-button>
+            <n-button danger size="small" @click="openReject(record)">{{ $t('i18n_7173f80900') }}</n-button>
           </n-space>
           <span v-else>-</span>
         </template>
@@ -51,14 +51,14 @@
 
     <CustomModal
       v-model:open="rejectVisible"
-      title="拒绝部署"
+      :title="$t('i18n_8e7497e2de')"
       :mask-closable="false"
       :confirm-loading="rejectLoading"
       @ok="doReject"
     >
       <n-form label-width="100px">
-        <n-form-item label="拒绝原因" required>
-          <n-input v-model:value="rejectRemark" type="textarea" placeholder="请填写拒绝原因（必填）" />
+        <n-form-item :label="$t('i18n_f48f949c1e')" required>
+          <n-input v-model:value="rejectRemark" type="textarea" :placeholder="$t('i18n_5e7688eca1')" />
         </n-form-item>
       </n-form>
     </CustomModal>
@@ -68,27 +68,29 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed, reactive } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY, parseTime } from '@/utils/const'
 import { listDeployRecords, listEnvironments, approveDeploy } from '@/api/environment'
 
+const { t: $t } = useI18n()
 const route = useRoute()
 
 const columns = [
-  { title: '版本', key: 'version' },
-  { title: '环境', key: 'environment' },
-  { title: '方式', key: 'mode' },
-  { title: '操作者', key: 'operator' },
-  { title: '状态', key: 'status' },
-  { title: '备注', key: 'remark' },
-  { title: '部署时间', key: 'createTimeMillis' },
-  { title: '操作', key: 'operation', width: 140 }
+  { title: $t('i18n_fe2df04a16'), key: 'version' },
+  { title: $t('i18n_fa405f5965'), key: 'environment' },
+  { title: $t('i18n_7220e4d5f9'), key: 'mode' },
+  { title: $t('i18n_6b0bc6432d'), key: 'operator' },
+  { title: $t('i18n_3fea7ca76c'), key: 'status' },
+  { title: $t('i18n_2432b57515'), key: 'remark' },
+  { title: $t('i18n_66d588da42'), key: 'createTimeMillis' },
+  { title: $t('i18n_2b6bc0f293'), key: 'operation', width: 140 }
 ]
 
 const listQuery = reactive({ ...PAGE_DEFAULT_LIST_QUERY })
 const list = ref<any[]>([])
 const loading = ref(false)
 const activePage = computed(() => route.path === '/deploy/records')
-const queryEnvironment = ref(null)
+const queryEnvironment = ref(localStorage.getItem('deploy-records-env-filter') || null)
 const environments = ref<any[]>([])
 const rejectVisible = ref(false)
 const rejectLoading = ref(false)
@@ -106,8 +108,14 @@ const pagination = computed(() => {
 })
 
 // 0 成功 1 失败 2 进行中 3 待审批 4 已拒绝
-const statusText = (s) => ({ 0: '成功', 1: '失败', 2: '进行中', 3: '待审批', 4: '已拒绝' })[s] || s
+const statusText = (s) =>
+  ({ 0: $t('i18n_330363dfc5'), 1: $t('i18n_acd5cb847a'), 2: $t('i18n_fb852fc6cc'), 3: $t('i18n_b0bf01a4a8'), 4: $t('i18n_81233d755c') })[s] || s
 const statusType = (s) => ({ 0: 'success', 1: 'error', 2: 'info', 3: 'warning', 4: 'default' })[s] || 'default'
+
+const onEnvChange = (value) => {
+  localStorage.setItem('deploy-records-env-filter', value || '')
+  loadData()
+}
 
 const loadData = async () => {
   loading.value = true
@@ -130,7 +138,7 @@ const loadEnvironments = async () => {
 
 const approve = (record, pass: boolean) => {
   $confirm({
-    title: `确认批准版本 ${record.version} 部署到 ${record.environment}？`,
+    title: $t('i18n_5782962b8a', { version: record.version, environment: record.environment }),
     onOk: async () => {
       const res: any = await approveDeploy({ recordId: record.id, approve: pass })
       if (res.code === 200) {
@@ -149,7 +157,7 @@ const openReject = (record) => {
 
 const doReject = async () => {
   if (!rejectRemark.value.trim()) {
-    $message.warning('请填写拒绝原因')
+    $message.warning($t('i18n_0f9381e8a9'))
     return
   }
   rejectLoading.value = true

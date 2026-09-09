@@ -18,8 +18,10 @@ package io.voyager1.service.environment;
 
 import io.voyager1.build.BuildExecutorPoolService;
 import io.voyager1.build.BuildExtraModule;
+import io.voyager1.build.BuildUtil;
 import io.voyager1.build.ReleaseManage;
 import io.voyager1.common.BaseServerController;
+import io.voyager1.common.SpringContextHolder;
 import io.voyager1.core.entity.DeploymentRecordEntity;
 import io.voyager1.core.repository.DeploymentRecordRepository;
 import io.voyager1.model.data.BuildInfoModel;
@@ -34,6 +36,7 @@ import io.voyager1.model.log.BuildHistoryLog;
 import io.voyager1.model.user.UserModel;
 import io.voyager1.service.dblog.BuildInfoService;
 import io.voyager1.service.dblog.DbBuildHistoryLogService;
+import io.voyager1.service.k8s.K8sService;
 import io.voyager1.service.version.VersionService;
 import io.voyager1.util.FileUtil;
 import io.voyager1.util.LogRecorder;
@@ -234,7 +237,7 @@ public class DeploymentService {
             StringBuilder logRefs = new StringBuilder();
             for (EnvironmentTargetModel target : targets) {
                 try {
-                    String logRef = this.deployToNode(version, target, userModel);
+                    String logRef = this.deployToTarget(version, target, userModel);
                     if (logRef != null) {
                         logRefs.append(logRefs.length() == 0 ? "" : ",").append(logRef);
                     }
@@ -318,25 +321,30 @@ public class DeploymentService {
     }
 
     /**
-     * 把版本发布到单个 NODE 目标（复用 ReleaseManage，覆盖发布目标为环境的 node:project）。
-     * <p>
-     * 每次部署创建独立的发布记录（新 CI_BUILD_LOG 行），且不回写构建配置状态：
-     * 部署结果不污染构建状态机、部署期间不锁死源构建、多目标部署互不覆盖。
-     *
-     * @return 发布记录 id（作为部署日志引用）
+     * 按目标类型分发到对应部署实现（NODE 节点 / K8S 集群 / SSH 主机）。
      */
-    private String deployToNode(VersionModel version, EnvironmentTargetModel target, UserModel userModel) throws Exception {
-        if (!EnvironmentService.TARGET_TYPE_NODE.equals(target.getTargetType())) {
-            throw new IllegalStateException("暂不支持的目标类型: " + target.getTargetType());
+    private String deployToTarget(VersionModel version, EnvironmentTargetModel target, UserModel userModel) throws Exception {
+        String targetType = target.getTargetType();
+        if (EnvironmentService.TARGET_TYPE_NODE.equals(targetType)) {
+            return this.deployToNode(version, target, userModel);
+        } else if (EnvironmentService.TARGET_TYPE_K8S.equals(targetType)) {
+            return this.deployToK8s(version, target, userModel);
+        } else if (EnvironmentService.TARGET_TYPE_SSH.equals(targetType)) {
+            return this.deployToSsh(version, target, userModel);
         }
-        Assert.hasText(target.getProjectId(), "NODE 目标缺少 projectId");
+        throw new IllegalStateException("暂不支持的目标类型: " + targetType);
+    }
+
+    /**
+     * 校验构建记录可用，并复制一条独立的发布记录（新 CI_BUILD_LOG 行），避免复用源构建记录导致状态互相覆盖。
+     */
+    private BuildHistoryLog createDeployLog(VersionModel version, EnvironmentTargetModel target) {
         BuildInfoModel buildInfo = buildInfoService.getByKey(version.getBuildId());
         Assert.notNull(buildInfo, "构建配置不存在: " + version.getBuildId());
         BuildHistoryLog historyLog = this.getHistoryLog(buildInfo.getId(), version.getBuildNumberId());
         Assert.notNull(historyLog, "构建记录不存在: " + version.getBuildId() + " #" + version.getBuildNumberId());
         Assert.state(historyLog.getStatus() != null && historyLog.getStatus() == BuildStatus.Success.getCode(),
             "只有构建成功的记录才能部署: " + version.getBuildId() + " #" + version.getBuildNumberId());
-        // 复制一条独立的发布记录，避免复用源构建记录导致的状态互相覆盖
         BuildHistoryLog deployLog = historyLog.toJson().to(BuildHistoryLog.class);
         deployLog.setId(null);
         deployLog.setCreateUser(null);
@@ -350,12 +358,16 @@ public class DeploymentService {
         deployLog.setStartTime(System.currentTimeMillis());
         deployLog.setEndTime(null);
         dbBuildHistoryLogService.insert(deployLog);
+        return deployLog;
+    }
 
-        BuildExtraModule buildExtraModule = BuildExtraModule.build(historyLog);
-        // 覆盖发布目标为环境绑定的 node:project
-        buildExtraModule.setReleaseMethod(BuildReleaseMethod.Project.getCode());
-        buildExtraModule.setReleaseMethodDataId(target.getTargetId() + ":" + target.getProjectId());
-        ReleaseManage manage = ReleaseManage.builder()
+    /**
+     * 构建 {@link ReleaseManage}（复用发布引擎）。
+     */
+    private ReleaseManage buildReleaseManage(VersionModel version, EnvironmentTargetModel target,
+                                             BuildExtraModule buildExtraModule, BuildHistoryLog historyLog,
+                                             BuildHistoryLog deployLog, UserModel userModel) {
+        return ReleaseManage.builder()
             .buildExtraModule(buildExtraModule)
             .logId(deployLog.getId())
             .userModel(userModel)
@@ -366,9 +378,115 @@ public class DeploymentService {
                 .file(FileUtil.file("logs/deploy", "deploy-" + sanitizeFileName(target.getTargetId()) + ".log")).build())
             .buildEnv(historyLog.toEnvironmentMapBuilder())
             .build();
+    }
+
+    /**
+     * 把版本发布到单个 NODE 目标（复用 ReleaseManage，覆盖发布目标为环境的 node:project）。
+     */
+    private String deployToNode(VersionModel version, EnvironmentTargetModel target, UserModel userModel) throws Exception {
+        Assert.hasText(target.getProjectId(), "NODE 目标缺少 projectId");
+        BuildInfoModel buildInfo = buildInfoService.getByKey(version.getBuildId());
+        BuildHistoryLog deployLog = this.createDeployLog(version, target);
+        BuildHistoryLog historyLog = this.getHistoryLog(buildInfo.getId(), version.getBuildNumberId());
+
+        BuildExtraModule buildExtraModule = BuildExtraModule.build(historyLog);
+        buildExtraModule.setReleaseMethod(BuildReleaseMethod.Project.getCode());
+        buildExtraModule.setReleaseMethodDataId(target.getTargetId() + ":" + target.getProjectId());
+        ReleaseManage manage = this.buildReleaseManage(version, target, buildExtraModule, historyLog, deployLog, userModel);
         String msg = manage.start(null, buildInfo);
         Assert.isTrue((msg == null || msg.isEmpty()), "发布失败: " + msg);
         return deployLog.getId();
+    }
+
+    /**
+     * 把版本发布到单个 SSH 目标（复用 ReleaseManage 的 SSH 发布：SCP 产物 + 远程执行发布命令）。
+     * <p>
+     * projectId 可选：用于覆盖发布目录（发布脚本通过 SSH_RELEASE_PATH 读取）。
+     */
+    private String deployToSsh(VersionModel version, EnvironmentTargetModel target, UserModel userModel) throws Exception {
+        BuildInfoModel buildInfo = buildInfoService.getByKey(version.getBuildId());
+        BuildHistoryLog deployLog = this.createDeployLog(version, target);
+        BuildHistoryLog historyLog = this.getHistoryLog(buildInfo.getId(), version.getBuildNumberId());
+
+        BuildExtraModule buildExtraModule = BuildExtraModule.build(historyLog);
+        buildExtraModule.setReleaseMethod(BuildReleaseMethod.Ssh.getCode());
+        buildExtraModule.setReleaseMethodDataId(target.getTargetId());
+        if (target.getProjectId() != null && !target.getProjectId().isEmpty()) {
+            buildExtraModule.setReleasePath(target.getProjectId());
+        }
+        ReleaseManage manage = this.buildReleaseManage(version, target, buildExtraModule, historyLog, deployLog, userModel);
+        String msg = manage.start(null, buildInfo);
+        Assert.isTrue((msg == null || msg.isEmpty()), "发布失败: " + msg);
+        return deployLog.getId();
+    }
+
+    /**
+     * 把版本部署到单个 K8S 目标：读取构建产物中的 Kubernetes manifest 并 apply 到集群。
+     * <p>
+     * projectId 可选：用于覆盖目标命名空间（缺省使用集群配置的默认命名空间）。
+     */
+    private String deployToK8s(VersionModel version, EnvironmentTargetModel target, UserModel userModel) throws Exception {
+        BuildInfoModel buildInfo = buildInfoService.getByKey(version.getBuildId());
+        BuildHistoryLog deployLog = this.createDeployLog(version, target);
+        BuildHistoryLog historyLog = this.getHistoryLog(buildInfo.getId(), version.getBuildNumberId());
+
+        K8sService k8sService = SpringContextHolder.getBean(K8sService.class);
+        String namespace = (target.getProjectId() == null || target.getProjectId().isEmpty())
+            ? null : target.getProjectId();
+        String manifest = this.readManifest(buildInfo.getId(), version.getBuildNumberId(), historyLog);
+        try {
+            k8sService.applyManifest(target.getTargetId(), namespace, manifest);
+            deployLog.setStatus(BuildStatus.PubSuccess.getCode());
+            deployLog.setStatusMsg("K8S 部署成功: " + target.getTargetId());
+            deployLog.setEndTime(System.currentTimeMillis());
+            dbBuildHistoryLogService.updateById(deployLog);
+        } catch (Exception e) {
+            deployLog.setStatus(BuildStatus.PubError.getCode());
+            deployLog.setStatusMsg("K8S 部署失败: " + e.getMessage());
+            deployLog.setEndTime(System.currentTimeMillis());
+            dbBuildHistoryLogService.updateById(deployLog);
+            throw e;
+        }
+        return deployLog.getId();
+    }
+
+    /**
+     * 读取构建产物中的 Kubernetes manifest（递归查找结果目录下的 .yaml/.yml 文件）。
+     */
+    private String readManifest(String buildId, Integer buildNumberId, BuildHistoryLog historyLog) throws Exception {
+        BuildExtraModule extra = BuildExtraModule.build(historyLog);
+        String resultFile = extra.getResultDirFile();
+        java.io.File packageFile = BuildUtil.getHistoryPackageFile(buildId, buildNumberId, resultFile);
+        if (packageFile == null || !packageFile.exists()) {
+            throw new IllegalStateException("构建产物不存在，无法读取 K8S manifest: " + buildId + " #" + buildNumberId);
+        }
+        java.io.File manifest = this.findManifest(packageFile);
+        if (manifest == null) {
+            throw new IllegalStateException("构建产物中未找到 Kubernetes manifest(.yaml/.yml): " + buildId + " #" + buildNumberId);
+        }
+        return new String(java.nio.file.Files.readAllBytes(manifest.toPath()), java.nio.charset.StandardCharsets.UTF_8);
+    }
+
+    private java.io.File findManifest(java.io.File file) {
+        if (file == null || !file.exists()) {
+            return null;
+        }
+        if (file.isFile()) {
+            String name = file.getName().toLowerCase();
+            return (name.endsWith(".yaml") || name.endsWith(".yml")) ? file : null;
+        }
+        if (file.isDirectory()) {
+            java.io.File[] children = file.listFiles();
+            if (children != null) {
+                for (java.io.File child : children) {
+                    java.io.File found = this.findManifest(child);
+                    if (found != null) {
+                        return found;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**

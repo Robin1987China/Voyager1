@@ -17,8 +17,8 @@
       <slot v-if="slots.footer" name="footer"></slot>
       <template v-else>
         <n-space justify="end">
-          <n-button @click="cancel">{{ cancelText }}</n-button>
-          <n-button type="primary" :loading="confirmLoading" @click="confirm">{{ okText }}</n-button>
+          <n-button @click="cancel">{{ cancelText || $t('i18n_625fb26b') }}</n-button>
+          <n-button type="primary" :loading="confirmLoading" @click="confirm">{{ okText || $t('i18n_38cf16f2') }}</n-button>
         </n-space>
       </template>
     </template>
@@ -39,8 +39,8 @@ export default defineComponent({
     maskClosable: { type: Boolean, default: true },
     // antd 的 keyboard=false -> naive close-on-esc=false
     keyboard: { type: Boolean, default: true },
-    okText: { type: String, default: '确 定' },
-    cancelText: { type: String, default: '取 消' },
+    okText: { type: String, default: '' },
+    cancelText: { type: String, default: '' },
     confirmLoading: { type: Boolean, default: false },
     showFooter: { type: Boolean, default: true }
   },

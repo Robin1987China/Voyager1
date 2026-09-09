@@ -150,7 +150,7 @@ const globalLoading = (props: boolean | string | Record<string, any>) => {
     if ('size' in props) newProps.size = props.size
     if ('delay' in props) newProps.delay = props.delay
   } else {
-    console.error('不支持的类型', props, Object.prototype.toString.call(props))
+    console.error(t('i18n_74955e648d'), props, Object.prototype.toString.call(props))
   }
   globalLoadingProps.value = { ...globalLoadingProps.value, ...newProps }
 }

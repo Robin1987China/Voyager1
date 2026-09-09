@@ -36,7 +36,7 @@
         >
         <n-form-item
           ><span
-            >总成本：<b>¥{{ totalAmount }}</b></span
+            >{{ $t('i18n_e529e7bc35') }}<b>¥{{ totalAmount }}</b></span
           ></n-form-item
         >
       </n-form>
@@ -48,12 +48,12 @@
         style="margin-top: 12px"
         :columns="[
           { title: $t('i18n_4d9f9c0f'), key: 'groupKey' },
-          { title: '金额(元)', key: 'totalAmount' }
+          { title: $t('i18n_95ffadb8c1'), key: 'totalAmount' }
         ]"
       />
     </n-card>
 
-    <n-card size="small" title="成本明细（CSV 导入 / 云 API 采集）" style="margin-top: 12px">
+    <n-card size="small" :title="$t('i18n_775350e886')" style="margin-top: 12px">
       <n-form layout="inline">
         <n-form-item :label="$t('i18n_ff7c6ad4')">
           <n-select
@@ -65,8 +65,8 @@
         <n-form-item :label="$t('i18n_99b7dc82')"
           ><n-input v-model:value="importForm.billingCycle" style="width: 110px" placeholder="2026-08"
         /></n-form-item>
-        <n-form-item><n-button type="primary" @click="doImport">CSV 导入</n-button></n-form-item>
-        <n-form-item><n-button @click="doSyncBill">云 API 采集</n-button></n-form-item>
+        <n-form-item><n-button type="primary" @click="doImport">{{ $t('i18n_a7e731e1b3') }}</n-button></n-form-item>
+        <n-form-item><n-button @click="doSyncBill">{{ $t('i18n_a84f2445c3') }}</n-button></n-form-item>
       </n-form>
       <n-input
         v-model:value="importForm.csvContent"
@@ -80,13 +80,13 @@
     <n-card size="small" :title="$t('i18n_58073aaf')" style="margin-top: 12px">
       <n-form layout="inline">
         <n-form-item :label="$t('i18n_70aefc6a')"
-          ><n-input v-model:value="tagRuleForm.vendor" style="width: 100px" placeholder="空=所有"
+          ><n-input v-model:value="tagRuleForm.vendor" style="width: 100px" :placeholder="$t('i18n_1430ea9bf4')"
         /></n-form-item>
-        <n-form-item label="标签key"><n-input v-model:value="tagRuleForm.tagKey" style="width: 120px" /></n-form-item>
-        <n-form-item label="标签value"
+        <n-form-item :label="$t('i18n_ceb7097235')"><n-input v-model:value="tagRuleForm.tagKey" style="width: 120px" /></n-form-item>
+        <n-form-item :label="$t('i18n_d3889a097a')"
           ><n-input v-model:value="tagRuleForm.tagValue" style="width: 120px"
         /></n-form-item>
-        <n-form-item label="项目ID"><n-input v-model:value="tagRuleForm.projectId" style="width: 120px" /></n-form-item>
+        <n-form-item :label="$t('i18n_33c9e2388e')"><n-input v-model:value="tagRuleForm.projectId" style="width: 120px" /></n-form-item>
         <n-form-item :label="$t('i18n_0848477e')"
           ><n-input v-model:value="tagRuleForm.projectName" style="width: 120px"
         /></n-form-item>
@@ -122,9 +122,9 @@
           />
         </n-form-item>
         <n-form-item :label="$t('i18n_76d932fd')"
-          ><n-input v-model:value="budgetForm.scopeValue" style="width: 120px" placeholder="账号ID/项目/标签"
+          ><n-input v-model:value="budgetForm.scopeValue" style="width: 120px" :placeholder="$t('i18n_9f48b8e6d8')"
         /></n-form-item>
-        <n-form-item label="月预算(元)"
+        <n-form-item :label="$t('i18n_f7aac33040')"
           ><n-input-number v-model:value="budgetForm.monthlyLimit" :min="0" style="width: 120px"
         /></n-form-item>
         <n-form-item
@@ -145,15 +145,13 @@
       <n-alert v-if="overBudget.length" type="error" style="margin-top: 12px">
         <template #message>
           <div v-for="item in overBudget" :key="item.budgetId">
-            「{{ item.name }}」超支：预算 ¥{{ item.monthlyLimit }}，当前 ¥{{ item.currentAmount }}，超 ¥{{
-              item.overAmount
-            }}
+            {{ $t('i18n_059a9932a8', { name: item.name, monthlyLimit: item.monthlyLimit, currentAmount: item.currentAmount, overAmount: item.overAmount }) }}
           </div>
         </template>
       </n-alert>
     </n-card>
 
-    <n-card size="small" title="成本优化建议（闲置资源）" style="margin-top: 12px">
+    <n-card size="small" :title="$t('i18n_e03e3661b4')" style="margin-top: 12px">
       <n-button size="small" @click="loadIdle">{{ $t('i18n_b844d6eb') }}</n-button>
       <n-data-table
         :data="idleResources"
@@ -162,7 +160,7 @@
         :row-key="(row) => row.instanceId"
         style="margin-top: 8px"
         :columns="[
-          { title: '实例ID', key: 'instanceId' },
+          { title: $t('i18n_1782d6afac'), key: 'instanceId' },
           { title: $t('i18n_d7ec2d3f'), key: 'name' },
           { title: $t('i18n_d3ce40d8'), key: 'regionId' },
           { title: $t('i18n_19444e70'), key: 'suggestion' }
@@ -233,7 +231,7 @@ const doSyncBill = async () => {
     return
   }
   if (!importForm.billingCycle) {
-    $message.warning('请输入账期（如 2026-08）')
+    $message.warning(t('i18n_a518a6e435'))
     return
   }
   const res: any = await syncCostBill({ accountId: importForm.accountId, billingCycle: importForm.billingCycle })
@@ -251,11 +249,11 @@ const loadTagRules = async () => {
 }
 const saveTagRule = async () => {
   if (!tagRuleForm.tagKey || !tagRuleForm.tagKey.trim()) {
-    $message.warning('请填写标签键')
+    $message.warning(t('i18n_6c962bbc20'))
     return
   }
   if (!tagRuleForm.tagValue || !tagRuleForm.tagValue.trim()) {
-    $message.warning('请填写标签值')
+    $message.warning(t('i18n_17a1eb5620'))
     return
   }
   const res: any = await saveCostTagRule(tagRuleForm)
@@ -273,7 +271,7 @@ const saveTagRule = async () => {
 const removeTagRule = (record) => {
   $confirm({
     title: t('i18n_aec937fb'),
-    content: `确定删除规则 ${record.tagKey}=${record.tagValue} 吗？`,
+    content: t('i18n_f5b8870892', { tagKey: record.tagKey, tagValue: record.tagValue }),
     okText: t('i18n_38cf16f2'),
     cancelText: t('i18n_625fb26b'),
     onOk: async () => {
@@ -295,11 +293,11 @@ const loadBudgets = async () => {
 }
 const saveBudget = async () => {
   if (!budgetForm.name || !budgetForm.name.trim()) {
-    $message.warning('请填写预算名称')
+    $message.warning(t('i18n_e331691ea6'))
     return
   }
   if (!budgetForm.monthlyLimit || budgetForm.monthlyLimit <= 0) {
-    $message.warning('月额度必须大于 0')
+    $message.warning(t('i18n_d8440a4101'))
     return
   }
   const res: any = await saveCostBudget(budgetForm)
@@ -313,7 +311,7 @@ const saveBudget = async () => {
 const removeBudget = (record) => {
   $confirm({
     title: t('i18n_7c9790c3'),
-    content: `确定删除预算「${record.name}」吗？`,
+    content: t('i18n_9073c9d39a', { name: record.name }),
     okText: t('i18n_38cf16f2'),
     cancelText: t('i18n_625fb26b'),
     onOk: async () => {
@@ -362,7 +360,7 @@ const tagRuleColumns = [
 const budgetColumns = [
   { title: t('i18n_d7ec2d3f'), key: 'name' },
   { title: t('i18n_df011658'), key: 'scope', width: 180, render: (row) => `${row.scopeType}:${row.scopeValue || '-'}` },
-  { title: '月预算(元)', key: 'monthlyLimit', width: 110 },
+  { title: t('i18n_f7aac33040'), key: 'monthlyLimit', width: 110 },
   {
     title: t('i18n_2b6bc0f2'),
     key: 'actions',

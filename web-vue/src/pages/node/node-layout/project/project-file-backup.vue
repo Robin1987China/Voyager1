@@ -91,7 +91,7 @@
     <!-- 布局 -->
     <n-layout v-show="!viewList" class="file-layout">
       <!-- 目录树 -->
-      <n-layout-sider theme="light" class="sider" width="25%">
+      <n-layout-sider theme="dark" class="sider" width="25%">
         <div class="dir-container">
           <n-space>
             <n-button
@@ -619,13 +619,13 @@ export default {
   padding: 0;
 }
 .sider {
-  border: 1px solid #e2e2e2;
+  border: 1px solid var(--dsh-divider);
   height: calc(100vh - 80px);
   overflow-y: auto;
 }
 .dir-container {
   padding: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--dsh-divider);
 }
 .file-content {
   height: calc(100vh - 100px);

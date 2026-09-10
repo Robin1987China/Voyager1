@@ -1,7 +1,7 @@
 <template>
   <div>
     <n-tabs v-model:value="activeTab" type="line" animated>
-      <n-tab-pane name="list" tab="监控列表">
+      <n-tab-pane name="list" :tab="$t('i18n_2b4d1f4e6f')">
         <!-- 数据表格 -->
         <CustomTable
       is-show-tools
@@ -121,7 +121,7 @@
       </template>
     </CustomTable>
       </n-tab-pane>
-      <n-tab-pane name="log" tab="监控日志">
+      <n-tab-pane name="log" :tab="$t('i18n_2217abf5ab')">
         <monitor-log />
       </n-tab-pane>
     </n-tabs>

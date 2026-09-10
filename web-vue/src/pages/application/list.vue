@@ -4,7 +4,7 @@
       is-show-tools
       :active-page="activePage"
       table-name="application-list"
-      :empty-description="'暂无应用'"
+      :empty-description="$t('i18n_3534c3d1c4')"
       :columns="columns"
       :data="list"
       :loading="loading"
@@ -15,8 +15,8 @@
     >
       <template #title>
         <n-space wrap>
-          <n-button type="primary" :loading="loading" @click="loadData">查询</n-button>
-          <n-button type="primary" @click="openCreate">新建应用</n-button>
+          <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_bee912d79e') }}</n-button>
+          <n-button type="primary" @click="openCreate">{{ $t('i18n_6638cae28f') }}</n-button>
         </n-space>
       </template>
       <template #tableBodyCell="{ column, text, record }">
@@ -28,9 +28,9 @@
         </template>
         <template v-else-if="column.dataIndex === 'operation'">
           <n-space>
-            <n-button size="small" type="primary" @click="goDetail(record)">详情</n-button>
-            <n-button size="small" @click="openEdit(record)">编辑</n-button>
-            <n-button size="small" danger @click="doDel(record)">删除</n-button>
+            <n-button size="small" type="primary" @click="goDetail(record)">{{ $t('i18n_f26225bde6') }}</n-button>
+            <n-button size="small" @click="openEdit(record)">{{ $t('i18n_95b351c862') }}</n-button>
+            <n-button size="small" danger @click="doDel(record)">{{ $t('i18n_2f4aaddde3') }}</n-button>
           </n-space>
         </template>
         <template v-else>
@@ -41,33 +41,33 @@
 
     <CustomModal
       v-model:open="editVisible"
-      :title="editForm.id ? '编辑应用' : '新建应用'"
+      :title="editForm.id ? $t('i18n_396fb46d83') : $t('i18n_6638cae28f')"
       :mask-closable="false"
       :confirm-loading="saveLoading"
       @ok="saveEdit"
     >
       <n-form label-width="100px">
-        <n-form-item label="应用名" required>
-          <n-input v-model:value="editForm.name" placeholder="如 order-svc" />
+        <n-form-item :label="$t('i18n_ed16f8c39d')" required>
+          <n-input v-model:value="editForm.name" :placeholder="$t('i18n_24bdde3ef6')" />
         </n-form-item>
-        <n-form-item label="代码仓库" required>
+        <n-form-item :label="$t('i18n_c30f113cff')" required>
           <n-select
             v-model:value="editForm.repositoryId"
             :options="repoOptions"
-            placeholder="选择代码仓库"
+            :placeholder="$t('i18n_03b06f2350')"
             filterable
           />
         </n-form-item>
-        <n-form-item label="构建配置" required>
+        <n-form-item :label="$t('i18n_5e4a086d54')" required>
           <n-select
             v-model:value="editForm.buildId"
             :options="buildOptions"
-            placeholder="选择构建配置"
+            :placeholder="$t('i18n_097665acde')"
             filterable
           />
         </n-form-item>
-        <n-form-item label="备注">
-          <n-input v-model:value="editForm.remark" type="textarea" placeholder="备注" />
+        <n-form-item :label="$t('i18n_2432b57515')">
+          <n-input v-model:value="editForm.remark" type="textarea" :placeholder="$t('i18n_2432b57515')" />
         </n-form-item>
       </n-form>
     </CustomModal>
@@ -77,20 +77,22 @@
 <script lang="ts" setup>
 import { ref, onMounted, reactive, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY } from '@/utils/const'
 import { listApplications, saveApplication, deleteApplication } from '@/api/application'
 import { getRepositoryList } from '@/api/repository'
 import { getBuildList } from '@/api/build-info'
 
+const { t: $t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
 const columns = [
-  { title: '应用名', key: 'name' },
-  { title: '代码仓库', key: 'repositoryId' },
-  { title: '构建配置', key: 'buildId' },
-  { title: '备注', key: 'remark' },
-  { title: '操作', key: 'operation', width: 200 }
+  { title: $t('i18n_ed16f8c39d'), key: 'name' },
+  { title: $t('i18n_c30f113cff'), key: 'repositoryId' },
+  { title: $t('i18n_5e4a086d54'), key: 'buildId' },
+  { title: $t('i18n_2432b57515'), key: 'remark' },
+  { title: $t('i18n_2b6bc0f293'), key: 'operation', width: 200 }
 ]
 
 const listQuery = reactive({ ...PAGE_DEFAULT_LIST_QUERY })
@@ -162,22 +164,22 @@ const openEdit = (record) => {
 
 const saveEdit = async () => {
   if (!editForm.name || !editForm.name.trim()) {
-    $message.warning('请填写应用名')
+    $message.warning($t('i18n_86534fb10f'))
     return
   }
   if (!editForm.repositoryId) {
-    $message.warning('请选择代码仓库')
+    $message.warning($t('i18n_3ee8a79010'))
     return
   }
   if (!editForm.buildId) {
-    $message.warning('请选择构建配置')
+    $message.warning($t('i18n_5315a7ac06'))
     return
   }
   saveLoading.value = true
   try {
     const res: any = await saveApplication({ ...editForm })
     if (res.code === 200) {
-      $message.success('保存成功')
+      $message.success($t('i18n_3b108349b9'))
       editVisible.value = false
       loadData()
     }
@@ -188,11 +190,11 @@ const saveEdit = async () => {
 
 const doDel = (record) => {
   $confirm({
-    title: `确认删除应用 ${record.name}？仅删除应用定义，不影响构建/版本/部署记录`,
+    title: $t('i18n_7ded4d98d8', { name: record.name }),
     onOk: async () => {
       const res: any = await deleteApplication({ id: record.id })
       if (res.code === 200) {
-        $message.success('删除成功')
+        $message.success($t('i18n_0007d170'))
         loadData()
       }
     }

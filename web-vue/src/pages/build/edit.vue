@@ -546,7 +546,7 @@
                           <QuestionCircleOutlined v-if="!temp.id" />
                         </span>
                       </template>
-                      {{ 'i18n_abb6b7260b' }}
+                      {{ $t('i18n_abb6b7260b') }}
                     </n-tooltip>
                   </template>
                   <n-input-group compact>
@@ -749,14 +749,14 @@
                       </n-form-item>
                     </span>
                   </template>
-                  {{ 'i18n_61bfa4e925' }}
+                  {{ $t('i18n_61bfa4e925') }}
                 </n-tooltip>
                 <n-form-item path="dockerTag" :label="$t('i18n_9a77f3523e')">
                   <n-tooltip>
                     <template #trigger>
                       <n-input v-model:value="tempExtraData.dockerTag" :placeholder="$t('i18n_250a999bb2')" />
                     </template>
-                    {{ 'i18n_fa57a7afad' }}
+                    {{ $t('i18n_fa57a7afad') }}
                   </n-tooltip>
                 </n-form-item>
                 <n-form-item path="dockerBuildArgs" :label="$t('i18n_244d5a0ed8')">
@@ -766,7 +766,7 @@
                         <template #trigger>
                           <n-input v-model:value="tempExtraData.dockerBuildArgs" :placeholder="$t('i18n_6e70d2fb91')" />
                         </template>
-                        {{ 'i18n_a34545bd16' }}
+                        {{ $t('i18n_a34545bd16') }}
                       </n-tooltip>
                     </n-grid-item>
                     <n-grid-item :span="4" style="text-align: right">{{ $t('i18n_3f016aa454') }}</n-grid-item>
@@ -984,7 +984,7 @@
                           :unchecked-label="$t('i18n_c9744f45e7')"
                         />
                       </template>
-                      {{ 'i18n_12afa77947' }}
+                      {{ $t('i18n_12afa77947') }}
                     </n-tooltip>
                   </n-grid-item>
                   <n-grid-item :span="6" style="text-align: right">

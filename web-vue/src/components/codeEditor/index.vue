@@ -587,7 +587,7 @@ export default {
   color: white !important;
 }
 .cm-matchhighlight {
-  background-color: #fef6f6;
+  background-color: rgba(86, 134, 254, 0.25);
 }
 .CodeMirror-scroll {
   margin: 0;

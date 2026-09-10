@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :theme="darkTheme">
+  <n-config-provider :theme="darkTheme" :theme-overrides="dshThemeOverrides">
     <div class="init-wrapper" :style="backgroundImage">
       <!-- 舱内环境（极暗） -->
       <div class="cabin"></div>
@@ -33,7 +33,7 @@
             <div class="planet-ring"></div>
             <!-- 旅行者1号探测器（掠过舷窗） -->
             <div class="probe-trail"></div>
-            <img class="probe" :src="probeImg" alt="旅行者1号" />
+            <img class="probe" :src="probeImg" :alt="$t('i18n_5d2ea51567')" />
             <!-- 舷窗玻璃反射 -->
             <div class="viewport-glass"></div>
           </div>
@@ -76,9 +76,13 @@
 <script lang="ts" setup>
 import { darkTheme } from 'naive-ui'
 import { DownOutlined } from '@ant-design/icons-vue'
+import { dshThemeOverrides } from '@/theme/dsh'
 
 import { supportLang } from '@/i18n'
 import probeImg from '@/assets/images/voyager-probe.svg'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const useGuideStore = guideStore()
 
@@ -113,7 +117,7 @@ defineProps({
 
 const backgroundImage = computed(() => {
   // 舱内环境：极暗深黑（2001 太空漫游基调）
-  const color = 'radial-gradient(1400px 900px at 50% 40%, #0a0f1c 0%, #05070d 60%, #020409 100%)'
+  const color = 'radial-gradient(1400px 900px at 50% 40%, #1e1f24 0%, #151517 60%, #0f0f11 100%)'
   return {
     background: color
   }
@@ -188,7 +192,7 @@ const backgroundImage = computed(() => {
 .space {
   position: absolute;
   inset: 0;
-  background: radial-gradient(120% 120% at 50% 45%, #0b1222 0%, #060a14 55%, #020409 100%);
+  background: radial-gradient(120% 120% at 50% 45%, #20222a 0%, #151517 55%, #0f0f11 100%);
 }
 .stars {
   position: absolute;
@@ -205,12 +209,12 @@ const backgroundImage = computed(() => {
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background:
-    radial-gradient(circle at 32% 30%, rgba(212, 175, 55, 0.55) 0%, transparent 60%),
-    radial-gradient(circle at 40% 45%, #c9a24b 0%, #8a6530 38%, #4a3016 62%, #1c1006 100%);
+    radial-gradient(circle at 32% 30%, rgba(86, 134, 254, 0.4) 0%, transparent 60%),
+    radial-gradient(circle at 40% 45%, #4868b2 0%, #2e4370 38%, #1a2440 62%, #0d1220 100%);
   box-shadow:
     inset -20px -16px 40px rgba(0, 0, 0, 0.65),
-    inset 6px 8px 20px rgba(255, 236, 179, 0.25),
-    0 0 60px rgba(201, 162, 75, 0.12);
+    inset 6px 8px 20px rgba(191, 219, 254, 0.22),
+    0 0 60px rgba(65, 118, 230, 0.15);
 }
 .planet-shadow {
   position: absolute;
@@ -229,17 +233,17 @@ const backgroundImage = computed(() => {
   width: 240px;
   height: 96px;
   transform: translate(-50%, -50%) rotate(-18deg);
-  border: 1.5px solid rgba(201, 162, 75, 0.28);
+  border: 1.5px solid rgba(86, 134, 254, 0.3);
   border-radius: 50%;
   box-shadow:
-    0 0 12px rgba(201, 162, 75, 0.1),
-    inset 0 0 12px rgba(201, 162, 75, 0.08);
+    0 0 12px rgba(86, 134, 254, 0.12),
+    inset 0 0 12px rgba(86, 134, 254, 0.1);
 }
 .planet-ring::before {
   content: '';
   position: absolute;
   inset: 26% 4%;
-  border: 1px solid rgba(201, 162, 75, 0.14);
+  border: 1px solid rgba(86, 134, 254, 0.16);
   border-radius: 50%;
 }
 .viewport-glass {
@@ -264,7 +268,7 @@ const backgroundImage = computed(() => {
   width: 92px;
   height: 92px;
   opacity: 0.95;
-  filter: drop-shadow(0 0 10px rgba(242, 206, 107, 0.25));
+  filter: drop-shadow(0 0 10px rgba(86, 134, 254, 0.3));
   animation: probeDrift 14s ease-in-out infinite;
 }
 .probe-trail {
@@ -275,7 +279,7 @@ const backgroundImage = computed(() => {
   height: 1.5px;
   transform: rotate(-32deg);
   transform-origin: right center;
-  background: linear-gradient(90deg, transparent, rgba(242, 206, 107, 0.55));
+  background: linear-gradient(90deg, transparent, rgba(86, 134, 254, 0.55));
   animation: trailPulse 4s ease-in-out infinite;
 }
 @keyframes probeDrift {
@@ -304,7 +308,7 @@ const backgroundImage = computed(() => {
   height: 18vh;
   pointer-events: none;
   z-index: 2;
-  background: linear-gradient(180deg, transparent 0%, rgba(10, 15, 26, 0.5) 55%, rgba(6, 9, 16, 0.85) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(21, 21, 23, 0.55) 55%, rgba(15, 15, 17, 0.88) 100%);
   border-top: 1px solid rgba(148, 163, 184, 0.07);
   box-shadow: 0 -30px 60px rgba(0, 0, 0, 0.5);
 }
@@ -325,8 +329,8 @@ const backgroundImage = computed(() => {
 }
 .cabin-light-2 {
   right: calc(50% - 90px);
-  background: #f59e0b;
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+  background: #5686fe;
+  box-shadow: 0 0 6px rgba(86, 134, 254, 0.5);
   animation-delay: 2.2s;
 }
 @keyframes lightPulse {

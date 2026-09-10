@@ -32,7 +32,7 @@
             placeholder="Azure tenantId / GCP projectId"
         /></n-form-item>
         <n-form-item :label="$t('i18n_d3ce40d8')"
-          ><n-input v-model:value="accForm.region" style="width: 140px" placeholder="如 cn-hangzhou"
+          ><n-input v-model:value="accForm.region" style="width: 140px" :placeholder="$t('i18n_19a1a6782b')"
         /></n-form-item>
         <n-form-item
           ><n-button type="primary" @click="saveAccount">{{ $t('i18n_a85f0f3d') }}</n-button></n-form-item
@@ -50,12 +50,12 @@
 
     <n-card size="small" :title="$t('i18n_2f6824d7')" style="margin-top: 12px">
       <n-form layout="inline">
-        <n-form-item label="实例ID"><n-input v-model:value="instForm.instanceId" style="width: 160px" /></n-form-item>
+        <n-form-item :label="$t('i18n_1782d6afac')"><n-input v-model:value="instForm.instanceId" style="width: 160px" /></n-form-item>
         <n-form-item :label="$t('i18n_d7ec2d3f')"
           ><n-input v-model:value="instForm.name" style="width: 120px"
         /></n-form-item>
-        <n-form-item label="公网IP"><n-input v-model:value="instForm.publicIp" style="width: 140px" /></n-form-item>
-        <n-form-item label="内网IP"><n-input v-model:value="instForm.privateIp" style="width: 140px" /></n-form-item>
+        <n-form-item :label="$t('i18n_efed5dc863')"><n-input v-model:value="instForm.publicIp" style="width: 140px" /></n-form-item>
+        <n-form-item :label="$t('i18n_c66462042e')"><n-input v-model:value="instForm.privateIp" style="width: 140px" /></n-form-item>
         <n-form-item
           ><n-button type="primary" @click="saveInstance">{{ $t('i18n_153e9834') }}</n-button></n-form-item
         >
@@ -73,8 +73,8 @@
 
     <n-card size="small" :title="$t('i18n_20727f13')" style="margin-top: 12px">
       <n-form layout="inline">
-        <n-form-item label="磁盘ID"
-          ><n-input v-model:value="snapForm.diskId" style="width: 200px" placeholder="如 d-xxx / vol-xxx"
+        <n-form-item :label="$t('i18n_c37becffab')"
+          ><n-input v-model:value="snapForm.diskId" style="width: 200px" :placeholder="$t('i18n_1cf17a8fe5')"
         /></n-form-item>
         <n-form-item :label="$t('i18n_953f2b80')"
           ><n-input v-model:value="snapForm.snapshotName" style="width: 160px"
@@ -100,7 +100,7 @@
         size="small"
         :row-key="(row) => row.securityGroupId"
         :columns="[
-          { title: '安全组ID', key: 'securityGroupId' },
+          { title: $t('i18n_8c6f5d1092'), key: 'securityGroupId' },
           { title: $t('i18n_d7ec2d3f'), key: 'name' },
           { title: $t('i18n_3bdd08ad'), key: 'description' }
         ]"
@@ -117,19 +117,19 @@
       />
     </n-card>
 
-    <CustomModal v-model:open="importVisible" title="导入为 SSH 机器" :mask-closable="false" @ok="doImport">
+    <CustomModal v-model:open="importVisible" :title="$t('i18n_4908c11784')" :mask-closable="false" @ok="doImport">
       <n-form label-width="90px">
         <n-form-item :label="$t('i18n_480c216f')">
           <n-input :value="importForm.name" disabled />
         </n-form-item>
-        <n-form-item label="SSH 用户" required>
+        <n-form-item :label="$t('i18n_2272f5e9ab')" required>
           <n-input v-model:value="importForm.sshUser" placeholder="root" />
         </n-form-item>
-        <n-form-item label="SSH 端口">
+        <n-form-item :label="$t('i18n_3f284a59d4')">
           <n-input-number v-model:value="importForm.sshPort" :min="1" :max="65535" style="width: 200px" />
         </n-form-item>
-        <n-form-item label="SSH 密码">
-          <n-input v-model:value="importForm.password" type="password" placeholder="登录密码（或密钥）" />
+        <n-form-item :label="$t('i18n_6bc0413216')">
+          <n-input v-model:value="importForm.password" type="password" :placeholder="$t('i18n_a32272807c')" />
         </n-form-item>
       </n-form>
     </CustomModal>
@@ -143,7 +143,7 @@
           <n-input :value="resizeForm.instanceType" disabled />
         </n-form-item>
         <n-form-item :label="$t('i18n_ce27fe1f')" required>
-          <n-input v-model:value="resizeForm.newInstanceType" placeholder="如 ecs.g7.2xlarge / t3.large" />
+          <n-input v-model:value="resizeForm.newInstanceType" :placeholder="$t('i18n_01f01e2807')" />
         </n-form-item>
       </n-form>
     </CustomModal>
@@ -154,7 +154,7 @@
           <n-input :value="imageForm.name" disabled />
         </n-form-item>
         <n-form-item :label="$t('i18n_413f0e52')" required>
-          <n-input v-model:value="imageForm.imageName" placeholder="如 web-prod-20260831" />
+          <n-input v-model:value="imageForm.imageName" :placeholder="$t('i18n_7e26da76f6')" />
         </n-form-item>
       </n-form>
     </CustomModal>
@@ -205,7 +205,7 @@ const saveAccount = async () => {
     return
   }
   if (!accForm.accessKey || !accForm.accessKey.trim() || !accForm.secretKey || !accForm.secretKey.trim()) {
-    $message.warning('请填写 AccessKey 和 SecretKey')
+    $message.warning(t('i18n_676167d3df'))
     return
   }
   const res: any = await saveCloudAccount(accForm)
@@ -252,7 +252,7 @@ const saveInstance = async () => {
     return
   }
   if (!instForm.instanceId || !instForm.instanceId.trim()) {
-    $message.warning('请填写实例ID')
+    $message.warning(t('i18n_bae31c48b6'))
     return
   }
   const res: any = await saveCloudInstance({ ...instForm, accountId: currentAccountId.value })
@@ -265,7 +265,7 @@ const saveInstance = async () => {
 // 生产实例的停止/重启是破坏性操作：二次确认（带实例名）+ 行级 loading 防连点
 const operating = ref('')
 const operate = (record, action) => {
-  const actionText = action === 'stop' ? '停止' : action === 'reboot' ? '重启' : action
+  const actionText = action === 'stop' ? t('i18n_095e938e') : action === 'reboot' ? t('i18n_01b4e06f') : action
   const doExec = async () => {
     operating.value = record.instanceId + action
     try {
@@ -280,7 +280,7 @@ const operate = (record, action) => {
   }
   if (action === 'stop' || action === 'reboot') {
     $confirm({
-      title: `确认${actionText}实例 ${record.name || record.instanceId}（${record.instanceId}）？`,
+      title: t('i18n_8c872bff05', { action: actionText, name: record.name || record.instanceId, instanceId: record.instanceId }),
       onOk: doExec
     })
     return
@@ -382,7 +382,7 @@ const createSnapshot = async () => {
 const removeSnapshot = (record) => {
   $confirm({
     title: t('i18n_3f04bd3d'),
-    content: `确定删除快照 ${record.snapshotId} 吗？`,
+    content: t('i18n_9d21926027', { snapshotId: record.snapshotId }),
     okText: t('i18n_38cf16f2'),
     cancelText: t('i18n_625fb26b'),
     onOk: async () => {
@@ -463,13 +463,13 @@ const accountColumns = [
 ]
 
 const instanceColumns = [
-  { title: '实例ID', key: 'instanceId', width: 120 },
+  { title: t('i18n_1782d6afac'), key: 'instanceId', width: 120 },
   { title: t('i18n_d7ec2d3f'), key: 'name', width: 120 },
-  { title: '公网IP', key: 'publicIp', width: 120 },
-  { title: '内网IP', key: 'privateIp', width: 120 },
+  { title: t('i18n_efed5dc863'), key: 'publicIp', width: 120 },
+  { title: t('i18n_c66462042e'), key: 'privateIp', width: 120 },
   { title: t('i18n_d3ce40d8'), key: 'regionId', width: 110 },
   { title: t('i18n_ea887bd0'), key: 'instanceType', width: 130 },
-  { title: 'CPU/内存', key: 'cpuMem', width: 100, render: (row) => `${row.cpu || '-'}核/${memG(row.memory)}` },
+  { title: t('i18n_0ffc085022'), key: 'cpuMem', width: 100, render: (row) => `${row.cpu || '-'}${t('i18n_163bb04013')}/${memG(row.memory)}` },
   { title: t('i18n_3fea7ca7'), key: 'status', width: 90 },
   { title: t('i18n_22e888c2'), key: 'expireTime', width: 160 },
   {
@@ -533,7 +533,7 @@ const instanceColumns = [
 ]
 
 const snapshotColumns = [
-  { title: '快照ID', key: 'snapshotId' },
+  { title: t('i18n_a58f86f91a'), key: 'snapshotId' },
   { title: t('i18n_d7ec2d3f'), key: 'name' },
   { title: t('i18n_3fea7ca7'), key: 'status', width: 90 },
   { title: t('i18n_4f5537dd'), key: 'diskId' },
@@ -552,7 +552,7 @@ const snapshotColumns = [
 ]
 
 const scalingGroupColumns = [
-  { title: '伸缩组ID', key: 'scalingGroupId' },
+  { title: t('i18n_6a9d9529f5'), key: 'scalingGroupId' },
   { title: t('i18n_d7ec2d3f'), key: 'name' },
   { title: t('i18n_3fea7ca7'), key: 'status', width: 90 },
   {

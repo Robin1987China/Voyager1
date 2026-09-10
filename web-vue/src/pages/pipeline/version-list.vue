@@ -4,7 +4,7 @@
       is-show-tools
       :active-page="activePage"
       table-name="version-list"
-      :empty-description="'暂无版本'"
+      :empty-description="$t('i18n_4f31e0e575')"
       :columns="columns"
       :data="filteredList"
       :loading="loading"
@@ -20,12 +20,12 @@
           <n-input
             v-model:value="keyword"
             class="search-input-item"
-            placeholder="版本号（模糊匹配）"
+            :placeholder="$t('i18n_9beff70da6')"
             clearable
             @press-enter="changePage({ current: 1, pageSize: listQuery.limit })"
           />
-          <n-button type="primary" :loading="loading" @click="changePage({ current: 1, pageSize: listQuery.limit })">查询</n-button>
-          <n-button type="primary" @click="openCreate">创建版本</n-button>
+          <n-button type="primary" :loading="loading" @click="changePage({ current: 1, pageSize: listQuery.limit })">{{ $t('i18n_bee912d79e') }}</n-button>
+          <n-button type="primary" @click="openCreate">{{ $t('i18n_305445c8f0') }}</n-button>
         </n-space>
       </template>
       <template #tableBodyCell="{ column, text, record }">
@@ -41,11 +41,11 @@
         <template v-else-if="column.dataIndex === 'operation'">
           <n-space>
             <n-button v-if="record.status === 0" type="primary" size="small" @click="openAction(record, 'submit')"
-              >提测</n-button
+              >{{ $t('i18n_e6a92d13a1') }}</n-button
             >
-            <n-button v-if="record.status === 1" danger size="small" @click="openAction(record, 'return')">打回</n-button>
+            <n-button v-if="record.status === 1" danger size="small" @click="openAction(record, 'return')">{{ $t('i18n_9a7b15dccc') }}</n-button>
             <n-button v-if="record.status === 1" type="primary" size="small" @click="openAction(record, 'release')"
-              >发布</n-button
+              >{{ $t('i18n_83611abd5f') }}</n-button
             >
             <n-dropdown
               v-if="record.status !== 3"
@@ -53,7 +53,7 @@
               :options="envOptions"
               @select="(key) => deployToEnv(record, key)"
             >
-              <n-button type="info" size="small">部署到环境</n-button>
+              <n-button type="info" size="small">{{ $t('i18n_739426ab8c') }}</n-button>
             </n-dropdown>
             <n-dropdown
               v-if="record.status === 1 || record.status === 2"
@@ -61,7 +61,7 @@
               :options="promoteOptions"
               @select="(key) => promote(record, key)"
             >
-              <n-button type="success" size="small">晋升</n-button>
+              <n-button type="success" size="small">{{ $t('i18n_e5cab0a893') }}</n-button>
             </n-dropdown>
           </n-space>
         </template>
@@ -73,20 +73,20 @@
 
     <CustomModal
       v-model:open="createVisible"
-      title="从构建记录生成版本"
+      :title="$t('i18n_8bc9b8680a')"
       :mask-closable="false"
       :confirm-loading="createLoading"
       @ok="createVersion"
     >
       <n-form label-width="100px">
-        <n-form-item label="构建配置" required>
-          <n-input v-model:value="createForm.buildId" placeholder="构建配置 id（应用）" />
+        <n-form-item :label="$t('i18n_5e4a086d54')" required>
+          <n-input v-model:value="createForm.buildId" :placeholder="$t('i18n_4b9a47f04c')" />
         </n-form-item>
-        <n-form-item label="构建记录" required>
-          <n-input-number v-model:value="createForm.buildNumberId" placeholder="构建记录编号 #" style="width: 100%" />
+        <n-form-item :label="$t('i18n_60af0e54e5')" required>
+          <n-input-number v-model:value="createForm.buildNumberId" :placeholder="$t('i18n_c501573294')" style="width: 100%" />
         </n-form-item>
-        <n-form-item label="备注">
-          <n-input v-model:value="createForm.remark" placeholder="版本备注（可选）" />
+        <n-form-item :label="$t('i18n_2432b57515')">
+          <n-input v-model:value="createForm.remark" :placeholder="$t('i18n_2cd6e479ce')" />
         </n-form-item>
       </n-form>
     </CustomModal>
@@ -99,11 +99,11 @@
       @ok="doAction"
     >
       <n-form label-width="100px">
-        <n-form-item :label="actionType === 'return' ? '打回原因' : '备注'" :required="actionType === 'return'">
+        <n-form-item :label="actionType === 'return' ? $t('i18n_181eda4b58') : $t('i18n_2432b57515')" :required="actionType === 'return'">
           <n-input
             v-model:value="actionRemark"
             type="textarea"
-            :placeholder="actionType === 'return' ? '请填写打回原因（必填，将记录到版本审计）' : '操作备注（可选）'"
+            :placeholder="actionType === 'return' ? $t('i18n_ec621ddf56') : $t('i18n_8acc54f2ef')"
           />
         </n-form-item>
       </n-form>
@@ -113,6 +113,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, reactive, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { COMPUTED_PAGINATION, PAGE_DEFAULT_LIST_QUERY, parseTime } from '@/utils/const'
 import {
@@ -124,21 +125,23 @@ import {
 } from '@/api/pipeline'
 import { listEnvironments, deployVersion, promoteVersion } from '@/api/environment'
 
+const { t: $t } = useI18n()
+
 const route = useRoute()
 
 const columns = [
-  { title: '版本号', key: 'version' },
-  { title: '应用', key: 'buildId' },
-  { title: '构建记录', key: 'buildNumberId' },
-  { title: '状态', key: 'status' },
-  { title: '产物', key: 'artifactRef' },
-  { title: '备注', key: 'remark' },
+  { title: $t('i18n_d0b2958432'), key: 'version' },
+  { title: $t('i18n_5b0520a9bf'), key: 'buildId' },
+  { title: $t('i18n_60af0e54e5'), key: 'buildNumberId' },
+  { title: $t('i18n_3fea7ca76c'), key: 'status' },
+  { title: $t('i18n_7dfcab648d'), key: 'artifactRef' },
+  { title: $t('i18n_2432b57515'), key: 'remark' },
   {
-    title: '创建时间',
+    title: $t('i18n_eca37cb072'),
     key: 'createTimeMillis',
     render: (row) => (row['createTimeMillis'] ? parseTime(row['createTimeMillis']) : '')
   },
-  { title: '操作', key: 'operation', width: 220 }
+  { title: $t('i18n_2b6bc0f293'), key: 'operation', width: 220 }
 ]
 const listQuery = reactive({ ...PAGE_DEFAULT_LIST_QUERY })
 const keyword = ref('')
@@ -175,15 +178,15 @@ const envOptions = computed(() =>
 )
 // 晋升目标：排除首个环境（首个环境无需晋升，直接部署）
 const promoteOptions = computed(() =>
-  environments.value.slice(1).map((e) => ({ label: `晋升到 ${e.name}`, key: e.name }))
+  environments.value.slice(1).map((e) => ({ label: $t('i18n_64aecd297d', { name: e.name }), key: e.name }))
 )
 
 const actionTitle = computed(() => {
-  const name = actionType.value === 'submit' ? '提测' : actionType.value === 'return' ? '打回' : '发布'
-  return `${name}版本 ${actionRecord.value?.version || ''}`
+  const name = actionType.value === 'submit' ? $t('i18n_e6a92d13a1') : actionType.value === 'return' ? $t('i18n_9a7b15dccc') : $t('i18n_83611abd5f')
+  return $t('i18n_a201e18bbc', { name, version: actionRecord.value?.version || '' })
 })
 
-const statusText = (s) => ({ 0: '开发中', 1: '已提测', 2: '已发布', 3: '已打回' })[s] || s
+const statusText = (s) => ({ 0: $t('i18n_29dd651c2f'), 1: $t('i18n_2b436a16fa'), 2: $t('i18n_dca0c13b83'), 3: $t('i18n_72649d75af') })[s] || s
 const statusColor = (s) => ({ 0: 'blue', 1: 'orange', 2: 'green', 3: 'red' })[s] || 'default'
 
 const loadEnvironments = async () => {
@@ -219,18 +222,18 @@ const openCreate = () => {
 
 const createVersion = async () => {
   if (!createForm.buildId || !createForm.buildId.trim()) {
-    $message.warning('请填写构建配置 id')
+    $message.warning($t('i18n_e9b9cb8c24'))
     return
   }
   if (createForm.buildNumberId === null || createForm.buildNumberId === undefined) {
-    $message.warning('请填写构建记录编号')
+    $message.warning($t('i18n_a208489bf7'))
     return
   }
   createLoading.value = true
   try {
     const res: any = await createVersionFromBuild(createForm)
     if (res.code === 200) {
-      $message.success('生成成功')
+      $message.success($t('i18n_b6c4a445a2'))
       createVisible.value = false
       loadData()
     }
@@ -248,7 +251,7 @@ const openAction = (record, action) => {
 
 const doAction = async () => {
   if (actionType.value === 'return' && !actionRemark.value.trim()) {
-    $message.warning('打回必须填写原因')
+    $message.warning($t('i18n_c82573fafe'))
     return
   }
   actionLoading.value = true
@@ -267,7 +270,7 @@ const doAction = async () => {
 
 const deployToEnv = (record, envName) => {
   $confirm({
-    title: `确认部署版本 ${record.version} 到环境 ${envName}？`,
+    title: $t('i18n_7786fef335', { version: record.version, envName }),
     onOk: async () => {
       const res: any = await deployVersion({ versionId: record.id, environment: envName })
       if (res.code === 200) {
@@ -280,7 +283,7 @@ const deployToEnv = (record, envName) => {
 
 const promote = (record, envName) => {
   $confirm({
-    title: `确认晋升版本 ${record.version} 到 ${envName}？（同一制品，不重新构建）`,
+    title: $t('i18n_91297526a1', { version: record.version, envName }),
     onOk: async () => {
       const res: any = await promoteVersion({ versionId: record.id, environment: envName })
       if (res.code === 200) {

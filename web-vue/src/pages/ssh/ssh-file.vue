@@ -2,7 +2,7 @@
   <!-- 布局 -->
   <n-layout class="ssh-file-layout">
     <!-- 目录树 -->
-    <n-layout-sider theme="light" class="sider" width="25%">
+    <n-layout-sider theme="dark" class="sider" width="25%">
       <n-grid class="dir-container">
         <n-space>
           <n-button size="small" type="primary" @click="loadData()">{{ $t('i18n_694fc5efa9') }}</n-button>
@@ -1299,10 +1299,10 @@ export default {
 }
 .dir-container {
   padding: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--dsh-divider);
 }
 .sider {
-  border: 1px solid #e2e2e2;
+  border: 1px solid var(--dsh-divider);
   /* overflow-x: auto; */
 }
 .file-content {
@@ -1325,7 +1325,7 @@ export default {
     align-items: center;
   }
   :deep(.n-tree-node--selected > .n-tree-node-content) {
-    background-color: #1677ff;
+    background-color: #4176e6;
     color: #fff;
   }
 }

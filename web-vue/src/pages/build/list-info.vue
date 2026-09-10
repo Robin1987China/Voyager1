@@ -206,7 +206,7 @@
             <n-grid-item :span="6" class="title text-overflow-hidden">{{ $t('i18n_b5d0091ae3') }}:</n-grid-item>
             <n-grid-item :span="18" class="content text-overflow-hidden">
               <n-tag v-if="item.buildId <= 0">-</n-tag>
-              <n-tag v-else color="#108ee9" @click="handleBuildLog(item)">#{{ item.buildId }}</n-tag>
+              <n-tag v-else color="#4176e6" @click="handleBuildLog(item)">#{{ item.buildId }}</n-tag>
             </n-grid-item>
           </n-grid>
 
@@ -371,7 +371,7 @@
               <span class="tw">
                 <span class="tw">
                   <span v-if="record.buildId <= 0"></span>
-                  <n-tag v-else color="#108ee9" @click="handleBuildLog(record)">#{{ text }}</n-tag>
+                  <n-tag v-else color="#4176e6" @click="handleBuildLog(record)">#{{ text }}</n-tag>
                 </span>
               </span>
             </template>{{ 

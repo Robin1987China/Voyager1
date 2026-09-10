@@ -398,7 +398,7 @@
                       :stroke-color="{
                         '0%': '#87d068',
                         '30%': '#87d068',
-                        '100%': '#108ee9'
+                        '100%': '#4176e6'
                       }"
                       status="active"
                       :percent="item.occupyCpu"
@@ -416,7 +416,7 @@
                       :stroke-color="{
                         '0%': '#87d068',
                         '30%': '#87d068',
-                        '100%': '#108ee9'
+                        '100%': '#4176e6'
                       }"
                       status="active"
                       :percent="item.occupyDisk"
@@ -434,7 +434,7 @@
                       :stroke-color="{
                         '0%': '#87d068',
                         '30%': '#87d068',
-                        '100%': '#108ee9'
+                        '100%': '#4176e6'
                       }"
                       status="active"
                       :percent="item.occupyMemory"

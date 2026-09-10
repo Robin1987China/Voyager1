@@ -4,7 +4,7 @@
     <n-spin tip="Loading..." :spinning="loading">
       <n-layout class="file-layout">
         <!-- 目录树 -->
-        <n-layout-sider theme="light" class="sider" width="25%">
+        <n-layout-sider theme="dark" class="sider" width="25%">
           <div class="dir-container">
             <n-space>
               <n-button size="small" type="primary" @click="loadData">{{ $t('i18n_90b5a467c1') }}</n-button>
@@ -1383,13 +1383,13 @@ export default {
   width: auto;
 }
 .sider {
-  border: 1px solid #e2e2e2;
+  border: 1px solid var(--dsh-divider);
   height: calc(100vh - 80px);
   overflow-y: auto;
 }
 .dir-container {
   padding: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--dsh-divider);
 }
 .file-content {
   height: calc(100vh - 100px);
@@ -1409,7 +1409,7 @@ export default {
     align-items: center;
   }
   :deep(.n-tree-node--selected > .n-tree-node-content) {
-    background-color: #1677ff;
+    background-color: #4176e6;
     color: #fff;
   }
 }

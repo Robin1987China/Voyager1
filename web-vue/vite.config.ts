@@ -37,9 +37,20 @@ export default defineConfig(({ mode }: ConfigEnv) => {
           // 用于从入口点创建的块的打包输出格式[name]表示文件名,[hash]表示该文件内容hash值
           entryFileNames: 'assets/js/[name].[hash].js', // 用于命名代码拆分时创建的共享块的输出命名
           chunkFileNames: 'assets/js/[name].[hash].js', // 用于输出静态资源的命名，[ext]表示文件扩展名
-          assetFileNames: 'assets/[ext]/[name].[hash].[ext]'
+          assetFileNames: 'assets/[ext]/[name].[hash].[ext]',
+          // 拆分大体积第三方库，避免单个 chunk 超过 500KB
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return
+            if (id.includes('naive-ui')) return 'naive-ui'
+            if (id.includes('echarts') || id.includes('zrender')) return 'echarts'
+            if (id.includes('xterm')) return 'xterm'
+            if (id.includes('codemirror') || id.includes('@codemirror')) return 'codemirror'
+            if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router')) return 'vue-vendor'
+            return 'vendor'
+          }
         }
       },
+      chunkSizeWarningLimit: 1500,
       //打包前清空文件，默认true
       emptyOutDir: true,
       modulePreload: { polyfill: true },

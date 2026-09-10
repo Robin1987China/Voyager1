@@ -118,10 +118,14 @@ export default {
         // Whether input should be disabled.
         disableStdin: false,
         rendererType: 'canvas',
+        fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--dsh-font-mono') || 'monospace',
         theme: {
-          // foreground: "#7e9192", //字体
-          // background: "#002833", //背景色
-          cursor: 'help', //设置光标
+          // DSH 暗色：与全站蓝灰色阶一致
+          foreground: '#f9fafb',
+          background: '#151517',
+          cursor: '#5686fe',
+          cursorAccent: '#151517',
+          selectionBackground: 'rgba(86, 134, 254, 0.35)',
           lineHeight: 16
         }
       })

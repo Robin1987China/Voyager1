@@ -2,7 +2,7 @@
   <div>
     <n-layout class="log-layout">
       <!-- 侧边栏 文件树 -->
-      <n-layout-sider theme="light" class="sider" width="20%">
+      <n-layout-sider theme="dark" class="sider" width="20%">
         <n-empty v-if="list.length === 0" />
         <n-tree
           :data="list"
@@ -198,7 +198,7 @@ export default {
   margin: 0;
 }
 .sider {
-  border: 1px solid #e2e2e2;
+  border: 1px solid var(--dsh-divider);
   height: calc(100vh - 80px);
   overflow-y: auto;
 }

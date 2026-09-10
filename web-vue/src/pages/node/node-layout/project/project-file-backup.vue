@@ -619,13 +619,13 @@ export default {
   padding: 0;
 }
 .sider {
-  border: 1px solid #e2e2e2;
+  border: 1px solid var(--dsh-divider);
   height: calc(100vh - 80px);
   overflow-y: auto;
 }
 .dir-container {
   padding: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--dsh-divider);
 }
 .file-content {
   height: calc(100vh - 100px);

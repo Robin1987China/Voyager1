@@ -491,18 +491,18 @@ onMounted(loadClusters)
   transition: all 0.2s;
 }
 .cluster-item:hover {
-  border-color: #1677ff;
+  border-color: #4176e6;
 }
 .cluster-item.active {
-  border-color: #1677ff;
-  background: var(--app-color-primary-bg);
+  border-color: #4176e6;
+  background: rgba(65, 118, 230, 0.15);
 }
 .cluster-name {
   font-weight: 600;
   font-size: 13px;
 }
 .cluster-meta {
-  color: var(--app-color-text-secondary);
+  color: var(--dsh-text-secondary);
   font-size: 12px;
   margin: 2px 0 4px;
 }
@@ -511,7 +511,7 @@ onMounted(loadClusters)
   gap: 4px;
 }
 .yaml-view {
-  background: #0b1220;
+  background: var(--dsh-bg-base);
   color: #7bd88f;
   padding: 12px;
   border-radius: 6px;
@@ -523,7 +523,7 @@ onMounted(loadClusters)
   word-break: break-all;
 }
 .log-view {
-  background: #0b1220;
+  background: var(--dsh-bg-base);
   color: #d0d0d0;
   padding: 12px;
   border-radius: 6px;

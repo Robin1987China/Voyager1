@@ -50,9 +50,9 @@ export const useAppStore = defineStore('app', {
           console.log(
             '\n %c ' + parseTime(buildInfo.t) + ' %c vs %c ' + buildInfo.v + ' %c vs %c ' + data,
             'color: #ffffff; background: #f1404b; padding:5px 0;',
-            'background: #1890ff; padding:5px 0;',
+            'background: #4176e6; padding:5px 0;',
             'color: #ffffff; background: #f1404b; padding:5px 0;',
-            'background: #1890ff; padding:5px 0;',
+            'background: #4176e6; padding:5px 0;',
             'color: #ffffff; background: #f1404b; padding:5px 0;'
           )
         })

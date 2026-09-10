@@ -109,7 +109,7 @@
           <n-tooltip placement="topLeft">
             <template #trigger>
               <span class="tw">
-                <n-tag color="#108ee9">{{ renderSizeFormat(text) }}</n-tag>
+                <n-tag color="#4176e6">{{ renderSizeFormat(text) }}</n-tag>
               </span>
             </template>
             renderSizeFormat(text) + ' ' + record.sha1Sum

@@ -57,7 +57,7 @@
           'app-header-dark': theme == 'dark'
         }"
         :style="{
-          background: theme === 'light' ? '#fff' : '#141414'
+          background: theme === 'light' ? '#fff' : '#151517'
         }"
       >
         <n-space direction="vertical" style="width: 100%" :item-style="{ width: '100%' }">

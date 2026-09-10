@@ -237,16 +237,17 @@ export default {
 </script>
 <style scoped>
 .log-view-wrapper {
-  background: #292a2b;
+  background: var(--dsh-bg-layer3);
   color: #ffb86c;
   padding: 10px;
-  box-shadow: inset 0 0 10px 0 #e8e8e8;
+  box-shadow: inset 0 0 10px 0 rgba(0, 0, 0, 0.5);
   border-radius: 8px;
 }
 .scroller {
   height: 100%;
   width: 100%;
   font-family:
+    var(--dsh-font-mono),
     Operator Mono,
     Source Code Pro,
     Menlo,

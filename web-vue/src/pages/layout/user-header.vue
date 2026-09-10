@@ -145,115 +145,6 @@
         </n-form-item>
       </n-form>
     </CustomModal>
-    <!-- 个性配置区 -->
-    <CustomModal
-      v-if="customizeVisible"
-      v-model:open="customizeVisible"
-      :title="$t('i18n_cb09b98416')"
-      :footer="null"
-      :mask-closable="false"
-      width="50%"
-      @ok="customizeVisible = false"
-    >
-      <n-form :model="temp">
-        <n-alert banner>
-          <template #message> {{ $t('i18n_bf93517805') }},{{ $t('i18n_52b526ab9e') }} </template>
-        </n-alert>
-        <!-- <n-form-item label="页面导航">
-          <n-space>
-            <n-switch
-              :checked-label="开"
-              @click="toggleGuide"
-              :value="!this.guideStatus"
-              :disabled="this.getDisabledGuide"
-              :unchecked-label="关"
-            />
-
-            <div v-if="!this.guideStatus">
-              重置导航
-              <RestOutlined @click="restGuide" />
-            </div>
-          </n-space>
-        </n-form-item> -->
-        <n-form-item :label="$t('i18n_156af3b3d1')">
-          <template #help>{{ $t('i18n_ecdf9093d0') }}</template>
-
-          <n-switch
-            :checked-label="$t('i18n_0a60ac8f02')"
-            :value="menuMultipleFlag"
-            :unchecked-label="$t('i18n_c9744f45e7')"
-            @click="toggleMenuMultiple"
-          />
-        </n-form-item>
-        <!-- <n-form-item label="页面配置">
-          <n-space>
-            自动撑开：
-            <n-switch
-              :checked-label="是"
-              @click="toggleFullScreenFlag"
-              :value="this.fullScreenFlag"
-              :unchecked-label="否"
-            />
-          </n-space>
-        </n-form-item>
-        <n-form-item label="滚动条显示">
-          <n-space>
-            全局配置：
-            <n-switch
-              :checked-label="显示"
-              @click="toggleScrollbarFlag"
-              :value="this.scrollbarFlag"
-              :unchecked-label="不显示"
-            />
-          </n-space>
-        </n-form-item> -->
-        <n-form-item :label="$t('i18n_0113fc41fc')">
-          <template #help>{{ $t('i18n_b5fdd886b6') }}</template>
-
-          <n-switch
-            :checked-label="$t('i18n_185926bf98')"
-            :value="fullscreenViewLog"
-            :unchecked-label="$t('i18n_c5a2c23d89')"
-            @click="toggleFullscreenViewLog"
-          />
-        </n-form-item>
-        <n-form-item :label="$t('i18n_5d9c139f38')">
-          <n-radio-group v-model:value="themeView" button-style="solid">
-            <n-radio-button v-for="item in getSupportThemes" :key="item.value" :value="item.value">
-              {{ item.label }}
-            </n-radio-button>
-          </n-radio-group>
-
-          <template #help>{{ $t('i18n_2b4bb321d7') }}</template>
-        </n-form-item>
-        <n-form-item :label="$t('i18n_593e04dfad')">
-          <n-radio-group v-model:value="menuThemeView" button-style="solid">
-            <n-radio-button value="light">{{ $t('i18n_48d0a09bdd') }}</n-radio-button>
-            <n-radio-button value="dark">{{ $t('i18n_41e8e8b993') }}</n-radio-button>
-          </n-radio-group>
-
-          <template #help>{{ $t('i18n_fbfeb76b33') }}</template>
-        </n-form-item>
-
-        <n-form-item :label="$t('i18n_4f50cd2a5e')">
-          <n-switch
-            :checked-label="$t('i18n_03e59bb33c')"
-            :value="compactView"
-            :unchecked-label="$t('i18n_43e534acf9')"
-            @click="toggleCompactView"
-          />
-        </n-form-item>
-        <n-form-item :label="$t('i18n_295bb704f5')">
-          <template #help>{{ $t('i18n_92f9a3c474') }}</template>
-
-          <n-select
-            v-model:value="locale"
-            style="width: 220px"
-            :options="supportLang.map((item) => ({ label: item.label, value: item.value }))"
-          />
-        </n-form-item>
-      </n-form>
-    </CustomModal>
     <!-- 查看操作日志 -->
     <CustomModal
       v-if="viewLogVisible"
@@ -281,7 +172,6 @@ import {
   ProfileOutlined,
   RestOutlined,
   RetweetOutlined,
-  SkinOutlined,
   SwapOutlined
 } from '@ant-design/icons-vue'
 import { editUserInfo, getUserInfo, myWorkspace, sendEmailCode, updatePwd, clusterList } from '@/api/user/user'
@@ -320,7 +210,6 @@ export default {
       myClusterList: [],
       currentClusterId: '',
       selectWorkspace: {},
-      customizeVisible: false,
       // 表单校验规则
       rules: {
         name: [
@@ -442,8 +331,6 @@ export default {
         divider('d-user'),
         { label: this.$t('i18n_cda84be2f6'), key: 'userlog', icon: icon(BarsOutlined) },
         divider('d-userlog'),
-        { label: this.$t('i18n_b4fd7afd31'), key: 'customize', icon: icon(SkinOutlined) },
-        divider('d-customize'),
         { label: this.$t('i18n_44efd179aa'), key: 'logout', icon: icon(LogoutOutlined) },
         divider('d-logout'),
         { label: this.$t('i18n_86c1eb397d'), key: 'logout-swap', icon: icon(SwapOutlined) },
@@ -565,9 +452,6 @@ export default {
         case 'userlog':
           this.handleUserlog()
           break
-        case 'customize':
-          this.customize()
-          break
         case 'logout':
           this.logOut()
           break
@@ -578,10 +462,6 @@ export default {
           this.logOutAll()
           break
       }
-    },
-
-    customize() {
-      this.customizeVisible = true
     },
 
     init() {

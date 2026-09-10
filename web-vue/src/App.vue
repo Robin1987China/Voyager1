@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :theme="naiveTheme">
+  <n-config-provider :theme="naiveTheme" :theme-overrides="dshThemeOverrides">
     <n-message-provider>
       <n-dialog-provider>
         <n-notification-provider>
@@ -32,16 +32,20 @@ import { onMounted, onUnmounted } from 'vue'
 import { changeLang } from './i18n'
 import { useI18n } from 'vue-i18n'
 import { syncDiscreteTheme } from '@/d.ts/global/global'
+import { dshThemeOverrides, installDshCssVars } from '@/theme/dsh'
 const routerActivation = ref(true)
 const useGuideStore = guideStore()
 const i18nHook = useI18n()
 const t = i18nHook.t
 
-// 主题（light/dark/auto），绑定到 Naive n-config-provider
+// 主题绑定到 Naive n-config-provider；DSH 调色板经 theme-overrides 统一覆盖（见 theme/dsh.ts）
 const naiveTheme = computed(() => {
   const theme = useGuideStore.getThemeView()
   return theme === 'dark' ? darkTheme : lightTheme
 })
+
+// 注入 --dsh-* CSS 变量，供自定义样式引用
+installDshCssVars()
 
 // 同步主题到离散弹层（$message/$notification/$confirm）
 watch(
@@ -160,21 +164,18 @@ provide('globalLoading', globalLoading)
 </script>
 <style lang="less">
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  // color: #2c3e50;
   margin: 0;
   padding: 0;
 }
 
 .globalLoading {
   z-index: 99999;
-  // background-color: #1f1f1f;
-  // background-color: rgba(0, 0, 0, 0.7);
-  background-color: rgba(140, 140, 140, 0.2);
-  opacity: 0.8;
   height: 100vh;
+  // 注意：此处是 n-spin 内容容器（content-class），不要设置常驻背景/透明度——
+  // 否则所有页面都会被一层"薄纱"罩住；真正的加载遮罩由 n-spin 在 show=true 时自行渲染。
 }
 </style>
 <style scoped>

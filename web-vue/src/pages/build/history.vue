@@ -93,7 +93,7 @@
           <n-tooltip>
             <template #trigger>
               <span class="tw">
-                <n-tag color="#108ee9" @click="handleBuildLog(record)">
+                <n-tag color="#4176e6" @click="handleBuildLog(record)">
                   #{{ text }}<template v-if="record.fromBuildNumberId">&lt;-{{ record.fromBuildNumberId }}</template>
                 </n-tag>
               </span>
@@ -233,9 +233,9 @@
           right: 0,
           bottom: 0,
           width: '100%',
-          borderTop: '1px solid #e9e9e9',
+          borderTop: '1px solid var(--dsh-divider)',
           padding: '10px 16px',
-          background: '#fff',
+          background: 'var(--dsh-bg-layer2)',
           textAlign: 'right',
           zIndex: 1
         }"

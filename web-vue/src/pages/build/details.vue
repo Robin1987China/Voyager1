@@ -35,7 +35,7 @@
 
         <n-descriptions-item :label="$t('i18n_66aafbdb72')">
           <span v-if="data.buildId <= 0"></span>
-          <n-tag v-else color="#108ee9">#{{ data.buildId }}</n-tag>
+          <n-tag v-else color="#4176e6">#{{ data.buildId }}</n-tag>
         </n-descriptions-item>
         <n-descriptions-item :label="$t('i18n_248c9aa7aa')">
           <n-tooltip>

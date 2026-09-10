@@ -149,12 +149,8 @@ export const useGuideStore = defineStore('guide', {
     getExtendPlugins(state) {
       return state.extendPlugins
     },
-    getCatchThemeView: (state) => {
-      return () => {
-        // 默认深色主题（与登录页深空风格一致；未设置过则为 dark）
-        const theme = state.guideCache.themeView || 'dark'
-        return allowThemeView.includes(theme) ? theme : 'dark'
-      }
+    getCatchThemeView: () => {
+      return () => 'dark'
     },
     getSupportThemes: () => {
       return [
@@ -190,15 +186,8 @@ export const useGuideStore = defineStore('guide', {
         }
       }
     },
-    getMenuThemeView: (state) => {
-      return () => {
-        // 侧边栏默认跟随主主题
-        const menuThemeView = state.guideCache.menuThemeView || state.guideCache.themeView || 'dark'
-        if (allowThemeView.includes(menuThemeView)) {
-          return menuThemeView
-        }
-        return 'dark'
-      }
+    getMenuThemeView: () => {
+      return () => 'dark'
     },
     // 计算弹窗全屏样式
     getFullscreenViewLogStyle: (state) => {

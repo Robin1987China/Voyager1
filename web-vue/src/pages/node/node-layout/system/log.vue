@@ -221,7 +221,7 @@ export default {
   margin: 0;
 }
 .log-sider {
-  border: 1px solid #e2e2e2;
+  border: 1px solid var(--dsh-divider);
   overflow-x: auto;
   height: calc(100vh - 110px);
   /* width: max-content; */

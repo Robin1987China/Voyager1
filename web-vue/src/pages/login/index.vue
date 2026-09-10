@@ -504,7 +504,7 @@ onBeforeUnmount(() => {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(13, 23, 42, 0.55);
+  background: rgba(27, 27, 28, 0.72);
   backdrop-filter: blur(24px) saturate(1.2);
   -webkit-backdrop-filter: blur(24px) saturate(1.2);
   border: 1px solid rgba(148, 163, 184, 0.18);
@@ -530,7 +530,7 @@ onBeforeUnmount(() => {
   height: 3px;
   border-radius: 2px;
   margin: 10px auto 0;
-  background: linear-gradient(90deg, #d9a93f, #8a5e1b);
+  background: linear-gradient(90deg, #5686fe, #4868b2);
   opacity: 0.85;
 }
 
@@ -542,7 +542,7 @@ onBeforeUnmount(() => {
 .brand-logo {
   width: 68px;
   height: 68px;
-  filter: drop-shadow(0 6px 18px rgba(217, 169, 63, 0.35));
+  filter: drop-shadow(0 6px 18px rgba(86, 134, 254, 0.35));
   animation: logoFloat 6s ease-in-out infinite;
 }
 @keyframes logoFloat {
@@ -560,7 +560,7 @@ onBeforeUnmount(() => {
   font-weight: 600;
   letter-spacing: 8px;
   text-indent: 8px;
-  background: linear-gradient(135deg, #f4e2ae 0%, #d9a93f 55%, #b0802a 100%);
+  background: linear-gradient(135deg, #c7d8fe 0%, #5686fe 55%, #4176e6 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -596,18 +596,18 @@ onBeforeUnmount(() => {
 .btn-login {
   width: 100%;
   margin: 10px 0;
-  background: linear-gradient(135deg, #e8c97e, #c99b3f);
+  background: linear-gradient(135deg, #5686fe, #4176e6);
   border: none;
-  color: #231603;
+  color: #f9fafb;
   font-weight: 600;
-  box-shadow: 0 8px 24px rgba(217, 169, 63, 0.35);
+  box-shadow: 0 8px 24px rgba(65, 118, 230, 0.35);
   letter-spacing: 4px;
 }
 .btn-login:hover,
 .btn-login:focus {
-  background: linear-gradient(135deg, #f4e2ae, #d9a93f);
-  color: #1c1006;
-  box-shadow: 0 10px 28px rgba(217, 169, 63, 0.5);
+  background: linear-gradient(135deg, #6b96ff, #5686fe);
+  color: #f9fafb;
+  box-shadow: 0 10px 28px rgba(65, 118, 230, 0.5);
 }
 
 /* 深色玻璃卡片内的 naive 组件适配 */
@@ -616,7 +616,7 @@ onBeforeUnmount(() => {
   padding: 30px;
 }
 :deep(.n-input) {
-  background: rgba(15, 27, 48, 0.6);
+  background: rgba(21, 21, 23, 0.6);
   border-radius: 8px;
 }
 :deep(.n-input .n-input__input-el),

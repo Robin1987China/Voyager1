@@ -484,7 +484,7 @@ onMounted(loadClusters)
 }
 .cluster-item {
   padding: 8px 10px;
-  border: 1px solid var(--app-color-border-secondary);
+  border: 1px solid var(--dsh-border);
   border-radius: 6px;
   margin-bottom: 6px;
   cursor: pointer;

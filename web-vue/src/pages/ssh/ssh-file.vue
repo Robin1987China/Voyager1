@@ -2,7 +2,7 @@
   <!-- 布局 -->
   <n-layout class="ssh-file-layout">
     <!-- 目录树 -->
-    <n-layout-sider theme="light" class="sider" width="25%">
+    <n-layout-sider theme="dark" class="sider" width="25%">
       <n-grid class="dir-container">
         <n-space>
           <n-button size="small" type="primary" @click="loadData()">{{ $t('i18n_694fc5efa9') }}</n-button>

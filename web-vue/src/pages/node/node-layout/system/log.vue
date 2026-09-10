@@ -1,7 +1,7 @@
 <template>
   <n-layout class="log-layout">
     <!-- 侧边栏 文件树 -->
-    <n-layout-sider theme="light" class="log-sider" width="20%">
+    <n-layout-sider theme="dark" class="log-sider" width="20%">
       <n-empty v-if="list.length === 0" />
       <n-tree
         :data="list"

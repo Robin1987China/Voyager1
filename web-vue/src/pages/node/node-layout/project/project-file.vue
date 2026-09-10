@@ -4,7 +4,7 @@
     <n-spin tip="Loading..." :spinning="loading">
       <n-layout class="file-layout">
         <!-- 目录树 -->
-        <n-layout-sider theme="light" class="sider" width="25%">
+        <n-layout-sider theme="dark" class="sider" width="25%">
           <div class="dir-container">
             <n-space>
               <n-button size="small" type="primary" @click="loadData">{{ $t('i18n_90b5a467c1') }}</n-button>

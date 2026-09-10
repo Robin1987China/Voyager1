@@ -1,11 +1,11 @@
 <template>
   <n-layout style="padding: 5px 0">
     <n-layout-sider
-      theme="light"
+      theme="dark"
       width="200"
       :style="{
         height: `calc(100vh - 10px)`,
-        borderRight: '1px solid #e8e8e8',
+        borderRight: '1px solid var(--dsh-divider)',
         overflowX: 'scroll'
       }"
     >

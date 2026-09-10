@@ -91,7 +91,7 @@
     <!-- 布局 -->
     <n-layout v-show="!viewList" class="file-layout">
       <!-- 目录树 -->
-      <n-layout-sider theme="light" class="sider" width="25%">
+      <n-layout-sider theme="dark" class="sider" width="25%">
         <div class="dir-container">
           <n-space>
             <n-button

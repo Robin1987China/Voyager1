@@ -4,7 +4,7 @@ import App from './App.vue'
 import router from './router'
 import '@/router/auth'
 import i18n from './i18n'
-import { changeLang, defaultLocale } from './i18n'
+import { changeLang, defaultLocale, t } from './i18n'
 import { $notification } from '@/d.ts/global/global'
 
 changeLang(defaultLocale).then(() => {
@@ -25,7 +25,7 @@ changeLang(defaultLocale).then(() => {
       if (!errorNotified) {
         errorNotified = true
         $notification.error({
-          message: '页面出现异常',
+          message: t('i18n_95a18b994f'),
           description: String((err as Error)?.message || err),
           duration: 5000,
           onClose: () => {

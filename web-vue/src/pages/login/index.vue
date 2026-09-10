@@ -556,10 +556,12 @@ onBeforeUnmount(() => {
 }
 .brand-name {
   margin-top: 8px;
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 600;
-  letter-spacing: 8px;
-  text-indent: 8px;
+  /* 卡片仅 380-400px 宽：30px + 8px 字距会把「Voyager1 持续交付平台」挤到折行断词 */
+  letter-spacing: 3px;
+  text-indent: 3px;
+  white-space: nowrap;
   background: linear-gradient(135deg, #c7d8fe 0%, #5686fe 55%, #4176e6 100%);
   -webkit-background-clip: text;
   background-clip: text;

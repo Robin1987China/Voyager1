@@ -495,7 +495,10 @@ public class DeploymentService {
         return contents;
     }
 
-    private void collectManifests(java.io.File file, List<java.io.File> out) {
+    /**
+     * 递归收集结果目录下的 .yaml/.yml（包级可见，便于单元测试）。
+     */
+    void collectManifests(java.io.File file, List<java.io.File> out) {
         if (file == null || !file.exists()) {
             return;
         }

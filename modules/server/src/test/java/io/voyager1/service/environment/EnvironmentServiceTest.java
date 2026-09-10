@@ -44,6 +44,10 @@ public class EnvironmentServiceTest extends ApplicationStartTest {
     private VersionService versionService;
     @Autowired
     private io.voyager1.service.node.NodeService nodeService;
+    @Autowired
+    private io.voyager1.service.k8s.K8sService k8sService;
+    @Autowired
+    private io.voyager1.service.node.ssh.SshService sshService;
 
     @BeforeEach
     public void reset() {
@@ -59,6 +63,107 @@ public class EnvironmentServiceTest extends ApplicationStartTest {
         node.setName("环境测试节点-" + nodeId);
         nodeService.insert(node);
         return nodeId;
+    }
+
+    /**
+     * 创建真实 K8S 集群夹具（bindTarget 会校验集群存在）。
+     */
+    private String createK8sCluster() {
+        String name = "环境测试集群-" + System.nanoTime();
+        return k8sService.save(null, name, "apiVersion: v1\nkind: Config\nclusters: []\ncontexts: []\nusers: []", null, "default", "测试");
+    }
+
+    /**
+     * 创建真实 SSH 主机夹具（bindTarget 会校验主机存在 + 工作区权限）。
+     */
+    private String createSshHost() {
+        io.voyager1.model.data.SshModel ssh = new io.voyager1.model.data.SshModel();
+        String id = "ssh-" + System.nanoTime();
+        ssh.setId(id);
+        ssh.setName("环境测试SSH-" + id);
+        ssh.setWorkspaceId("DEFAULT");
+        ssh.setHost("127.0.0.1");
+        ssh.setPort(22222);
+        ssh.setUser("root");
+        sshService.insert(ssh);
+        return id;
+    }
+
+    /**
+     * 目标类型放开后：K8S 集群可绑定，且不存在的集群被拒绝。
+     */
+    @Test
+    public void testBindTargetK8s() {
+        environmentService.initDefaultEnvironments();
+        EnvironmentModel dev = environmentService.listEnabled().get(0);
+        String clusterId = createK8sCluster();
+        String bindId = environmentService.bindTarget(dev.getId(), EnvironmentService.TARGET_TYPE_K8S, clusterId, "test-ns", "DEFAULT");
+        Assertions.assertNotNull(bindId);
+        List<io.voyager1.model.data.EnvironmentTargetModel> targets = environmentService.listTargets(dev.getId());
+        io.voyager1.model.data.EnvironmentTargetModel bound = targets.stream()
+            .filter(t -> clusterId.equals(t.getTargetId())).findFirst().orElse(null);
+        Assertions.assertNotNull(bound);
+        Assertions.assertEquals(EnvironmentService.TARGET_TYPE_K8S, bound.getTargetType());
+        Assertions.assertEquals("test-ns", bound.getProjectId());
+        // 不存在的集群应被拒绝
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> environmentService.bindTarget(dev.getId(), EnvironmentService.TARGET_TYPE_K8S, "ghost-cluster", null, "DEFAULT"));
+        environmentService.unbindTarget(bindId);
+    }
+
+    /**
+     * 目标类型放开后：SSH 主机可绑定，且不存在的 SSH 主机被拒绝。
+     */
+    @Test
+    public void testBindTargetSsh() {
+        environmentService.initDefaultEnvironments();
+        EnvironmentModel dev = environmentService.listEnabled().get(0);
+        String sshId = createSshHost();
+        String bindId = environmentService.bindTarget(dev.getId(), EnvironmentService.TARGET_TYPE_SSH, sshId, "/opt/voyager1-release", "DEFAULT");
+        Assertions.assertNotNull(bindId);
+        List<io.voyager1.model.data.EnvironmentTargetModel> targets = environmentService.listTargets(dev.getId());
+        io.voyager1.model.data.EnvironmentTargetModel bound = targets.stream()
+            .filter(t -> sshId.equals(t.getTargetId())).findFirst().orElse(null);
+        Assertions.assertNotNull(bound);
+        Assertions.assertEquals(EnvironmentService.TARGET_TYPE_SSH, bound.getTargetType());
+        Assertions.assertEquals("/opt/voyager1-release", bound.getProjectId());
+        // 不存在的 SSH 主机应被拒绝
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> environmentService.bindTarget(dev.getId(), EnvironmentService.TARGET_TYPE_SSH, "ghost-ssh", null, "DEFAULT"));
+        environmentService.unbindTarget(bindId);
+    }
+
+    /**
+     * 未知目标类型仍应被拒绝（白名单只放开 NODE/K8S/SSH）。
+     */
+    @Test
+    public void testBindTargetRejectsUnknownType() {
+        environmentService.initDefaultEnvironments();
+        EnvironmentModel dev = environmentService.listEnabled().get(0);
+        Assertions.assertThrows(IllegalStateException.class,
+            () -> environmentService.bindTarget(dev.getId(), "FOO", "whatever", null, "DEFAULT"));
+    }
+
+    /**
+     * K8S manifest 发现：递归收集 .yaml/.yml，忽略其它后缀与不存在的路径。
+     */
+    @Test
+    public void testCollectManifests() throws Exception {
+        java.nio.file.Path root = java.nio.file.Files.createTempDirectory("v1-manifest-");
+        java.nio.file.Path sub = java.nio.file.Files.createDirectories(root.resolve("deploy"));
+        java.nio.file.Files.write(sub.resolve("app.yaml"), "kind: Deployment".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        java.nio.file.Files.write(sub.resolve("svc.yml"), "kind: Service".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        java.nio.file.Files.write(root.resolve("readme.txt"), "not a manifest".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+        List<java.io.File> found = new java.util.ArrayList<>();
+        deploymentService.collectManifests(root.toFile(), found);
+        List<String> names = found.stream().map(java.io.File::getName).sorted().collect(java.util.stream.Collectors.toList());
+        Assertions.assertEquals(java.util.Arrays.asList("app.yaml", "svc.yml"), names);
+
+        // 空/不存在的路径不应抛异常，返回空列表
+        List<java.io.File> none = new java.util.ArrayList<>();
+        deploymentService.collectManifests(root.resolve("nope").toFile(), none);
+        Assertions.assertTrue(none.isEmpty());
     }
 
     @Test

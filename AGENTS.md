@@ -89,12 +89,18 @@ cd modules/agent/target/agent-0.0.2-release && ./bin/Agent.sh start
 6. **启动脚本**：JDK8 专属参数必须放在 `java_8` 分支内；JDK17 运行需 add-opens
 7. **日志路径**：`LogbackConfig` 回退路径需剥离 `jar!` 段；启动脚本需 export VOYAGER1_LOG
 8. **版本检查**：`remote-version-url` 未配置时静默降级（返回 null，不打 WARN）
-9. **release 目录是打包产物**：改源码后必须重新 `mvn clean package` 才生效（**必须带 clean**——`target/classes/dist` 会累积旧前端文件，只 `package` 会打进陈旧 dist）
+9. **release 目录含运行时数据，禁止 `mvn clean`**：`target/server-0.0.2-release/` 里除了打包产物，还有 `db/`（H2 数据库）、`conf/`（含 `disabled-captcha` 等配置）、`logs/`。`mvn clean` 会把它们**连库一起删掉且不可恢复**。
+   前端改动后安全重建方式（只清 dist 缓存，不碰运行数据）：
+   ```bash
+   cd web-vue && npm run build
+   cd .. && rm -rf modules/server/target/classes/dist && mvn -pl modules/server -am package -DskipTests
+   ```
 
 ## 常见坑备忘
 
 - **登录失败排查**：先确认密码格式（前端 sha1），再确认账号锁定（多次失败锁 30 分钟，用 `--rest:super_user_pwd` 重置解锁）
 - **H2 独占锁**：应用运行时不能直接连接 db 文件（只读也不行）
+- **数据库就在 release 目录里**：跑过服务的 `target/server-0.0.2-release/db/Server.mv.db` 即真实数据库；`mvn clean` 会连它一起删除（不可恢复）。只想重建前端产物时：`npm run build` + `rm -rf target/classes/dist` + `mvn -pl modules/server -am package -DskipTests`
 - **agent jar 不更新**：`mvn package` 时若 target 已有 jar 可能跳过重建，删掉再打
 - **UI 巡检假阳性**：页面切换时请求 abort 产生的 `AxiosError: Network Error` 是 WARN 非 FAIL；全屏终端页（full-terminal / ssh-tabs）无参数渲染空白属正常
 - **测试**：新增测试必须用 JUnit5（jupiter）、必须有断言；外部依赖测试加 `@Tag("external")`，人工维护类加 `@Tag("manual")`

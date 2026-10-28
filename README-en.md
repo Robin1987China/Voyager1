@@ -29,15 +29,17 @@
 
 ## 🤖 AI Capabilities (MCP · Agent · AIOps)
 
-Voyager1 natively exposes its core operations capabilities as **MCP (Model Context Protocol) tools**, and ships with built-in Agent orchestration and self-healing, enabling AI assistants (Cursor, Claude Code, etc.) to safely operate your environment.
+Voyager1 natively exposes its core operations capabilities as **MCP (Model Context Protocol) tools**, and ships with built-in Agent orchestration, execution auditing and self-healing, enabling AI assistants (Cursor, Claude Code, etc.) to safely operate your environment.
 
-- **MCP Server (13 tools)**: `/mcp` endpoint (JSON-RPC 2.0), reusing JWT auth and `@Feature` permission, exposing build, deploy, pipeline, SSH, monitor, K8s, cloud, and AIOps self-healing capabilities to AI agents.
+- **MCP Server (11 tools)**: `/mcp` endpoint (JSON-RPC 2.0), reusing JWT auth and `@Feature` permission, exposing build, deploy, SSH, monitor, K8s, cloud, and AIOps self-healing capabilities to AI agents.
   - Read-only: `version.list` / `environment.list` / `build.list` / `log.get` / `monitor.list` / `k8s.resourceList` / `cloud.instanceList` / `selfHeal.diagnose`
-  - Execute: `build.trigger` / `deploy.publish` / `pipeline.trigger` / `ssh.execute`
-  - Human-in-the-loop (HITL): `pipeline.approval`
-- **Agent Intent Parsing**: turns natural language (e.g. "deploy v1.2.3 to test") into MCP tool-call sequences. Currently rule-based (keyword matching), with LLM as a pluggable extension (OpenAI-compatible endpoints to follow).
+  - Execute: `build.trigger` / `deploy.publish` / `ssh.execute`
+  - Human-in-the-loop (HITL): `deploy.publish` and `ssh.execute` require approval; expired approvals are rejected automatically
+- **Intent Execution**: `POST /agent/intent/execute` turns natural language (e.g. "deploy v1.2.3 to test") into tool calls and **runs them in order**; it stops at the first tool that needs approval instead of skipping the gate.
+- **Pluggable LLM Gateway**: OpenAI-compatible endpoints (`voyager1.llm.*`, **disabled by default**). When enabled, intent parsing and root-cause analysis are model-driven; if unconfigured or on failure it falls back to the rule-based implementation.
+- **Execution Audit**: every tool call is recorded in `AGENT_AUDIT` (session / intent / tool / arguments / result / duration) and can be queried via `POST /agent/audit/list`.
 - **Agent Approval Gate**: high-risk tools (`deploy.publish`, `ssh.execute`) require human approval before execution; built-in dangerous-command blacklist (`rm -rf /`, `mkfs`, `dd`, `shutdown`, etc.).
-- **AIOps Self-Healing**: alert → root cause → remediation mapping (e.g. `process_down` / `high_cpu` / `deploy_failed`), currently rule-based, triggerable via the `selfHeal.diagnose` MCP tool, with an LLM gateway to follow.
+- **AIOps Self-Healing**: alert → root cause → remediation mapping (e.g. `process_down` / `high_cpu` / `deploy_failed`), with an alert-type allowlist, consecutive-failure circuit breaker and manual abort (`POST /agent/self-heal/abort`); high-risk actions go through approval.
 
 > See [MCP Tools](docs/mcp-tools.md) and [Architecture](docs/ARCHITECTURE.md) for details.
 
@@ -64,6 +66,7 @@ Voyager1 natively exposes its core operations capabilities as **MCP (Model Conte
 	3. Supports SSH-based deployment
   4. Supports scheduled builds
 	5. Supports WebHook-triggered builds
+- **Environment-based CD**: dev / test / prod definitions (CI/CD, deploy-only, approval switch) with deployment targets bound to nodes / K8s clusters / SSH hosts; deployments follow the version state machine, and approval-gated environments run after approval
 - Supports online editing of nginx configuration files and automatic reload operations
 	1. Manage nginx status and SSL certificates
 - Automatic alerts and restart attempts for abnormal project status
@@ -90,7 +93,7 @@ Voyager1 natively exposes its core operations capabilities as **MCP (Model Conte
 
 ## 📥 Installing Voyager1
 
-Voyager1 uses a **Server + Agent** architecture and can be built from source. For the initial release (v0.0.2), building from source is recommended.
+Voyager1 uses a **Server + Agent** architecture and can be built from source. For the initial release (v0.0.3), building from source is recommended.
 
 ### Environment Requirements
 
@@ -122,30 +125,35 @@ cd ..
 
 ```shell
 # Package (skip tests; if the agent jar already exists it may be skipped, delete it first)
-rm -f modules/agent/target/agent-0.0.2.jar
+rm -f modules/agent/target/agent-0.0.3.jar
 mvn clean package
 ```
 
+> ⚠️ `clean` is only for a fresh clone. When upgrading an existing deployment,
+> `target/server-*-release/` contains the database and configs, and `clean` would delete them
+> permanently — for upgrades use: `cd web-vue && npm run build`, then
+> `rm -rf modules/server/target/classes/dist && mvn package`.
+
 After packaging, the artifacts are located at:
-- Server: `modules/server/target/server-0.0.2-release/`
-- Agent: `modules/agent/target/agent-0.0.2-release/`
+- Server: `modules/server/target/server-0.0.3-release/`
+- Agent: `modules/agent/target/agent-0.0.3-release/`
 
 > You can also use `script/release.sh` (Linux) or `script/release.bat` (Windows) for one-command packaging.
 
 #### 4. Install and Start the Server
 
-Upload the `server-0.0.2-release` directory to the server (the entire directory), then inside it:
+Upload the `server-0.0.3-release` directory to the server (the entire directory), then inside it:
 
 ```shell
 ./bin/Server.sh start     # Linux
 # or Windows: bin\Server.bat start
 ```
 
-The server default port is `2122`, accessible at `http://127.0.0.2:2122/` (replace `127.0.0.2` with the server IP if not local).
+The server default port is `2122`, accessible at `http://127.0.0.1:2122/` (replace `127.0.0.1` with the server IP if not local).
 
 #### 5. Install and Start the Agent
 
-Upload the `agent-0.0.2-release` directory to the managed host (the entire directory, **in a different directory from the server**), then inside it:
+Upload the `agent-0.0.3-release` directory to the managed host (the entire directory, **in a different directory from the server**), then inside it:
 
 ```shell
 ./bin/Agent.sh start      # Linux
@@ -174,7 +182,7 @@ io.voyager1.Voyager1ServerApplication       # port 2122
 io.voyager1.Voyager1AgentApplication        # port 2123, note the default account printed
 
 # 3. Start the frontend dev server
-cd web-vue && npm install && npm run dev    # default http://127.0.0.2:3000/
+cd web-vue && npm install && npm run dev    # default http://127.0.0.1:3000/
 ```
 
 ### Method 3: 📦 Docker Compose (Build from Source)

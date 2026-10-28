@@ -29,15 +29,17 @@
 
 ## 🤖 AI 能力（MCP · Agent · AIOps）
 
-Voyager1 原生把核心运维能力暴露为 **MCP（Model Context Protocol）工具**，并内置 Agent 编排与自愈能力，让 AI 助手（Cursor、Claude Code 等）能安全地操作你的环境。
+Voyager1 原生把核心运维能力暴露为 **MCP（Model Context Protocol）工具**，并内置 Agent 编排、执行审计与自愈能力，让 AI 助手（Cursor、Claude Code 等）能安全地操作你的环境。
 
-- **MCP Server（13 个工具）**：`/mcp` 端点（JSON-RPC 2.0），复用 JWT 鉴权与 `@Feature` 权限，把构建、部署、流水线、SSH、监控、K8s、云资源、AIOps 自愈等能力暴露给 AI Agent 调用。
+- **MCP Server（11 个工具）**：`/mcp` 端点（JSON-RPC 2.0），复用 JWT 鉴权与 `@Feature` 权限，把构建、部署、SSH、监控、K8s、云资源、AIOps 自愈等能力暴露给 AI Agent 调用。
   - 只读：`version.list` / `environment.list` / `build.list` / `log.get` / `monitor.list` / `k8s.resourceList` / `cloud.instanceList` / `selfHeal.diagnose`
-  - 执行：`build.trigger` / `deploy.publish` / `pipeline.trigger` / `ssh.execute`
-  - 人工闸门（HITL）：`pipeline.approval`
-- **Agent 意图解析**：把自然语言（如「把 v1.2.3 部署到 test」）拆解为 MCP 工具调用序列；当前为规则版（关键词匹配），LLM 实现作为可插拔扩展（后续接入 OpenAI 兼容接口）。
+  - 执行：`build.trigger` / `deploy.publish` / `ssh.execute`
+  - 人工闸门（HITL）：`deploy.publish`、`ssh.execute` 需审批后执行，审批超时自动拒绝
+- **意图执行**：`POST /agent/intent/execute` 把自然语言（如「把 v1.2.3 部署到 test」）拆解为工具调用并**逐条执行**；遇到需审批的危险工具即停止，不越过审批继续动作。
+- **LLM 可插拔网关**：支持 OpenAI 兼容接口（配置 `voyager1.llm.*`，**默认关闭**）。开启后意图解析与根因分析由模型完成；未配置或调用失败时自动回落规则版。
+- **执行审计**：每次工具调用写入 `AGENT_AUDIT`（会话 / 意图 / 工具 / 入参 / 结果 / 耗时），可通过 `POST /agent/audit/list` 查询。
 - **Agent 审批闸门**：高危工具（`deploy.publish`、`ssh.execute`）需人工审批后才执行；内置危险命令黑名单（`rm -rf /`、`mkfs`、`dd`、`shutdown` 等）。
-- **AIOps 自愈**：告警 → 根因 → 修复动作映射（如 `process_down` / `high_cpu` / `deploy_failed`），当前为规则版，可通过 MCP 工具 `selfHeal.diagnose` 触发，后续接入 LLM 网关。
+- **AIOps 自愈**：告警 → 根因 → 修复动作映射（如 `process_down` / `high_cpu` / `deploy_failed`），带告警类型白名单、连续失败熔断与人工中止（`POST /agent/self-heal/abort`），危险动作走审批。
 
 > 详见 [MCP 工具说明](docs/mcp-tools.md) 与 [架构说明](docs/ARCHITECTURE.md)。
 
@@ -63,6 +65,8 @@ Voyager1 原生把核心运维能力暴露为 **MCP（Model Context Protocol）�
 	3. 支持 SSH 方式发布
 	4. 支持定时构建
 	5. 支持 WebHook 形式触发构建
+- **环境化 CD**：dev / test / prod 环境定义（CI/CD、仅部署、审批开关）+ 部署目标绑定（节点 / K8S 集群 / SSH 主机），部署受版本状态机约束，需审批的环境在审批通过后执行
+- **环境化 CD**：dev / test / prod 环境定义（CI/CD、仅部署、审批开关）+ 部署目标绑定（节点 / K8S 集群 / SSH 主机），部署受版本状态机约束，需审批的环境在审批通过后执行
 - 支持在线编辑 nginx 配置文件并自动 reload 等操作
 	1. 管理 nginx 状态，管理 SSL 证书
 - 项目状态监控异常自动报警、自动尝试重启
@@ -81,15 +85,15 @@ Voyager1 原生把核心运维能力暴露为 **MCP（Model Context Protocol）�
 > 4. 本地构建依赖的是系统环境，如果构建命令需要使用 maven 或者 node
 	 需要在构建项目的服务器安装好对应的环境。如果已经启动服务端再安装的对应环境需要通过命令行重启服务端后环境才会生效。
 > 5. 在 Ubuntu/Debian 服务器作为插件端可能会添加失败，请在当前用户的根目录创建 .bash_profile 文件
-> 6. 升级 2.7.x 后不建议降级操作，会涉及到数据不兼容的情况
-> 7. 由于目前 2.x.x 版本插件端和服务端主要采用 http 协议通讯，插件端和服务端网络要求互通，在使用的时候请注意。
-> 8. Voyager1 3.0 版本已经开始规划更新了，尽请期待新版本的诞生吧
+> 6. 升级前请先备份数据目录；不同版本之间数据结构可能不兼容，升级后不建议直接降级
+> 7. 插件端与服务端通过 HTTP 通讯，两者网络必须互通，请提前放行 `2122` / `2123` 端口
+> 8. 发版节奏与变更记录见 [CHANGELOG.md](CHANGELOG.md)
 
 
 
 ## 📥 安装 Voyager1
 
-Voyager1 采用 **Server + Agent** 架构，从源码构建即可部署。当前初始版本（v0.0.2）推荐**从源码编译安装**。
+Voyager1 采用 **Server + Agent** 架构，从源码构建即可部署。当前初始版本（v0.0.3）推荐**从源码编译安装**。
 
 ### 环境要求
 
@@ -121,30 +125,34 @@ cd ..
 
 ```shell
 # 打包（skip 测试；若 agent jar 已存在会增量跳过，需先删除强制重建）
-rm -f modules/agent/target/agent-0.0.2.jar
+rm -f modules/agent/target/agent-0.0.3.jar
 mvn clean package
 ```
 
+> ⚠️ `clean` 仅适用于全新克隆。已有部署升级时，`target/server-*-release/` 内含数据库与配置，
+> `clean` 会把它们一并删除且不可恢复——升级请改用：`cd web-vue && npm run build`，
+> 再执行 `rm -rf modules/server/target/classes/dist && mvn package`。
+
 打包完成后，产物位于：
-- 服务端：`modules/server/target/server-0.0.2-release/`
-- 插件端：`modules/agent/target/agent-0.0.2-release/`
+- 服务端：`modules/server/target/server-0.0.3-release/`
+- 插件端：`modules/agent/target/agent-0.0.3-release/`
 
 > 也可以使用 `script/release.sh`（Linux）或 `script/release.bat`（Windows）一键打包。
 
 #### 4. 安装并启动服务端
 
-将 `server-0.0.2-release` 目录上传到服务器（整个目录），进入目录后：
+将 `server-0.0.3-release` 目录上传到服务器（整个目录），进入目录后：
 
 ```shell
 ./bin/Server.sh start     # Linux
 # 或 Windows: bin\Server.bat start
 ```
 
-服务端默认端口 `2122`，访问 `http://127.0.0.2:2122/`（非本机访问换成服务器 IP）。
+服务端默认端口 `2122`，访问 `http://127.0.0.1:2122/`（非本机访问换成服务器 IP）。
 
 #### 5. 安装并启动插件端
 
-将 `agent-0.0.2-release` 目录上传到被管主机（整个目录，**与服务端不要放在同一目录**），进入目录后：
+将 `agent-0.0.3-release` 目录上传到被管主机（整个目录，**与服务端不要放在同一目录**），进入目录后：
 
 ```shell
 ./bin/Agent.sh start      # Linux
@@ -173,7 +181,7 @@ io.voyager1.Voyager1ServerApplication       # 端口 2122
 io.voyager1.Voyager1AgentApplication        # 端口 2123，注意控制台打印的默认账号
 
 # 3. 启动前端开发模式
-cd web-vue && npm install && npm run dev    # 默认 http://127.0.0.2:3000/
+cd web-vue && npm install && npm run dev    # 默认 http://127.0.0.1:3000/
 ```
 
 ### 方式三：📦 Docker Compose（从源码构建镜像）

@@ -22,6 +22,7 @@ import io.voyager1.build.BuildUtil;
 import io.voyager1.build.ReleaseManage;
 import io.voyager1.common.BaseServerController;
 import io.voyager1.common.SpringContextHolder;
+import io.voyager1.configuration.AgentAutonomyConfig;
 import io.voyager1.core.entity.DeploymentRecordEntity;
 import io.voyager1.core.repository.DeploymentRecordRepository;
 import io.voyager1.model.data.BuildInfoModel;
@@ -34,6 +35,7 @@ import io.voyager1.model.enums.BuildStatus;
 import io.voyager1.model.enums.VersionStatus;
 import io.voyager1.model.log.BuildHistoryLog;
 import io.voyager1.model.user.UserModel;
+import io.voyager1.service.agent.DeploymentVerifyService;
 import io.voyager1.service.dblog.BuildInfoService;
 import io.voyager1.service.dblog.DbBuildHistoryLogService;
 import io.voyager1.service.k8s.K8sService;
@@ -101,19 +103,25 @@ public class DeploymentService {
     private final BuildInfoService buildInfoService;
     private final DbBuildHistoryLogService dbBuildHistoryLogService;
     private final BuildExecutorPoolService buildExecutorPoolService;
+    private final DeploymentVerifyService deploymentVerifyService;
+    private final AgentAutonomyConfig agentAutonomyConfig;
 
     public DeploymentService(DeploymentRecordRepository repository,
                              VersionService versionService,
                              EnvironmentService environmentService,
                              BuildInfoService buildInfoService,
                              DbBuildHistoryLogService dbBuildHistoryLogService,
-                             BuildExecutorPoolService buildExecutorPoolService) {
+                             BuildExecutorPoolService buildExecutorPoolService,
+                             DeploymentVerifyService deploymentVerifyService,
+                             AgentAutonomyConfig agentAutonomyConfig) {
         this.repository = repository;
         this.versionService = versionService;
         this.environmentService = environmentService;
         this.buildInfoService = buildInfoService;
         this.dbBuildHistoryLogService = dbBuildHistoryLogService;
         this.buildExecutorPoolService = buildExecutorPoolService;
+        this.deploymentVerifyService = deploymentVerifyService;
+        this.agentAutonomyConfig = agentAutonomyConfig;
     }
 
     /**
@@ -254,6 +262,10 @@ public class DeploymentService {
 
     /**
      * 回写部署记录最终状态（异步任务完成后调用）。
+     * <p>
+     * 部署失败时按 {@code voyager1.agent.auto-rollback-enabled}（默认开启）自动回滚：
+     * 把已提测版本打回，解锁 CI。回滚结果写入 {@code logRef} 便于追溯。
+     * </p>
      */
     @Transactional
     public void finishRecord(String recordId, boolean success, String logRef) {
@@ -263,11 +275,38 @@ public class DeploymentService {
             return;
         }
         record.setStatus(success ? STATUS_SUCCESS : STATUS_FAILED);
-        if (logRef != null && !logRef.isEmpty()) {
-            record.setLogRef(logRef);
+        StringBuilder refs = new StringBuilder(logRef == null ? "" : logRef);
+        if (!success) {
+            String rollback = this.autoRollback(record);
+            if (rollback != null && !rollback.isEmpty()) {
+                refs.append(refs.length() == 0 ? "" : ",").append(rollback);
+            }
+        }
+        if (refs.length() > 0) {
+            record.setLogRef(refs.toString());
         }
         record.setModifyTimeMillis(System.currentTimeMillis());
         repository.save(record);
+    }
+
+    /**
+     * 部署失败自动回滚：把已提测版本打回（解锁 CI）。
+     *
+     * @return 回滚说明；未回滚（关闭开关 / 版本非已提测 / 异常）返回 null
+     */
+    private String autoRollback(DeploymentRecordEntity record) {
+        if (!agentAutonomyConfig.isAutoRollbackEnabled()) {
+            log.info("自动回滚已关闭，跳过: record={}", record.getId());
+            return null;
+        }
+        try {
+            boolean rolledBack = deploymentVerifyService.rollbackOnFailure(
+                record.getVersionId(), "部署到环境 " + record.getEnvironment() + " 失败");
+            return rolledBack ? "auto-rollback:version-returned" : null;
+        } catch (Exception e) {
+            log.warn("自动回滚失败: record={} {}", record.getId(), e.getMessage());
+            return "auto-rollback:failed(" + e.getMessage() + ")";
+        }
     }
 
     /**

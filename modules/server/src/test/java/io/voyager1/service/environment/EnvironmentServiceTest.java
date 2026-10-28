@@ -215,6 +215,33 @@ public class EnvironmentServiceTest extends ApplicationStartTest {
         Assertions.assertEquals(0, environmentService.listTargets(dev.getId()).size());
     }
 
+    /**
+     * 部署失败自动回滚：已提测版本被打回（解锁 CI），部署记录标记 auto-rollback。
+     */
+    @Test
+    public void testDeployFailureAutoRollback() {
+        long suffix = System.nanoTime();
+        VersionModel version = versionService.createVersion("rollback-build-" + suffix, 1, "v-rollback-" + suffix, "/tmp/r.jar", "测试");
+        versionService.submit(version.getId(), "提测");
+        Assertions.assertEquals(VersionStatus.Submitted.getCode(),
+            versionService.getByKey(version.getId()).getStatus().intValue());
+
+        String recordId = deploymentService.createRecord(version.getId(), "test", "manual", "tester",
+            DeploymentService.STATUS_RUNNING, "");
+        deploymentService.finishRecord(recordId, false, "deploy-failed-log");
+
+        VersionModel after = versionService.getByKey(version.getId());
+        Assertions.assertEquals(VersionStatus.Returned.getCode(), after.getStatus().intValue(),
+            "部署失败后已提测版本应被打回");
+
+        DeploymentRecordModel record = deploymentService.listByVersionId(version.getId()).stream()
+            .filter(r -> recordId.equals(r.getId())).findFirst().orElse(null);
+        Assertions.assertNotNull(record);
+        Assertions.assertEquals(DeploymentService.STATUS_FAILED, record.getStatus().intValue());
+        Assertions.assertTrue(record.getLogRef() != null && record.getLogRef().contains("auto-rollback"),
+            "部署记录应标记自动回滚，实际: " + record.getLogRef());
+    }
+
     @Test
     public void testManualDeploy() {
         VersionModel version = versionService.createVersion("env-test-build", 1, "v9.9.9", "/tmp/e.jar", "测试");

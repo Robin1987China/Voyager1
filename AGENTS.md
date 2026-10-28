@@ -102,6 +102,8 @@ cd modules/agent/target/agent-0.0.2-release && ./bin/Agent.sh start
 - **H2 独占锁**：应用运行时不能直接连接 db 文件（只读也不行）
 - **数据库就在 release 目录里**：跑过服务的 `target/server-0.0.2-release/db/Server.mv.db` 即真实数据库；`mvn clean` 会连它一起删除（不可恢复）。只想重建前端产物时：`npm run build` + `rm -rf target/classes/dist` + `mvn -pl modules/server -am package -DskipTests`
 - **agent jar 不更新**：`mvn package` 时若 target 已有 jar 可能跳过重建，删掉再打
+- **新增 MCP 工具必须三处同步**：`McpToolRegistry`（注册 + `execute` 分支）、`docs/mcp-tools.md` 工具表、`McpToolRegistryTest.testListTools` 的数量断言
+- **Agent 自治改动**：审计走 `AGENT_AUDIT`（`AgentAuditService.record` 已包 try/catch，勿在调用处再抛）；自愈的危险动作必须经 `McpToolRegistry` 审批闸门，不要绕过直接执行
 - **UI 巡检假阳性**：页面切换时请求 abort 产生的 `AxiosError: Network Error` 是 WARN 非 FAIL；全屏终端页（full-terminal / ssh-tabs）无参数渲染空白属正常
 - **测试**：新增测试必须用 JUnit5（jupiter）、必须有断言；外部依赖测试加 `@Tag("external")`，人工维护类加 `@Tag("manual")`
 - **macOS 网络**：lo0 默认只有 127.0.0.1，访问 127.0.0.2 会挂起；脚本一律用 127.0.0.1（可 `--base` 覆盖），curl 必加 `--max-time`

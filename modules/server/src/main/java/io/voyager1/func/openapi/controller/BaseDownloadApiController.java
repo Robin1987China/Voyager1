@@ -67,8 +67,8 @@ public abstract class BaseDownloadApiController extends BaseVoyager1Controller {
             //  Range: bytes=500- 表示从第 500 字节开始到文件结束部分的内容
             //  Range: bytes=0-0,-1 表示第一个和最后一个字节
             //  Range: bytes=500-600,601-999 同时指定几个范围
+            // 说明：多段 Range（如 bytes=0-0,-1）暂不支持，明确拒绝而非错误解析。
             Assert.state(!(rangeByte != null && rangeByte.contains(",")), "不支持分片多端下载");
-            // TODO 解析更多格式的 RANGE 请求头
             long[] split = StrUtil.splitToLong(rangeByte, "-");
             Assert.state(split != null, "range 传入的信息不正确");
             if (split.length == 2) {

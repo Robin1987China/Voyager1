@@ -102,7 +102,8 @@ public class SystemGitProcess extends AbstractGitProcess {
         if (protocol == 0) {
             return command;
         } else if (protocol == 1) {
-            // TODO 需要实现本地 git ssh 指定证书拉取
+            // 说明：本地 git 拉取暂只支持默认 ~/.ssh 配置。按构建指定证书需要凭证存储与
+            // known_hosts 校验设计，故这里显式拒绝，而不是静默回退到默认 key。
             File rsaFile = (File) parameter.get("rsaFile");
             if (FileUtil.isFile(rsaFile)) {
                 throw new IllegalStateException("暂时不支持本地 git 指定证书拉取代码");

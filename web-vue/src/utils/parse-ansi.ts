@@ -75,11 +75,8 @@ const ansiparse: any = function (str: any) {
       continue
     } else if (matchingData != null) {
       if (str[i] == ';') {
-        //
         // `;` separates many formatting codes, for example: `\033[33;43m`
         // means that both `33` and `43` should be applied.
-        //
-        // TODO: this can be simplified by modifying state here.
         //
         ansiState.push(matchingData)
         matchingData = ''
@@ -94,8 +91,6 @@ const ansiparse: any = function (str: any) {
 
         //
         // Convert matched formatting data into user-friendly state object.
-        //
-        // TODO: DRY.
         //
         ansiState.forEach(function (ansiCode) {
           if (ansiparse.foregroundColors[ansiCode]) {

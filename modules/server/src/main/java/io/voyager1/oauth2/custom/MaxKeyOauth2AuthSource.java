@@ -30,7 +30,6 @@ public class MaxKeyOauth2AuthSource extends CommonOauth2AuthSource {
 
     @Override
     public Class<? extends AuthDefaultRequest> getTargetClass() {
-        // TODO Auto-generated method stub
         return MaxKeyAuthOauth2Request.class;
     }
 }

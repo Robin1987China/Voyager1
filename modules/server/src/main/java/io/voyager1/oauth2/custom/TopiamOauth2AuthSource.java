@@ -32,7 +32,6 @@ public class TopiamOauth2AuthSource extends CommonOauth2AuthSource {
 
     @Override
     public Class<? extends AuthDefaultRequest> getTargetClass() {
-        // TODO Auto-generated method stub
         return TopiamAuthOauth2Request.class;
     }
 }

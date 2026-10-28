@@ -1,6 +1,6 @@
 <template>
   <div>
-    <n-tabs type="card" default-active-key="1">
+    <n-tabs type="card" default-value="1">
       <n-tab-pane name="1" :tab="$t('i18n_55abea2d61')"> <upgrade></upgrade></n-tab-pane>
       <n-tab-pane name="2" :tab="$t('i18n_78dccb6e97')">
         <CustomTable

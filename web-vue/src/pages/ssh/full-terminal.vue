@@ -7,7 +7,7 @@
           height: `calc(100vh - 45px)`
         }"
       >
-        <template #title>
+        <template #header>
           <template v-if="sshData">
             <n-space>
               <div>
@@ -22,7 +22,7 @@
           </template>
           <template v-else>loading</template>
         </template>
-        <template #extra>
+        <template #header-extra>
           <a href="#"></a>
         </template>
         <terminal1 v-if="sshData" :ssh-id="sshData.id" />

@@ -2,7 +2,7 @@
   <defaultBg>
     <template #content>
       <n-card v-if="canInstall" style="width: 550px" hoverable>
-        <template #title>
+        <template #header>
           {{ $t('i18n_c2f11fde3a') }}
           <span>{{ $t('i18n_620efec150') }}</span>
         </template>

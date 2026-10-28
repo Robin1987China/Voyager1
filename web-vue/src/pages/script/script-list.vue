@@ -328,8 +328,8 @@
       :mask-closable="false"
     >
       <n-form ref="editTriggerForm" :rules="rules" :model="temp">
-        <n-tabs default-active-key="1">
-          <template #rightExtra>
+        <n-tabs default-value="1">
+          <template #suffix>
             <n-tooltip>
               <template #trigger>
                 <span class="tw">

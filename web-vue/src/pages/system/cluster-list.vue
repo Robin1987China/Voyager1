@@ -16,7 +16,7 @@
           </div>
           <div v-if="groupList.filter((item) => !groupMap[item]).length">
             {{ $t('i18n_7dde69267a') }}
-            <template v-for="(item, index) in groupList">
+            <template v-for="(item, index) in groupList" :key="item">
               <n-tag v-if="!groupMap[item]" :key="index">{{ item }}</n-tag>
             </template>
           </div>

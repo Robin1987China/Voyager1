@@ -84,7 +84,7 @@
       <!-- <n-grid type="flex" justify="center"> -->
       <!-- <n-divider v-if="listQuery.total > 0" dashed> 构建历史 </n-divider> -->
       <n-card v-if="listQuery.total > 0" :title="$t('i18n_a05c1667ca')" size="small">
-        <template #extra>
+        <template #header-extra>
           <n-pagination
             v-model:page="listQuery.page"
             v-model:page-size="listQuery.limit"

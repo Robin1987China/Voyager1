@@ -1,8 +1,8 @@
 <template>
   <div>
     <div v-if="fastInstallInfo">
-      <n-collapse v-model:value="fastInstallActiveKey">
-        <n-collapse-item key="1" :header="$t('i18n_947d983961')">
+      <n-collapse v-model:expanded-names="fastInstallActiveKey">
+        <n-collapse-item name="1" :header="$t('i18n_947d983961')">
           <n-alert title="" type="warning" show-icon>
             <template #description>
               <ul>
@@ -29,14 +29,14 @@
                   {{ $t('i18n_a50fbc5a52') }}<b>networkName</b
                   >{{
                     $t('i18n_9971192b6a')
-                  }}://192.168.31.175:2122/api/node/receive_push?token=xxx&workspaceId=xxx&networkName=en0
+                  }}://&lt;your-server-ip&gt;:2122/api/node/receive_push?token=xxx&workspaceId=xxx&networkName=en0
                 </li>
               </ul>
             </template>
           </n-alert>
         </n-collapse-item>
-        <n-collapse-item key="2" :header="$t('i18n_70b5b45591')">
-          <n-tabs :default-active-key="0">
+        <n-collapse-item name="2" :header="$t('i18n_70b5b45591')">
+          <n-tabs :default-value="0">
             <n-tab-pane v-for="(item, index) in fastInstallInfo.shUrls" :key="index" :tab="item.name">
               <div>
                 <n-alert type="info" :title="`${$t('i18n_ccb91317c5')}`">
@@ -51,7 +51,7 @@
             </n-tab-pane>
           </n-tabs>
         </n-collapse-item>
-        <n-collapse-item key="3" :header="$t('i18n_dab864ab72')">
+        <n-collapse-item name="3" :header="$t('i18n_dab864ab72')">
           <n-alert type="info" :title="`${$t('i18n_ccb91317c5')}(${$t('i18n_a8920fbfad')})`">
             <template #description>
               <n-p style="margin-bottom: 0">
@@ -61,7 +61,7 @@
             </template>
           </n-alert>
         </n-collapse-item>
-        <n-collapse-item key="4" :header="$t('i18n_adaf94c06b')">
+        <n-collapse-item name="4" :header="$t('i18n_adaf94c06b')">
           <div v-if="!pullFastInstallResultData || !pullFastInstallResultData.length">
             {{ $t('i18n_f4fb0cbecf') }}
           </div>

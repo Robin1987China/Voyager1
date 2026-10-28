@@ -4,7 +4,7 @@
       <!-- 左栏：集群管理 -->
       <n-grid-item :span="6">
         <n-card size="small" :title="$t('i18n_8da25ce625')">
-          <template #extra>
+          <template #header-extra>
             <n-button size="small" type="primary" @click="resetForm">{{ $t('i18n_66ab5e9f24') }}</n-button>
           </template>
           <n-form layout="vertical" size="small">
@@ -69,7 +69,7 @@
               <n-tag v-if="current" color="blue">{{ current.name }}</n-tag>
             </n-space>
           </template>
-          <template #extra>
+          <template #header-extra>
             <n-space>
               <n-select
                 v-model:value="nsFilter"

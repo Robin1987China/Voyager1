@@ -39,7 +39,7 @@
     <n-grid :x-gap="[16, 16]">
       <n-grid-item :span="6">
         <n-card size="small">
-          <template #title>
+          <template #header>
             {{ $t('i18n_1b7cba289a') }}
             <n-tooltip>
               <template #trigger>
@@ -57,7 +57,7 @@
       </n-grid-item>
       <n-grid-item :span="6">
         <n-card size="small">
-          <template #title>
+          <template #header>
             {{ $t('i18n_7c0ee78130') }}
             <n-tooltip>
               <template #trigger>
@@ -104,8 +104,8 @@
       </n-grid-item>
       <n-grid-item :span="6">
         <n-card size="small">
-          <template #title> {{ $t('i18n_3fb2e5ec7b') }} </template>
-          <template #extra>
+          <template #header> {{ $t('i18n_3fb2e5ec7b') }} </template>
+          <template #header-extra>
             <a href="#" @click="handleUserlog(2)">{{ $t('i18n_0ec9eaf9c3') }}</a>
           </template>
           <n-timeline v-if="loginLog && loginLog.length">
@@ -124,7 +124,7 @@
       </n-grid-item>
       <n-grid-item :span="6">
         <n-card size="small">
-          <template #title>
+          <template #header>
             {{ $t('i18n_cda84be2f6') }}
             <n-tooltip>
               <template #trigger>
@@ -133,7 +133,7 @@
               $t('i18n_05510a85b0')
              }}</n-tooltip>
           </template>
-          <template #extra>
+          <template #header-extra>
             <a href="#" @click="handleUserlog(1)">{{ $t('i18n_0ec9eaf9c3') }}</a>
           </template>
           <n-timeline v-if="operateLog && operateLog.length">

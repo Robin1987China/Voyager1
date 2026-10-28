@@ -408,8 +408,26 @@ export default {
     },
     // 本地网络检测
     localCheckVersion(tip) {
-      //console.log(compareVersion("1.0.0", "1.0.1"), compareVersion("2.4.3", "2.4.2"));
-      //console.log(compareVersion("1.0.2", "dev"));
+      // 外网版本仓库可能不可达：成功缓存 24h、失败负缓存 10min，
+      // 避免每次进入页面都发起一次必然失败的请求（控制台噪音 + 无谓等待）
+      const CACHE_KEY = 'voyager1-version-check'
+      const SUCCESS_TTL = 24 * 3600 * 1000
+      const FAILURE_TTL = 10 * 60 * 1000
+      try {
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null')
+        if (cached && cached.at) {
+          const ttl = cached.failed ? FAILURE_TTL : SUCCESS_TTL
+          if (Date.now() - cached.at < ttl) {
+            if (!cached.failed && cached.data) {
+              this.applyRemoteVersion(cached.data, tip)
+            }
+            return
+          }
+        }
+      } catch (e) {
+        // 缓存损坏时忽略，继续走网络
+      }
+
       const buildInfo = pageBuildInfo()
 
       const url = this.temp?.joinBetaRelease
@@ -424,27 +442,39 @@ export default {
           if (!data || !data.tag_name) {
             return
           }
-
-          const tagName = data.tag_name.replace('v', '')
-          const upgrade = compareVersion(this.temp.version, tagName) < 0
-
-          if (upgrade && tip) {
-            //
-            const dUrl = data.downloadUrl || 'https://voyager1.top'
-            const htmlAref = `<a href='${dUrl}' target='_blank'>${dUrl}</a>`
-            const title = this.$t('i18n_2314f99795')
-            const tip = this.$t('i18n_ab3615a5ad')
-            const html = `${title} ${tagName} ${htmlAref} ${tip}`
-
-            $notification.success({
-              duration: 10,
-              message: h('div', null, [h('p', { innerHTML: html }, null)])
-            })
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), data }))
+          } catch (e) {
+            // 忽略存储异常
           }
+          this.applyRemoteVersion(data, tip)
         })
         .catch(() => {
           // 版本检查依赖外部网络，失败不影响页面使用
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), failed: true }))
+          } catch (e) {
+            // 忽略存储异常
+          }
         })
+    },
+    // 应用远程版本信息（命中缓存与实时请求共用）
+    applyRemoteVersion(data, tip) {
+      const tagName = data.tag_name.replace('v', '')
+      const upgrade = compareVersion(this.temp.version, tagName) < 0
+
+      if (upgrade && tip) {
+        const dUrl = data.downloadUrl || 'https://voyager1.top'
+        const htmlAref = `<a href='${dUrl}' target='_blank'>${dUrl}</a>`
+        const title = this.$t('i18n_2314f99795')
+        const tipText = this.$t('i18n_ab3615a5ad')
+        const html = `${title} ${tagName} ${htmlAref} ${tipText}`
+
+        $notification.success({
+          duration: 10,
+          message: h('div', null, [h('p', { innerHTML: html }, null)])
+        })
+      }
     },
     showVersion(tip, data) {
       return new Promise((resolve) => {

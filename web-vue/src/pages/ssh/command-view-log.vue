@@ -1,7 +1,7 @@
 <template>
   <div>
-    <n-tabs :active-key="activeKey" @change="tabCallback">
-      <n-tab-pane v-for="item in logList" :key="item.id">
+    <n-tabs :value="activeKey" @update:value="tabCallback">
+      <n-tab-pane v-for="item in logList" :key="item.id" :name="item.id">
         <template #tab>
           <span>
             <LoadingOutlined v-if="!logMap[item.id] || logMap[item.id].run" />

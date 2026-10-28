@@ -29,9 +29,9 @@
         type="editable-card"
         hide-add
         @edit="onEdit"
-        @change="change"
+        @update:value="change"
       >
-        <template #rightExtra>
+        <template #suffix>
           <n-button type="primary" :disabled="!activeKey" @click="changeFileVisible(activeKey, true)">
             {{ $t('i18n_8780e6b3d1') }}
           </n-button>

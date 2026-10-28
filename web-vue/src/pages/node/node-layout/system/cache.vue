@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <n-tabs default-active-key="1" tab-position="left">
+    <n-tabs default-value="1" tab-position="left">
       <n-tab-pane name="1" :tab="$t('i18n_3c6248b364')">
         <n-alert :title="$t('i18n_5785f004ea')" style="margin-top: 10px; margin-bottom: 40px" banner />
         <n-timeline>

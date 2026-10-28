@@ -1,20 +1,15 @@
 <template>
   <div>
-    <n-tabs tab-position="left" @change="changeTabs">
-      <template #leftExtra>
+    <n-tabs tab-position="left" @update:value="changeTabs">
+      <template #prefix>
         <n-space>
-          <n-statistic format="s" title="" :value="countdownTime" @finish="pullNodeData">
-            <template #suffix>
-              <div style="font-size: 12px">{{ $t('i18n_ff80d2671c') }}</div>
-            </template>
-          </n-statistic>
-          <!-- <n-statistic title="" :value="countdownTime" @finish="pullNodeData" /> -->
+          <n-countdown :key="countdownKey" :duration="refreshInterval * 1000" :render="countdownRender" @finish="pullNodeData" />
         </n-space>
       </template>
       <n-tab-pane name="info" :tab="$t('i18n_6ea1fe6baa')">
         <n-card size="small">
           
-          <template #extra>
+          <template #header-extra>
             <n-tag
               v-if="machineInfo"
               :color="machineInfo && machineInfo.status === 1 ? 'green' : 'pink'"
@@ -155,7 +150,7 @@
       <n-tab-pane name="stat" :tab="$t('i18n_aa9236568f')">
         <n-space v-if="nodeMonitorLoadStatus === 1" direction="vertical" style="width: 100%">
           <n-card size="small" :title="$t('i18n_6ea1fe6baa')">
-            <template #extra>
+            <template #header-extra>
               <n-button v-if="historyChart" size="small" type="primary" @click="handleHistory('')">
                 <AreaChartOutlined />{{ $t('i18n_5068552b18') }}
               </n-button>
@@ -164,7 +159,7 @@
             <div id="top-chart" class="chart">loading...</div>
           </n-card>
           <n-card size="small">
-            <template #title>
+            <template #header>
               <n-space :size="4">
                 <template #split>
                   <n-divider type="vertical" />
@@ -173,7 +168,7 @@
                 <template v-if="monitorConfig?.network?.statExcludeNames">
                   <span>
                     {{ $t('i18n_503660aa89') }}
-                    <n-tag v-for="item in monitorConfig?.network?.statExcludeNames?.split(',')">
+                    <n-tag v-for="item in monitorConfig?.network?.statExcludeNames?.split(',')" :key="item">
                       {{ item }}
                     </n-tag>
                   </span>
@@ -181,7 +176,7 @@
                 <template v-if="monitorConfig?.network?.statContainsOnlyNames">
                   <span>
                     {{ $t('i18n_bb7eeae618') }}
-                    <n-tag v-for="item in monitorConfig?.network?.statContainsOnlyNames?.split(',')">
+                    <n-tag v-for="item in monitorConfig?.network?.statContainsOnlyNames?.split(',')" :key="item">
                       {{ item }}
                     </n-tag>
                   </span>
@@ -195,14 +190,14 @@
                   <b>{{ $t('i18n_13f7bb78ef') }}</b>
                   <div>
                     {{ $t('i18n_475cd76aec') }}
-                    <n-tag v-for="item in JSON.parse(machineInfo?.extendInfo || '{}')?.monitorIfsNames?.split(',')">
+                    <n-tag v-for="item in JSON.parse(machineInfo?.extendInfo || '{}')?.monitorIfsNames?.split(',')" :key="item">
                       {{ item }}
                     </n-tag>
                   </div>
                 </n-popover>
               </n-space>
             </template>
-            <template #extra>
+            <template #header-extra>
               <n-button v-if="netHistoryChart" size="small" type="primary" @click="handleHistory('network-stat')">
                 <AreaChartOutlined />
                 {{ $t('i18n_5068552b18') }}
@@ -212,7 +207,7 @@
             <div id="net-chart" class="chart">loading...</div>
           </n-card>
           <n-card size="small" :title="$t('i18n_bbbaeb32fc')">
-            <template #extra>
+            <template #header-extra>
               <n-button v-if="networkDelayChart" size="small" type="primary" @click="handleHistory('networkDelay')">
                 <AreaChartOutlined />{{ $t('i18n_5068552b18') }}
               </n-button>
@@ -226,7 +221,7 @@
       </n-tab-pane>
       <n-tab-pane name="process" :tab="$t('i18n_d6a5b67779')">
         <n-card size="small">
-          <template #title>
+          <template #header>
             <n-grid>
               <n-grid-item :span="18">
                 <n-space>
@@ -815,7 +810,7 @@ export default {
       historyChart: null,
       netHistoryChart: null,
       networkDelayChart: null,
-      countdownTime: Date.now(),
+      countdownKey: 0,
       machineInfo: null,
       networkInterfaces: [],
       nodeMonitorLoadStatus: 0,
@@ -848,6 +843,10 @@ export default {
     window.removeEventListener('resize', this.resize)
   },
   methods: {
+    // n-statistic 无 @finish 事件；自动刷新必须用 n-countdown
+    countdownRender({ seconds }) {
+      return `${seconds} ${this.$t('i18n_ff80d2671c')}`
+    },
     formatPercent,
     parseTime,
     formatDuration,
@@ -912,7 +911,7 @@ export default {
       this.getMachineNetworkInterfaces()
       this.getMachineHwDiskInfo()
       // 重新计算倒计时
-      this.countdownTime = Date.now() + this.refreshInterval * 1000
+      this.countdownKey += 1
     },
     changeTabs(activeKey) {
       if (activeKey === 'stat') {

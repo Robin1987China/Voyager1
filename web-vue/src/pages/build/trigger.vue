@@ -2,8 +2,8 @@
   <div>
     <div v-if="triggerVisible">
       <n-form ref="editTriggerForm" :model="temp">
-        <n-tabs default-active-key="1" type="card">
-          <template #rightExtra>
+        <n-tabs default-value="1" type="card">
+          <template #suffix>
             <n-tooltip>
               <template #trigger>
                 <span class="tw">

@@ -31,11 +31,7 @@
               />
             </div>
             <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
-            <n-statistic format="s" :title="$t('i18n_0f8403d07e') + ' '" :value="countdownTime" @finish="autoUpdate">
-              <template #suffix>
-                <div style="font-size: 12px">{{ $t('i18n_ee6ce96abb') }}</div>
-              </template>
-            </n-statistic>
+            <n-countdown :key="countdownKey" :duration="5000" :render="countdownRender" @finish="autoUpdate" />
           </n-space>
         
       </n-card>
@@ -327,7 +323,7 @@
     </template>
     <template v-else-if="type === 'compose'">
       <n-card>
-        <template #title>
+        <template #header>
           <n-space>
             <n-input
               v-model:value="listQuery['name']"
@@ -356,11 +352,7 @@
               />
             </div>
             <n-button type="primary" :loading="loading" @click="loadData">{{ $t('i18n_e5f71fc31e') }}</n-button>
-            <n-statistic format="s" :title="$t('i18n_0f8403d07e') + ' '" :value="countdownTime" @finish="autoUpdate">
-              <template #suffix>
-                <div style="font-size: 12px">{{ $t('i18n_ee6ce96abb') }}</div>
-              </template>
-            </n-statistic>
+            <n-countdown :key="countdownKey" :duration="5000" :render="countdownRender" @finish="autoUpdate" />
           </n-space>
         </template>
         <n-collapse v-if="list && list.length">
@@ -1006,7 +998,7 @@ export default {
       },
       editVisible: false,
 
-      countdownTime: Date.now(),
+      countdownKey: 0,
 
       buildVisible: false
     }
@@ -1021,6 +1013,10 @@ export default {
     this.autoUpdate()
   },
   methods: {
+    // n-statistic 无 @finish 事件；自动刷新必须用 n-countdown
+    countdownRender({ seconds }) {
+      return `${this.$t('i18n_0f8403d07e')} ${seconds} ${this.$t('i18n_ee6ce96abb')}`
+    },
     autoUpdate() {
       this.loadData()
     },
@@ -1046,7 +1042,7 @@ export default {
           })
         }
         this.loading = false
-        this.countdownTime = Date.now() + 5 * 1000
+        this.countdownKey += 1
       })
     },
     sortPort(list) {

@@ -1,5 +1,5 @@
 <template>
-  <n-tabs default-active-key="1" @change="tabChange">
+  <n-tabs default-value="1" @update:value="tabChange">
     <n-tab-pane name="1">
       <template #tab>
         <span>

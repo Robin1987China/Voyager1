@@ -1,6 +1,6 @@
 <template>
   <div>
-    <n-tabs default-active-key="1">
+    <n-tabs default-value="1">
       <n-tab-pane name="1" :tab="$t('i18n_3c6248b364')">
         <n-descriptions bordered title="" layout="vertical" size="medium">
           <n-descriptions-item :span="3">

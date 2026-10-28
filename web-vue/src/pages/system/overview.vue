@@ -36,10 +36,10 @@
       <n-space>
         <span>
           {{ $t('i18n_fbee13a873') }}
-          <n-badge color="blue" :count="statData['workspaceCount'] || '0'" show-zero />
+          <n-badge color="blue" :value="num(statData['workspaceCount'])" show-zero />
         </span>
         <span
-          >{{ $t('i18n_5866b4bced') }}<n-badge color="cyan" :count="statData['clusterCount'] || '0'" show-zero
+          >{{ $t('i18n_5866b4bced') }}<n-badge color="cyan" :value="num(statData['clusterCount'])" show-zero
         /></span>
       </n-space>
     </n-page-header>
@@ -48,34 +48,28 @@
     <n-grid :x-gap="[16, 16]">
       <n-grid-item :span="6">
         <n-card size="small">
-          <template #title> {{ $t('i18n_a6bf763ede') }} </template>
+          <template #header> {{ $t('i18n_a6bf763ede') }} </template>
 
           <n-list>
 <template v-for="item in ['all', ...Object.keys(nodeStatusMap)]" :key="item">
 <n-list-item v-if="item === 'all'">{{ $t('i18n_ec1f13ff6d')
                 }}<n-badge
                   :color="item.color"
-                  :count="
-                    (statData.nodeStat &&
+                  :value="num((statData.nodeStat &&
                       statData.nodeStat.reduce(function (sum, item2) {
                         return sum + Number(item2.count)
-                      }, 0)) ||
-                    '0'
-                  "
+                      }, 0)))"
                   show-zero
                 /></n-list-item>
 <n-list-item v-else>{{ nodeStatusMap[item] }}：<n-badge
                   :color="Number(item) === 1 ? 'green' : ''"
-                  :count="
-                    (statData.nodeStat &&
+                  :value="num((statData.nodeStat &&
                       statData.nodeStat.find((item2) => {
                         return item2.status === Number(item)
                       }) &&
                       statData.nodeStat.find((item2) => {
                         return item2.status === Number(item)
-                      }).count) ||
-                    '0'
-                  "
+                      }).count))"
                   show-zero
                 /></n-list-item>
 </template>
@@ -84,34 +78,28 @@
       </n-grid-item>
       <n-grid-item :span="6">
         <n-card size="small">
-          <template #title> {{ $t('i18n_4ad6e58ebc') }} </template>
+          <template #header> {{ $t('i18n_4ad6e58ebc') }} </template>
 
           <n-list>
 <template v-for="item in ['all', ...Object.keys(sshStatusMap)]" :key="item">
 <n-list-item v-if="item === 'all'">{{ $t('i18n_ec1f13ff6d')
                 }}<n-badge
                   :color="item.color"
-                  :count="
-                    (statData.sshStat &&
+                  :value="num((statData.sshStat &&
                       statData.sshStat.reduce(function (sum, item2) {
                         return sum + Number(item2.count)
-                      }, 0)) ||
-                    '0'
-                  "
+                      }, 0)))"
                   show-zero
                 /></n-list-item>
 <n-list-item v-else>{{ sshStatusMap[item].desc }}：<n-badge
                   :color="sshStatusMap[item].color"
-                  :count="
-                    (statData.sshStat &&
+                  :value="num((statData.sshStat &&
                       statData.sshStat.find((item2) => {
                         return item2.status === Number(item)
                       }) &&
                       statData.sshStat.find((item2) => {
                         return item2.status === Number(item)
-                      }).count) ||
-                    '0'
-                  "
+                      }).count))"
                   show-zero
                 /></n-list-item>
 </template>
@@ -120,34 +108,28 @@
       </n-grid-item>
       <n-grid-item :span="6">
         <n-card size="small">
-          <template #title> {{ $t('i18n_ea58a20cda') }} </template>
+          <template #header> {{ $t('i18n_ea58a20cda') }} </template>
 
           <n-list>
 <template v-for="item in ['all', ...Object.keys(dockerStatusMap)]" :key="item">
 <n-list-item v-if="item === 'all'">{{ $t('i18n_ec1f13ff6d')
                 }}<n-badge
                   :color="item.color"
-                  :count="
-                    (statData.dockerStat &&
+                  :value="num((statData.dockerStat &&
                       statData.dockerStat.reduce(function (sum, item2) {
                         return sum + Number(item2.count)
-                      }, 0)) ||
-                    '0'
-                  "
+                      }, 0)))"
                   show-zero
                 /></n-list-item>
 <n-list-item v-else>{{ dockerStatusMap[item].desc }}：<n-badge
                   :color="dockerStatusMap[item].color"
-                  :count="
-                    (statData.dockerStat &&
+                  :value="num((statData.dockerStat &&
                       statData.dockerStat.find((item2) => {
                         return item2.status === Number(item)
                       }) &&
                       statData.dockerStat.find((item2) => {
                         return item2.status === Number(item)
-                      }).count) ||
-                    '0'
-                  "
+                      }).count))"
                   show-zero
                 /></n-list-item>
 </template>
@@ -156,7 +138,7 @@
       </n-grid-item>
       <n-grid-item :span="6">
         <n-card size="small">
-          <template #title> {{ $t('i18n_0da9b12963') }} </template>
+          <template #header> {{ $t('i18n_0da9b12963') }} </template>
 
           <n-list>
             <n-list-item
@@ -167,7 +149,7 @@
               ]"
               :key="item.field"
             >
-              {{ item.name }}：<n-badge :color="item.color" :count="statData[item.field] || '0'" show-zero />
+              {{ item.name }}：<n-badge :color="item.color" :value="num(statData[item.field])" show-zero />
             </n-list-item>
           </n-list>
         </n-card>
@@ -218,6 +200,12 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    // 后端统计字段以字符串返回（如 "1"），而 n-badge 的 count 必须是数值，
+    // 否则 badge 不渲染（show-zero 只对数值 0 生效）
+    num(v) {
+      const n = Number(v)
+      return Number.isFinite(n) ? n : 0
     },
     toAbout() {
       this.$router.push({

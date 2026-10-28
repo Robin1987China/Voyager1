@@ -2,7 +2,7 @@
   <div>
     <n-spin :tip="$t('i18n_bebcd7388f')" :spinning="loading">
       <n-card>
-        <template #title>
+        <template #header>
           <n-steps v-model:current="stepsCurrent" size="small" :items="stepsItems" @change="stepsChange"></n-steps>
         </template>
         <n-form ref="editBuildForm" :rules="rules" :model="temp">
@@ -1461,7 +1461,7 @@
       :mask-closable="false"
     >
       <n-collapse
-        :active-key="
+        :expanded-names="
           buildScipts.map((item, index) => {
             return index + ''
           })

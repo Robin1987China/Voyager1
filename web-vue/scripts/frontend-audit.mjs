@@ -118,10 +118,70 @@ function checkMenuRoute() {
   }
 }
 
+// ---------- 5. Naive UI / Ant Design API 差异（写错会静默失效）----------
+// 背景：Ant 的插槽名/事件名在 Naive 中不存在，Vue 不会报错，只会静默丢弃内容或事件。
+const VOID_TAGS = new Set(['br', 'hr', 'img', 'input', 'meta', 'link', 'area', 'base', 'col', 'embed', 'source', 'track', 'wbr'])
+function stripHtmlComments(text) {
+  return text.replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, ' '))
+}
+function checkNaiveApi() {
+  for (const fp of walkFiles(SRC, '.vue')) {
+    const txt = stripHtmlComments(readFileSync(fp, 'utf-8'))
+    const lineOf = (idx) => txt.slice(0, idx).split('\n').length
+    const tagRe = /<\/?([a-zA-Z][\w.-]*)((?:"[^"]*"|'[^']*'|[^>"'])*)>/g
+    const stack = []
+    let m
+    while ((m = tagRe.exec(txt))) {
+      const name = m[1]
+      const tok = m[0]
+      if (tok.startsWith('</')) {
+        for (let i = stack.length - 1; i >= 0; i--) {
+          if (stack[i] === name) { stack.splice(i, 1); break }
+        }
+        continue
+      }
+      const attrs = m[2] || ''
+      const parent = stack[stack.length - 1]
+      const ln = lineOf(m.index)
+      if (name === 'n-badge' && /:count=/.test(attrs)) {
+        add('Naive API 误用', fp, ln, 'n-badge 无 count 属性，应为 :value')
+      }
+      if (name === 'n-statistic' && /@finish=/.test(attrs)) {
+        add('Naive API 误用', fp, ln, 'n-statistic 无 @finish 事件，自动刷新请用 n-countdown')
+      }
+      if (name === 'n-tabs' && /@change=/.test(attrs)) {
+        add('Naive API 误用', fp, ln, 'n-tabs 无 @change 事件，应为 @update:value')
+      }
+      if (name === 'n-tabs' && /default-active-key/.test(attrs)) {
+        add('Naive API 误用', fp, ln, 'n-tabs 应为 default-value')
+      }
+      if (name === 'n-collapse' && /:(active-key|value)=/.test(attrs)) {
+        add('Naive API 误用', fp, ln, 'n-collapse 应为 :expanded-names')
+      }
+      if (name === 'n-tabs' && /:active-key=/.test(attrs)) {
+        add('Naive API 误用', fp, ln, 'n-tabs 应为 :value')
+      }
+      if (name === 'template' && /#(rightExtra|leftExtra)([\s=>/]|$)/.test(attrs)) {
+        add('Naive API 误用', fp, ln, 'n-tabs 应使用 #suffix / #prefix')
+      }
+      if (name === 'template' && parent === 'n-card' && /#title([\s=>/]|$)/.test(attrs)) {
+        add('Naive API 误用', fp, ln, 'n-card 无 #title 插槽，应为 #header')
+      }
+      if (name === 'template' && parent === 'n-card' && /#extra([\s=>/]|$)/.test(attrs)) {
+        add('Naive API 误用', fp, ln, 'n-card 无 #extra 插槽，应为 #header-extra')
+      }
+      // 自闭合/空元素检查完属性后再跳过入栈
+      if (tok.endsWith('/>') || VOID_TAGS.has(name.toLowerCase())) continue
+      stack.push(name)
+    }
+  }
+}
+
 checkUndefinedMethods()
 checkRawDollarT()
 checkDeletedApi()
 checkMenuRoute()
+checkNaiveApi()
 
 // ---------- 输出 ----------
 const byCat = {}

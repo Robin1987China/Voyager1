@@ -345,7 +345,7 @@
         </template>
         <template #cardBodyCell="{ item }">
           <n-card :head-style="{ padding: '0 6px' }" :body-style="{ padding: '10px' }">
-            <template #title>
+            <template #header>
               <n-grid :x-gap="[4, 0]">
                 <n-grid-item :span="17" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
                   <n-tooltip>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <n-tabs default-active-key="1">
+    <n-tabs default-value="1">
       <n-tab-pane name="1" :tab="$t('i18n_08b55fea3c')">
         <!-- 数据表格 -->
         <CustomTable

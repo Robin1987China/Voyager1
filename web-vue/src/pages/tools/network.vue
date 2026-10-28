@@ -1,7 +1,7 @@
 <template>
   <div>
-    <n-collapse v-model:value="activeKey">
-      <n-collapse-item key="1">
+    <n-collapse v-model:expanded-names="activeKey">
+      <n-collapse-item name="1">
         <template #header>
           {{ $t('i18n_0e44ae17ae') }}
           <n-tooltip>
@@ -34,7 +34,7 @@
           </template>
         </n-space>
       </n-collapse-item>
-      <n-collapse-item key="ping" :header="$t('i18n_bc4b0fd88a')">
+      <n-collapse-item name="ping" :header="$t('i18n_bc4b0fd88a')">
         <n-form ref="form" :model="pingData" :rules="pingRules" @submit.prevent="onPingSubmit">
           <n-form-item :label="$t('i18n_02d9819dda')" path="">
             <n-alert :title="$t('i18n_1dc9514548')" banner />
@@ -79,7 +79,7 @@
           </template>
         </n-form>
       </n-collapse-item>
-      <n-collapse-item key="telnet" :header="$t('i18n_97d08b02e7')">
+      <n-collapse-item name="telnet" :header="$t('i18n_97d08b02e7')">
         <n-form ref="form" :model="telnetData" :rules="telnetRules" @submit.prevent="onTelnetSubmit">
           <n-form-item label="HOST" path="host">
             <n-input

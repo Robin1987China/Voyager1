@@ -49,7 +49,7 @@
               <n-divider>{{ $t('i18n_0f004c4cf7') }}</n-divider>
               <n-form-item>
                 <n-space :size="20" wrap>
-                  <template v-for="(item, index) in oauth2AllProvides">
+                  <template v-for="(item, index) in oauth2AllProvides" :key="item.key">
                     <div v-if="enabledOauth2Provides.includes(item.key)" :key="index" class="oauth2-item">
                       <n-tooltip @click="toOauth2Url(item.key)">
                         <template #trigger>

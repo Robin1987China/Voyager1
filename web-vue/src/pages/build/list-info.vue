@@ -144,7 +144,7 @@
       </template>
       <template #cardBodyCell="{ item }">
         <n-card :head-style="{ padding: '0 6px' }" :body-style="{ padding: '10px' }">
-          <template #title>
+          <template #header>
             <n-grid :x-gap="[4, 0]">
               <n-grid-item :span="17" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
                 <n-button text style="padding: 0" size="small" @click="handleDetails(item)">
@@ -1128,7 +1128,6 @@ export default {
       $confirm({
         title: this.$t('i18n_c4535759ee'),
         zIndex: 1009,
-        // TODO 后续抽优化
         content: this.$t('i18n_25f6a95de3') + record.name + this.$t('i18n_c16ab7c424'),
         okText: this.$t('i18n_e83a256e4f'),
         cancelText: this.$t('i18n_625fb26b4b'),

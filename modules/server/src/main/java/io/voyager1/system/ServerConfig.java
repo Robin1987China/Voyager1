@@ -49,6 +49,8 @@ import java.util.Optional;
     NodeConfig.class,
     UserConfig.class,
     FileStorageConfig.class,
+    AgentAutonomyConfig.class,
+    LlmConfig.class,
     WebConfig.class})
 @Data
 public class ServerConfig implements InitializingBean {

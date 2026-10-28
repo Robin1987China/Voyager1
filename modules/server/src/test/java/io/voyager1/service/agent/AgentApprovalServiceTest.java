@@ -48,4 +48,27 @@ public class AgentApprovalServiceTest extends ApplicationStartTest {
         Assertions.assertEquals("approved", resp.getString("status"));
         Assertions.assertNotNull(resp.getString("result"));
     }
+
+    @Test
+    public void testRejectExpiredOnlyTouchesExpiredOnes() {
+        String expiredId = agentApprovalService.createApproval("expired-session", "deploy.publish", new JSONObject(), "admin");
+        String aliveId = agentApprovalService.createApproval("alive-session", "deploy.publish", new JSONObject(), "admin");
+
+        // 把其中一条的过期时间改到过去
+        io.voyager1.model.data.AgentApprovalModel expired = agentApprovalService.getByKey(expiredId);
+        expired.setExpireTimeMillis(System.currentTimeMillis() - 1000L);
+        agentApprovalService.updateById(expired);
+
+        int rejected = agentApprovalService.rejectExpired();
+        Assertions.assertTrue(rejected >= 1, "至少应拒绝本次构造的过期单");
+
+        Assertions.assertEquals(io.voyager1.model.data.AgentApprovalModel.STATUS_EXPIRED,
+            agentApprovalService.getByKey(expiredId).getStatus().intValue());
+        Assertions.assertEquals("审批超时自动拒绝", agentApprovalService.getByKey(expiredId).getRemark());
+        Assertions.assertEquals(io.voyager1.model.data.AgentApprovalModel.STATUS_PENDING,
+            agentApprovalService.getByKey(aliveId).getStatus().intValue(), "未过期的不应被拒绝");
+
+        // 清理未过期的那条，避免污染后续测试
+        agentApprovalService.reject(aliveId, "admin", "测试清理");
+    }
 }

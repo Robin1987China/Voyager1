@@ -166,6 +166,31 @@ public class AgentApprovalService implements DataService<AgentApprovalModel> {
             .collect(Collectors.toList());
     }
 
+    /**
+     * 扫描并拒绝已超时的待审批记录（由定时任务调用，无需有人打开页面）。
+     *
+     * @return 本次自动拒绝的条数
+     */
+    @Transactional
+    public int rejectExpired() {
+        long now = System.currentTimeMillis();
+        List<AgentApprovalEntity> expired = repository
+            .findByStatusOrderByCreateTimeMillisDesc(AgentApprovalModel.STATUS_PENDING)
+            .stream()
+            .filter(e -> e.getExpireTimeMillis() != null && e.getExpireTimeMillis() < now)
+            .collect(Collectors.toList());
+        for (AgentApprovalEntity entity : expired) {
+            entity.setStatus(AgentApprovalModel.STATUS_EXPIRED);
+            entity.setRemark("审批超时自动拒绝");
+            entity.setModifyTimeMillis(now);
+            repository.save(entity);
+        }
+        if (!expired.isEmpty()) {
+            log.info("审批超时自动拒绝 {} 条", expired.size());
+        }
+        return expired.size();
+    }
+
     public PageResultDto<AgentApprovalModel> listPage(HttpServletRequest request) {
         Map<String, String> paramMap = JakartaServletUtil.getParamMap(request);
         paramMap.put("workspaceId", WorkspaceContext.getWorkspaceId(request));

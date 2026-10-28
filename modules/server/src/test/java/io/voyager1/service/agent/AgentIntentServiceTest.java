@@ -16,6 +16,7 @@
 
 package io.voyager1.service.agent;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,8 @@ import java.util.List;
  */
 public class AgentIntentServiceTest {
 
-    private final AgentIntentService service = new AgentIntentService();
+    // 解析不依赖 MCP 注册表；执行路径见 AgentIntentExecuteTest
+    private final AgentIntentService service = new AgentIntentService(null, null);
 
     @Test
     public void testParseDeployIntent() {
@@ -64,5 +66,53 @@ public class AgentIntentServiceTest {
     @Test
     public void testParseBlankIntent() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> service.parseIntent("   "));
+    }
+
+    @Test
+    public void testParseIntentUsesLlmWhenAvailable() {
+        LlmGateway stub = new LlmGateway() {
+            @Override
+            public boolean available() {
+                return true;
+            }
+
+            @Override
+            public JSONObject chat(JSONArray messages, JSONArray tools) {
+                JSONObject msg = new JSONObject();
+                msg.put("role", "assistant");
+                JSONArray calls = new JSONArray();
+                JSONObject call = new JSONObject();
+                JSONObject fn = new JSONObject();
+                fn.put("name", "environment.list");
+                fn.put("arguments", "{}");
+                call.put("function", fn);
+                calls.add(call);
+                msg.put("tool_calls", calls);
+                return msg;
+            }
+        };
+        AgentIntentService svc = new AgentIntentService(null, stub);
+        // 规则版无法识别该句子，若仍能解析说明走的是 LLM
+        List<JSONObject> steps = svc.parseIntent("今晚月色真美");
+        Assertions.assertEquals(1, steps.size());
+        Assertions.assertEquals("environment.list", steps.get(0).getString("name"));
+    }
+
+    @Test
+    public void testParseIntentFallsBackWhenLlmFails() {
+        LlmGateway failing = new LlmGateway() {
+            @Override
+            public boolean available() {
+                return true;
+            }
+
+            @Override
+            public JSONObject chat(JSONArray messages, JSONArray tools) {
+                throw new IllegalStateException("boom");
+            }
+        };
+        AgentIntentService svc = new AgentIntentService(null, failing);
+        List<JSONObject> steps = svc.parseIntent("查看监控状态");
+        Assertions.assertTrue(steps.stream().anyMatch(s -> "monitor.list".equals(s.getString("name"))));
     }
 }

@@ -29,6 +29,7 @@ import io.voyager1.model.user.UserModel;
 import io.voyager1.util.FileUtil;
 import io.voyager1.util.FileUtils;
 import io.voyager1.service.agent.AgentApprovalService;
+import io.voyager1.service.agent.AgentAuditService;
 import io.voyager1.service.agent.SelfHealService;
 import io.voyager1.service.cloud.CloudInstanceService;
 import io.voyager1.service.dblog.BuildInfoService;
@@ -192,6 +193,15 @@ public class McpToolRegistry {
      * MCP tools/call 响应（封装 content 结构）
      */
     public JSONObject callTool(Object id, JSONObject params, String sessionId) {
+        return this.callTool(id, params, sessionId, null);
+    }
+
+    /**
+     * MCP tools/call 响应（带意图原文，用于审计关联）。
+     *
+     * @param intentText 触发本次调用的意图原文，可为 null（MCP 直连调用）
+     */
+    public JSONObject callTool(Object id, JSONObject params, String sessionId, String intentText) {
         String name = params == null ? null : params.getString("name");
         JSONObject args = params == null ? null : params.getJSONObject("arguments");
         if (args == null) {
@@ -205,26 +215,38 @@ public class McpToolRegistry {
         JSONArray content = new JSONArray();
         JSONObject c = new JSONObject();
         c.put("type", "text");
+        boolean success = true;
+        JSONObject auditResult = new JSONObject();
         // 危险工具走审批闸门
         if (name != null && APPROVAL_TOOLS.contains(name)) {
             String approvalId = SpringContextHolder.getBean(AgentApprovalService.class).createApproval(
                 sessionId, name, args, this.operator());
-            c.put("text", "待人工审批（审批 ID=" + approvalId + "），批准后执行");
+            String text = "待人工审批（审批 ID=" + approvalId + "），批准后执行";
+            c.put("text", text);
+            auditResult.put("pendingApproval", true);
+            auditResult.put("approvalId", approvalId);
+            auditResult.put("text", text);
         } else {
             try {
                 Object data = this.execute(name, args);
-                c.put("text", data instanceof String ? (String) data : JSON.toJSONString(data));
-                // 轻量审计：操作者 + tool + 参数摘要 + 结果 + 耗时
-                log.info("MCP tool 调用审计: operator={} tool={} args={} cost={}ms",
-                    this.operator(), name, JSON.toJSONString(args), System.currentTimeMillis() - start);
+                String text = data instanceof String ? (String) data : JSON.toJSONString(data);
+                c.put("text", text);
+                auditResult.put("text", text);
             } catch (Exception e) {
+                success = false;
                 log.error("MCP tool 执行失败: {} {}", name, e.getMessage(), e);
-                c.put("text", "执行失败: " + e.getMessage());
+                String text = "执行失败: " + e.getMessage();
+                c.put("text", text);
+                auditResult.put("error", e.getMessage());
             }
         }
         content.add(c);
         result.put("content", content);
         json.put("result", result);
+        // 执行审计（会话 / 意图 / 工具 / 入参 / 结果 / 耗时）；写失败不影响调用
+        SpringContextHolder.getBean(AgentAuditService.class).record(
+            sessionId, intentText, name, args, auditResult, success,
+            System.currentTimeMillis() - start, this.operator());
         return json;
     }
 

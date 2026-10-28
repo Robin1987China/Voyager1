@@ -52,4 +52,16 @@ public class AgentIntentController extends BaseServerController {
     public ApiResult<List<JSONObject>> parse(@ValidatorItem(value = ValidatorRule.NOT_BLANK, msg = "请输入意图描述") String intent) {
         return ApiResult.success("", agentIntentService.parseIntent(intent));
     }
+
+    /**
+     * 解析意图并逐工具执行（危险工具会停在待审批）。
+     */
+    @PostMapping(value = "execute", produces = "application/json")
+    @Feature(method = MethodFeature.EXECUTE)
+    public ApiResult<JSONObject> execute(@ValidatorItem(value = ValidatorRule.NOT_BLANK, msg = "请输入意图描述") String intent,
+                                         String agentSessionId) {
+        String sessionId = (agentSessionId == null || agentSessionId.isEmpty())
+            ? java.util.UUID.randomUUID().toString() : agentSessionId;
+        return ApiResult.success("", agentIntentService.execute(intent, sessionId));
+    }
 }
